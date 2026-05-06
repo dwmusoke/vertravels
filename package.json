@@ -1,0 +1,65 @@
+{
+  "name": "vertravels",
+  "version": "1.0.0",
+  "private": true,
+  "description": "VerTravels - Modern Travel Booking Platform",
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "dev:web": "turbo run dev --filter=web",
+    "dev:admin": "turbo run dev --filter=admin",
+    "dev:api": "turbo run dev --filter=api",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "test:unit": "turbo run test:unit",
+    "test:e2e": "turbo run test:e2e",
+    "clean": "turbo run clean && rm -rf node_modules",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "db:migrate": "supabase db push",
+    "db:seed": "supabase db seed run",
+    "db:generate-types": "supabase gen types typescript --local > packages/database/types/database.types.ts",
+    "edge:deploy": "supabase functions deploy",
+    "vercel:deploy": "vercel --prod"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@typescript-eslint/eslint-plugin": "^6.13.0",
+    "@typescript-eslint/parser": "^6.13.0",
+    "eslint": "^8.55.0",
+    "eslint-config-prettier": "^9.1.0",
+    "prettier": "^3.1.0",
+    "prettier-plugin-tailwindcss": "^0.5.9",
+    "supabase": "^1.120.0",
+    "turbo": "^1.11.1",
+    "typescript": "^5.3.2",
+    "vercel": "^32.7.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "packageManager": "pnpm@8.12.0",
+  "author": "VerTravels Team",
+  "license": "MIT",
+  "keywords": [
+    "travel",
+    "booking",
+    "flights",
+    "hotels",
+    "tours",
+    "nextjs",
+    "supabase",
+    "vercel"
+  ],
+  "dependencies": {
+    "@radix-ui/react-accordion": "^1.2.12",
+    "@radix-ui/react-alert-dialog": "^1.1.15",
+    "@radix-ui/react-progress": "^1.1.8",
+    "@radix-ui/react-radio-group": "^1.3.8",
+    "@radix-ui/react-scroll-area": "^1.2.10",
+    "@radix-ui/react-separator": "^1.1.8",
+    "@radix-ui/react-slider": "^1.3.6",
+    "@radix-ui/react-toast": "^1.2.15",
+    "cmdk": "^0.2.1"
+  }
+}

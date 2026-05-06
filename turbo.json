@@ -1,0 +1,63 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": ["**/.env.*local"],
+  "pipeline": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": [".next/**", "!.next/cache/**", "dist/**"],
+      "env": [
+        "NEXT_PUBLIC_SUPABASE_URL",
+        "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "NEXT_PUBLIC_VERCEL_ENV"
+      ]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true,
+      "dependsOn": ["^db:generate-types"]
+    },
+    "lint": {
+      "dependsOn": ["^build"]
+    },
+    "test": {
+      "dependsOn": ["build"]
+    },
+    "test:unit": {
+      "dependsOn": ["build"]
+    },
+    "test:e2e": {
+      "dependsOn": ["build"]
+    },
+    "clean": {
+      "cache": false
+    },
+    "db:generate-types": {
+      "cache": false
+    },
+    "edge:deploy": {
+      "cache": false
+    }
+  },
+  "globalEnv": [
+    "NODE_ENV",
+    "NEXT_PUBLIC_SUPABASE_URL",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "NEXT_PUBLIC_SITE_URL",
+    "NEXT_PUBLIC_ADMIN_URL",
+    "STRIPE_SECRET_KEY",
+    "STRIPE_PUBLISHABLE_KEY",
+    "FLUTTERWAVE_PUBLIC_KEY",
+    "FLUTTERWAVE_SECRET_KEY",
+    "FLUTTERWAVE_ENCRYPTION_KEY",
+    "PAYPAL_CLIENT_ID",
+    "PAYPAL_SECRET",
+    "AMADEUS_API_KEY",
+    "AMADEUS_API_SECRET",
+    "NDC_API_KEY",
+    "NDC_API_URL",
+    "SENDGRID_API_KEY",
+    "SENDGRID_FROM_EMAIL"
+  ]
+}

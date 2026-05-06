@@ -1,0 +1,7 @@
+{
+  "name": "@vertravels/database",
+  "version": "1.0.0",
+  "private": true,
+  "main": "./types/database.types.ts",
+  "types": "./types/database.types.ts"
+}
