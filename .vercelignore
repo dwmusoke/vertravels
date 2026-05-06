@@ -1,0 +1,8 @@
+apps/admin
+apps/api
+node_modules
+packages
+.git
+.env*
+*.md
+.DS_Store

@@ -1,4 +1,4 @@
 {
-  "buildCommand": "cd apps/web && pnpm install --no-frozen-lockfile --ignore-workspace",
-  "outputDirectory": "apps/web/.next"
+  "build": "next build",
+  "output": ".next"
 }

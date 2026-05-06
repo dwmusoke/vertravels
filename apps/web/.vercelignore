@@ -1,0 +1,9 @@
+{
+  "build": {
+    "command": "pnpm install && pnpm run build",
+    "output": ".next"
+  },
+  "install": {
+    "dont": true
+  }
+}
