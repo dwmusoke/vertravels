@@ -20,10 +20,7 @@
       }
     ],
     "paths": {
-      "@/*": ["./*"],
-      "@vertravels/ui": ["../../packages/ui/components/index.ts"],
-      "@vertravels/ui/*": ["../../packages/ui/components/*"],
-      "@database/*": ["../../packages/database/*"]
+      "@/*": ["./*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

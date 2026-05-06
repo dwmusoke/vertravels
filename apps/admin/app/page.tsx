@@ -16,7 +16,12 @@ import {
 } from "lucide-react";
 
 export default function AdminDashboardPage() {
-  const [stats, setStats] = useState<any>(null);
+  const [stats, setStats] = useState<{
+    totalBookings: number;
+    totalRevenue: number;
+    totalUsers: number;
+    activeModules: number;
+  } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -29,20 +34,14 @@ export default function AdminDashboardPage() {
       setLoading(true);
       const supabase = createClient();
 
-      // Fetch bookings
-      const { data: bookings, error: bookingsError } = await supabase
+      const { data: bookings } = await supabase
         .from("bookings")
         .select("*")
         .limit(100);
 
-      if (bookingsError) throw bookingsError;
-
-      // Fetch users
-      const { count: userCount, error: usersError } = await supabase
+      const { count: userCount } = await supabase
         .from("profiles")
         .select("*", { count: "exact", head: true });
-
-      if (usersError) throw usersError;
 
       const totalBookings = bookings?.length || 0;
       const totalRevenue =
@@ -77,7 +76,6 @@ export default function AdminDashboardPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Sidebar */}
       <aside className="fixed left-0 top-0 w-64 bg-white border-r h-full">
         <div className="h-16 flex items-center px-6 border-b">
           <div className="flex items-center gap-2">
@@ -112,7 +110,6 @@ export default function AdminDashboardPage() {
         </nav>
       </aside>
 
-      {/* Main Content */}
       <main className="ml-64 p-8">
         <div className="flex justify-between items-center mb-8">
           <div>
@@ -134,7 +131,6 @@ export default function AdminDashboardPage() {
           </div>
         )}
 
-        {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <div className="bg-white p-6 rounded-xl shadow-sm border">
             <div className="flex items-center justify-between">
@@ -193,7 +189,6 @@ export default function AdminDashboardPage() {
           </div>
         </div>
 
-        {/* Modules */}
         <div className="bg-white rounded-xl shadow-sm border p-6">
           <h2 className="text-lg font-semibold mb-4">Active Modules</h2>
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
