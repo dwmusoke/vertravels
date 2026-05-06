@@ -1,25 +1,30 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { Button } from '@vertravels/ui';
-import { Input } from '@vertravels/ui';
-import { DatePicker } from '@vertravels/ui';
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@vertravels/ui';
-import { Car, MapPin, Calendar, Clock, Fuel, Settings } from 'lucide-react';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@vertravels/ui";
+import { Input } from "@vertravels/ui";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@vertravels/ui";
+import { Car, MapPin, Calendar, Clock, Fuel, Settings } from "lucide-react";
 
 export function CarsSearch() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    pickupLocation: '',
-    dropoffLocation: '',
+    pickupLocation: "",
+    dropoffLocation: "",
     pickupDate: undefined as Date | undefined,
-    pickupTime: '10:00',
+    pickupTime: "10:00",
     dropoffDate: undefined as Date | undefined,
-    dropoffTime: '10:00',
-    carType: '',
-    transmission: '',
+    dropoffTime: "10:00",
+    carType: "",
+    transmission: "",
     sameLocation: true,
   });
 
@@ -27,14 +32,18 @@ export function CarsSearch() {
     e.preventDefault();
     setLoading(true);
 
-    if (!formData.pickupLocation || !formData.pickupDate || !formData.dropoffDate) {
-      alert('Please fill in all required fields');
+    if (
+      !formData.pickupLocation ||
+      !formData.pickupDate ||
+      !formData.dropoffDate
+    ) {
+      alert("Please fill in all required fields");
       setLoading(false);
       return;
     }
 
-    console.log('Searching cars:', formData);
-    
+    console.log("Searching cars:", formData);
+
     const params = new URLSearchParams({
       pickup: formData.pickupLocation,
       dropoff: formData.dropoffLocation || formData.pickupLocation,
@@ -58,7 +67,9 @@ export function CarsSearch() {
           type="checkbox"
           id="sameLocation"
           checked={formData.sameLocation}
-          onChange={(e) => setFormData({ ...formData, sameLocation: e.target.checked })}
+          onChange={(e) =>
+            setFormData({ ...formData, sameLocation: e.target.checked })
+          }
           className="rounded border-gray-300 text-primary focus:ring-primary"
         />
         <label htmlFor="sameLocation" className="text-sm font-medium">
@@ -72,17 +83,21 @@ export function CarsSearch() {
           label="Pick-up Location"
           placeholder="City, airport, or address"
           value={formData.pickupLocation}
-          onChange={(e) => setFormData({ ...formData, pickupLocation: e.target.value })}
+          onChange={(e) =>
+            setFormData({ ...formData, pickupLocation: e.target.value })
+          }
           icon={<MapPin className="h-4 w-4" />}
           required
         />
-        
+
         {!formData.sameLocation && (
           <Input
             label="Drop-off Location"
             placeholder="City, airport, or address"
             value={formData.dropoffLocation}
-            onChange={(e) => setFormData({ ...formData, dropoffLocation: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, dropoffLocation: e.target.value })
+            }
             icon={<MapPin className="h-4 w-4" />}
           />
         )}
@@ -91,24 +106,40 @@ export function CarsSearch() {
       {/* Dates */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
-          <DatePicker
-            label="Pick-up Date"
-            date={formData.pickupDate}
-            onSelect={(date) => setFormData({ ...formData, pickupDate: date })}
-            minDate={new Date()}
-            placeholder="Select date"
+          <label className="text-sm font-medium">Pick-up Date</label>
+          <Input
+            type="date"
+            value={
+              formData.pickupDate
+                ? formData.pickupDate.toISOString().split("T")[0]
+                : ""
+            }
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                pickupDate: e.target.value
+                  ? new Date(e.target.value)
+                  : undefined,
+              })
+            }
+            min={new Date().toISOString().split("T")[0]}
           />
           <Select
             value={formData.pickupTime}
-            onValueChange={(value) => setFormData({ ...formData, pickupTime: value })}
+            onValueChange={(value) =>
+              setFormData({ ...formData, pickupTime: value })
+            }
           >
             <SelectTrigger>
               <SelectValue placeholder="Pick-up Time" />
             </SelectTrigger>
             <SelectContent>
               {Array.from({ length: 24 }, (_, i) => i).map((hour) => (
-                <SelectItem key={hour} value={`${hour.toString().padStart(2, '0')}:00`}>
-                  {hour.toString().padStart(2, '0')}:00
+                <SelectItem
+                  key={hour}
+                  value={`${hour.toString().padStart(2, "0")}:00`}
+                >
+                  {hour.toString().padStart(2, "0")}:00
                 </SelectItem>
               ))}
             </SelectContent>
@@ -116,24 +147,44 @@ export function CarsSearch() {
         </div>
 
         <div className="space-y-2">
-          <DatePicker
-            label="Drop-off Date"
-            date={formData.dropoffDate}
-            onSelect={(date) => setFormData({ ...formData, dropoffDate: date })}
-            minDate={formData.pickupDate || new Date()}
-            placeholder="Select date"
+          <label className="text-sm font-medium">Drop-off Date</label>
+          <Input
+            type="date"
+            value={
+              formData.dropoffDate
+                ? formData.dropoffDate.toISOString().split("T")[0]
+                : ""
+            }
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                dropoffDate: e.target.value
+                  ? new Date(e.target.value)
+                  : undefined,
+              })
+            }
+            min={
+              formData.pickupDate
+                ? formData.pickupDate.toISOString().split("T")[0]
+                : new Date().toISOString().split("T")[0]
+            }
           />
           <Select
             value={formData.dropoffTime}
-            onValueChange={(value) => setFormData({ ...formData, dropoffTime: value })}
+            onValueChange={(value) =>
+              setFormData({ ...formData, dropoffTime: value })
+            }
           >
             <SelectTrigger>
               <SelectValue placeholder="Drop-off Time" />
             </SelectTrigger>
             <SelectContent>
               {Array.from({ length: 24 }, (_, i) => i).map((hour) => (
-                <SelectItem key={hour} value={`${hour.toString().padStart(2, '0')}:00`}>
-                  {hour.toString().padStart(2, '0')}:00
+                <SelectItem
+                  key={hour}
+                  value={`${hour.toString().padStart(2, "0")}:00`}
+                >
+                  {hour.toString().padStart(2, "0")}:00
                 </SelectItem>
               ))}
             </SelectContent>
@@ -145,7 +196,9 @@ export function CarsSearch() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Select
           value={formData.carType}
-          onValueChange={(value) => setFormData({ ...formData, carType: value })}
+          onValueChange={(value) =>
+            setFormData({ ...formData, carType: value })
+          }
         >
           <SelectTrigger>
             <SelectValue placeholder="Car Type" />
@@ -164,7 +217,9 @@ export function CarsSearch() {
 
         <Select
           value={formData.transmission}
-          onValueChange={(value) => setFormData({ ...formData, transmission: value })}
+          onValueChange={(value) =>
+            setFormData({ ...formData, transmission: value })
+          }
         >
           <SelectTrigger>
             <SelectValue placeholder="Transmission" />
@@ -182,16 +237,19 @@ export function CarsSearch() {
         <p className="text-sm font-medium mb-3">Additional Options</p>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {[
-            { icon: Fuel, label: 'Unlimited Mileage' },
-            { icon: Settings, label: 'Air Conditioning' },
-            { icon: Clock, label: 'Free Cancellation' },
-            { icon: Car, label: 'Airport Pickup' },
+            { icon: Fuel, label: "Unlimited Mileage" },
+            { icon: Settings, label: "Air Conditioning" },
+            { icon: Clock, label: "Free Cancellation" },
+            { icon: Car, label: "Airport Pickup" },
           ].map((option) => (
             <label
               key={option.label}
               className="flex items-center gap-2 p-3 border rounded-md cursor-pointer hover:bg-accent transition-colors"
             >
-              <input type="checkbox" className="rounded border-gray-300 text-primary" />
+              <input
+                type="checkbox"
+                className="rounded border-gray-300 text-primary"
+              />
               <option.icon className="h-4 w-4 text-muted-foreground" />
               <span className="text-sm">{option.label}</span>
             </label>

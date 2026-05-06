@@ -1,22 +1,27 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { Button } from '@vertravels/ui';
-import { Input } from '@vertravels/ui';
-import { DatePicker } from '@vertravels/ui';
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@vertravels/ui';
-import { Map, MapPin, Calendar, Users, Clock } from 'lucide-react';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@vertravels/ui";
+import { Input } from "@vertravels/ui";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@vertravels/ui";
+import { Map, MapPin, Calendar, Users, Clock } from "lucide-react";
 
 export function ToursSearch() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    destination: '',
+    destination: "",
     date: undefined as Date | undefined,
-    duration: '',
+    duration: "",
     guests: 2,
-    category: '',
+    category: "",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -24,16 +29,16 @@ export function ToursSearch() {
     setLoading(true);
 
     if (!formData.destination) {
-      alert('Please enter a destination');
+      alert("Please enter a destination");
       setLoading(false);
       return;
     }
 
-    console.log('Searching tours:', formData);
-    
+    console.log("Searching tours:", formData);
+
     const params = new URLSearchParams({
       destination: formData.destination,
-      date: formData.date?.toISOString() || '',
+      date: formData.date?.toISOString() || "",
       duration: formData.duration,
       guests: formData.guests.toString(),
       category: formData.category,
@@ -50,24 +55,37 @@ export function ToursSearch() {
         label="Destination"
         placeholder="City or attraction"
         value={formData.destination}
-        onChange={(e) => setFormData({ ...formData, destination: e.target.value })}
+        onChange={(e) =>
+          setFormData({ ...formData, destination: e.target.value })
+        }
         icon={<MapPin className="h-4 w-4" />}
         required
       />
 
       {/* Date & Duration */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <DatePicker
-          label="Date"
-          date={formData.date}
-          onSelect={(date) => setFormData({ ...formData, date })}
-          minDate={new Date()}
-          placeholder="Select date"
-        />
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Date</label>
+          <Input
+            type="date"
+            value={
+              formData.date ? formData.date.toISOString().split("T")[0] : ""
+            }
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                date: e.target.value ? new Date(e.target.value) : undefined,
+              })
+            }
+            min={new Date().toISOString().split("T")[0]}
+          />
+        </div>
 
         <Select
           value={formData.duration}
-          onValueChange={(value) => setFormData({ ...formData, duration: value })}
+          onValueChange={(value) =>
+            setFormData({ ...formData, duration: value })
+          }
         >
           <SelectTrigger>
             <SelectValue placeholder="Duration" />
@@ -91,10 +109,12 @@ export function ToursSearch() {
               <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  onClick={() => setFormData({ 
-                    ...formData, 
-                    guests: Math.max(1, formData.guests - 1)
-                  })}
+                  onClick={() =>
+                    setFormData({
+                      ...formData,
+                      guests: Math.max(1, formData.guests - 1),
+                    })
+                  }
                   className="h-6 w-6 rounded-full border flex items-center justify-center hover:bg-accent"
                 >
                   -
@@ -102,10 +122,12 @@ export function ToursSearch() {
                 <span className="w-6 text-center">{formData.guests}</span>
                 <button
                   type="button"
-                  onClick={() => setFormData({ 
-                    ...formData, 
-                    guests: formData.guests + 1
-                  })}
+                  onClick={() =>
+                    setFormData({
+                      ...formData,
+                      guests: formData.guests + 1,
+                    })
+                  }
                   className="h-6 w-6 rounded-full border flex items-center justify-center hover:bg-accent"
                 >
                   +
@@ -118,7 +140,9 @@ export function ToursSearch() {
         <div>
           <Select
             value={formData.category}
-            onValueChange={(value) => setFormData({ ...formData, category: value })}
+            onValueChange={(value) =>
+              setFormData({ ...formData, category: value })
+            }
           >
             <SelectTrigger>
               <SelectValue placeholder="Category" />
@@ -147,11 +171,23 @@ export function ToursSearch() {
       <div className="pt-4 border-t">
         <p className="text-sm font-medium mb-2">Popular Categories</p>
         <div className="flex flex-wrap gap-2">
-          {['City Tours', 'Day Trips', 'Adventure', 'Food Tours', 'Historical', 'Night Tours'].map((cat) => (
+          {[
+            "City Tours",
+            "Day Trips",
+            "Adventure",
+            "Food Tours",
+            "Historical",
+            "Night Tours",
+          ].map((cat) => (
             <button
               key={cat}
               type="button"
-              onClick={() => setFormData({ ...formData, category: cat.toLowerCase().replace(' ', '-') })}
+              onClick={() =>
+                setFormData({
+                  ...formData,
+                  category: cat.toLowerCase().replace(" ", "-"),
+                })
+              }
               className="px-3 py-1 text-sm rounded-full border hover:bg-accent transition-colors"
             >
               {cat}

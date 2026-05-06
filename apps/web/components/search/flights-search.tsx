@@ -1,20 +1,34 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { Button } from '@vertravels/ui';
-import { Input } from '@vertravels/ui';
-import { DatePicker } from '@vertravels/ui';
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@vertravels/ui';
-import { Plane, MapPin, Calendar, Users, ArrowRight, SwapHorizontal } from 'lucide-react';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@vertravels/ui";
+import { Input } from "@vertravels/ui";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@vertravels/ui";
+import {
+  Plane,
+  MapPin,
+  Calendar,
+  Users,
+  ArrowRight,
+  ArrowLeftRight,
+} from "lucide-react";
 
 export function FlightsSearch() {
   const router = useRouter();
-  const [tripType, setTripType] = useState<'round' | 'one-way' | 'multi'>('round');
+  const [tripType, setTripType] = useState<"round" | "one-way" | "multi">(
+    "round",
+  );
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    origin: '',
-    destination: '',
+    origin: "",
+    destination: "",
     departureDate: undefined as Date | undefined,
     returnDate: undefined as Date | undefined,
     passengers: {
@@ -22,7 +36,7 @@ export function FlightsSearch() {
       children: 0,
       infants: 0,
     },
-    cabinClass: 'economy',
+    cabinClass: "economy",
   });
 
   const handleSwapLocations = () => {
@@ -39,20 +53,20 @@ export function FlightsSearch() {
 
     // Validate form
     if (!formData.origin || !formData.destination || !formData.departureDate) {
-      alert('Please fill in all required fields');
+      alert("Please fill in all required fields");
       setLoading(false);
       return;
     }
 
     // Simulate search - in production, this would call the API
-    console.log('Searching flights:', formData);
-    
+    console.log("Searching flights:", formData);
+
     // Redirect to search results page
     const params = new URLSearchParams({
       origin: formData.origin,
       destination: formData.destination,
-      departure: formData.departureDate?.toISOString() || '',
-      return: formData.returnDate?.toISOString() || '',
+      departure: formData.departureDate?.toISOString() || "",
+      return: formData.returnDate?.toISOString() || "",
       adults: formData.passengers.adults.toString(),
       children: formData.passengers.children.toString(),
       infants: formData.passengers.infants.toString(),
@@ -71,8 +85,8 @@ export function FlightsSearch() {
         <label className="flex items-center space-x-2 cursor-pointer">
           <input
             type="radio"
-            checked={tripType === 'round'}
-            onChange={() => setTripType('round')}
+            checked={tripType === "round"}
+            onChange={() => setTripType("round")}
             className="text-primary focus:ring-primary"
           />
           <span>Round Trip</span>
@@ -80,8 +94,8 @@ export function FlightsSearch() {
         <label className="flex items-center space-x-2 cursor-pointer">
           <input
             type="radio"
-            checked={tripType === 'one-way'}
-            onChange={() => setTripType('one-way')}
+            checked={tripType === "one-way"}
+            onChange={() => setTripType("one-way")}
             className="text-primary focus:ring-primary"
           />
           <span>One Way</span>
@@ -89,8 +103,8 @@ export function FlightsSearch() {
         <label className="flex items-center space-x-2 cursor-pointer">
           <input
             type="radio"
-            checked={tripType === 'multi'}
-            onChange={() => setTripType('multi')}
+            checked={tripType === "multi"}
+            onChange={() => setTripType("multi")}
             className="text-primary focus:ring-primary"
           />
           <span>Multi-City</span>
@@ -107,13 +121,15 @@ export function FlightsSearch() {
           icon={<MapPin className="h-4 w-4" />}
           required
         />
-        
+
         <div className="relative">
           <Input
             label="To"
             placeholder="City or Airport"
             value={formData.destination}
-            onChange={(e) => setFormData({ ...formData, destination: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, destination: e.target.value })
+            }
             icon={<MapPin className="h-4 w-4" />}
             required
           />
@@ -122,29 +138,59 @@ export function FlightsSearch() {
             onClick={handleSwapLocations}
             className="absolute top-8 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-background border rounded-full p-1 hover:bg-accent"
           >
-            <SwapHorizontal className="h-4 w-4" />
+            <ArrowRight className="h-4 w-4 rotate-180" />
           </button>
         </div>
       </div>
 
       {/* Dates */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <DatePicker
-          label="Departure"
-          date={formData.departureDate}
-          onSelect={(date) => setFormData({ ...formData, departureDate: date })}
-          minDate={new Date()}
-          placeholder="Select date"
-        />
-        
-        {tripType === 'round' && (
-          <DatePicker
-            label="Return"
-            date={formData.returnDate}
-            onSelect={(date) => setFormData({ ...formData, returnDate: date })}
-            minDate={formData.departureDate || new Date()}
-            placeholder="Select date"
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Departure</label>
+          <Input
+            type="date"
+            value={
+              formData.departureDate
+                ? formData.departureDate.toISOString().split("T")[0]
+                : ""
+            }
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                departureDate: e.target.value
+                  ? new Date(e.target.value)
+                  : undefined,
+              })
+            }
+            min={new Date().toISOString().split("T")[0]}
           />
+        </div>
+
+        {tripType === "round" && (
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Return</label>
+            <Input
+              type="date"
+              value={
+                formData.returnDate
+                  ? formData.returnDate.toISOString().split("T")[0]
+                  : ""
+              }
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  returnDate: e.target.value
+                    ? new Date(e.target.value)
+                    : undefined,
+                })
+              }
+              min={
+                formData.departureDate
+                  ? formData.departureDate.toISOString().split("T")[0]
+                  : new Date().toISOString().split("T")[0]
+              }
+            />
+          </div>
         )}
       </div>
 
@@ -158,21 +204,33 @@ export function FlightsSearch() {
               <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  onClick={() => setFormData({ 
-                    ...formData, 
-                    passengers: { ...formData.passengers, adults: Math.max(1, formData.passengers.adults - 1) }
-                  })}
+                  onClick={() =>
+                    setFormData({
+                      ...formData,
+                      passengers: {
+                        ...formData.passengers,
+                        adults: Math.max(1, formData.passengers.adults - 1),
+                      },
+                    })
+                  }
                   className="h-6 w-6 rounded-full border flex items-center justify-center"
                 >
                   -
                 </button>
-                <span className="w-6 text-center">{formData.passengers.adults}</span>
+                <span className="w-6 text-center">
+                  {formData.passengers.adults}
+                </span>
                 <button
                   type="button"
-                  onClick={() => setFormData({ 
-                    ...formData, 
-                    passengers: { ...formData.passengers, adults: formData.passengers.adults + 1 }
-                  })}
+                  onClick={() =>
+                    setFormData({
+                      ...formData,
+                      passengers: {
+                        ...formData.passengers,
+                        adults: formData.passengers.adults + 1,
+                      },
+                    })
+                  }
                   className="h-6 w-6 rounded-full border flex items-center justify-center"
                 >
                   +
@@ -184,21 +242,33 @@ export function FlightsSearch() {
               <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  onClick={() => setFormData({ 
-                    ...formData, 
-                    passengers: { ...formData.passengers, children: Math.max(0, formData.passengers.children - 1) }
-                  })}
+                  onClick={() =>
+                    setFormData({
+                      ...formData,
+                      passengers: {
+                        ...formData.passengers,
+                        children: Math.max(0, formData.passengers.children - 1),
+                      },
+                    })
+                  }
                   className="h-6 w-6 rounded-full border flex items-center justify-center"
                 >
                   -
                 </button>
-                <span className="w-6 text-center">{formData.passengers.children}</span>
+                <span className="w-6 text-center">
+                  {formData.passengers.children}
+                </span>
                 <button
                   type="button"
-                  onClick={() => setFormData({ 
-                    ...formData, 
-                    passengers: { ...formData.passengers, children: formData.passengers.children + 1 }
-                  })}
+                  onClick={() =>
+                    setFormData({
+                      ...formData,
+                      passengers: {
+                        ...formData.passengers,
+                        children: formData.passengers.children + 1,
+                      },
+                    })
+                  }
                   className="h-6 w-6 rounded-full border flex items-center justify-center"
                 >
                   +
@@ -211,7 +281,9 @@ export function FlightsSearch() {
         <div>
           <Select
             value={formData.cabinClass}
-            onValueChange={(value) => setFormData({ ...formData, cabinClass: value })}
+            onValueChange={(value) =>
+              setFormData({ ...formData, cabinClass: value })
+            }
           >
             <SelectTrigger>
               <SelectValue placeholder="Cabin Class" />

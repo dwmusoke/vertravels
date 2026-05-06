@@ -59,8 +59,6 @@ export {
   ToastClose,
   Toaster,
   useToast,
-  Calendar,
-  DatePicker,
   Popover,
   PopoverTrigger,
   PopoverContent,

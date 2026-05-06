@@ -51,7 +51,6 @@ export {
   TableRow,
   TableCell,
   TableCaption,
-  type TableProps,
 } from "./Table";
 export {
   DropdownMenu,
@@ -82,13 +81,8 @@ export {
 } from "./Toast";
 export { Toaster } from "./Toaster";
 export { useToast } from "../hooks/use-toast";
-export {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  type PopoverProps,
-} from "./Popover";
-export { ScrollArea, ScrollBar, type ScrollAreaProps } from "./ScrollArea";
+export { Popover, PopoverTrigger, PopoverContent } from "./Popover";
+export { ScrollArea, ScrollBar } from "./ScrollArea";
 export { Separator, type SeparatorProps } from "./Separator";
 export { Switch, type SwitchProps } from "./Switch";
 export { Checkbox, type CheckboxProps } from "./Checkbox";

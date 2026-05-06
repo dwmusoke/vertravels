@@ -1,58 +1,63 @@
-'use client';
+"use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from '@vertravels/ui';
-import { Badge } from '@vertravels/ui';
-import { Button } from '@vertravels/ui';
-import { ArrowRight, Plane, Hotel, Map, Car } from 'lucide-react';
-import Link from 'next/link';
+import { Card, CardContent, CardHeader, CardTitle } from "@vertravels/ui";
+import { Badge } from "@vertravels/ui";
+import { Button } from "@vertravels/ui";
+import { ArrowRight, Plane, Hotel, Map, Car } from "lucide-react";
+import Link from "next/link";
 
 const bookings = [
   {
-    id: 'VT-2024-001',
-    type: 'flights',
-    title: 'New York to Paris',
-    date: 'Jan 15, 2024',
-    status: 'confirmed',
-    amount: '$850',
+    id: "VT-2024-001",
+    type: "flights",
+    title: "New York to Paris",
+    date: "Jan 15, 2024",
+    status: "confirmed",
+    amount: "$850",
     icon: Plane,
   },
   {
-    id: 'VT-2024-002',
-    type: 'hotels',
-    title: 'Hotel Le Marais, Paris',
-    date: 'Jan 15-20, 2024',
-    status: 'confirmed',
-    amount: '$650',
+    id: "VT-2024-002",
+    type: "hotels",
+    title: "Hotel Le Marais, Paris",
+    date: "Jan 15-20, 2024",
+    status: "confirmed",
+    amount: "$650",
     icon: Hotel,
   },
   {
-    id: 'VT-2024-003',
-    type: 'tours',
-    title: 'Paris City Tour',
-    date: 'Jan 16, 2024',
-    status: 'pending',
-    amount: '$120',
+    id: "VT-2024-003",
+    type: "tours",
+    title: "Paris City Tour",
+    date: "Jan 16, 2024",
+    status: "pending",
+    amount: "$120",
     icon: Map,
   },
   {
-    id: 'VT-2024-004',
-    type: 'cars',
-    title: 'Car Rental - Paris',
-    date: 'Jan 15-20, 2024',
-    status: 'confirmed',
-    amount: '$280',
+    id: "VT-2024-004",
+    type: "cars",
+    title: "Car Rental - Paris",
+    date: "Jan 15-20, 2024",
+    status: "confirmed",
+    amount: "$280",
     icon: Car,
   },
 ];
 
-function getModuleColor(type: string) {
-  const colors: Record<string, string> = {
-    flights: 'flights',
-    hotels: 'hotels',
-    tours: 'tours',
-    cars: 'cars',
+function getModuleColor(
+  type: string,
+): "default" | "flights" | "hotels" | "tours" | "cars" | "visa" {
+  const colors: Record<
+    string,
+    "default" | "flights" | "hotels" | "tours" | "cars" | "visa"
+  > = {
+    flights: "flights",
+    hotels: "hotels",
+    tours: "tours",
+    cars: "cars",
   };
-  return colors[type] || 'default';
+  return colors[type] || "default";
 }
 
 export function RecentBookings() {

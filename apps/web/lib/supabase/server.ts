@@ -1,11 +1,13 @@
-import { createServerClient, type CookieOptions } from '@supabase/ssr';
-import { cookies } from 'next/headers';
-import { Database } from '@database/types/database.types';
+import {
+  createServerClient as supabaseCreateServerClient,
+  type CookieOptions,
+} from "@supabase/ssr";
+import { cookies } from "next/headers";
 
 export function createServerClient() {
   const cookieStore = cookies();
 
-  return createServerClient<Database>(
+  return supabaseCreateServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
@@ -22,12 +24,12 @@ export function createServerClient() {
         },
         remove(name: string, options: CookieOptions) {
           try {
-            cookieStore.set({ name, value: '', ...options });
+            cookieStore.set({ name, value: "", ...options });
           } catch (error) {
             // Handle cookie remove error in server components
           }
         },
       },
-    }
+    },
   );
 }

@@ -1,17 +1,16 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { Button } from '@vertravels/ui';
-import { Input } from '@vertravels/ui';
-import { DatePicker } from '@vertravels/ui';
-import { Hotel, MapPin, Calendar, Users, Star } from 'lucide-react';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@vertravels/ui";
+import { Input } from "@vertravels/ui";
+import { Hotel, MapPin, Calendar, Users, Star } from "lucide-react";
 
 export function HotelsSearch() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    destination: '',
+    destination: "",
     checkIn: undefined as Date | undefined,
     checkOut: undefined as Date | undefined,
     guests: {
@@ -19,7 +18,7 @@ export function HotelsSearch() {
       children: 0,
       rooms: 1,
     },
-    starRating: '',
+    starRating: "",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -28,13 +27,13 @@ export function HotelsSearch() {
 
     // Validate form
     if (!formData.destination || !formData.checkIn || !formData.checkOut) {
-      alert('Please fill in all required fields');
+      alert("Please fill in all required fields");
       setLoading(false);
       return;
     }
 
-    console.log('Searching hotels:', formData);
-    
+    console.log("Searching hotels:", formData);
+
     const params = new URLSearchParams({
       destination: formData.destination,
       checkIn: formData.checkIn.toISOString(),
@@ -56,28 +55,56 @@ export function HotelsSearch() {
         label="Destination"
         placeholder="City, hotel name, or landmark"
         value={formData.destination}
-        onChange={(e) => setFormData({ ...formData, destination: e.target.value })}
+        onChange={(e) =>
+          setFormData({ ...formData, destination: e.target.value })
+        }
         icon={<MapPin className="h-4 w-4" />}
         required
       />
 
       {/* Dates */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <DatePicker
-          label="Check-in"
-          date={formData.checkIn}
-          onSelect={(date) => setFormData({ ...formData, checkIn: date })}
-          minDate={new Date()}
-          placeholder="Select date"
-        />
-        
-        <DatePicker
-          label="Check-out"
-          date={formData.checkOut}
-          onSelect={(date) => setFormData({ ...formData, checkOut: date })}
-          minDate={formData.checkIn || new Date()}
-          placeholder="Select date"
-        />
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Check-in</label>
+          <Input
+            type="date"
+            value={
+              formData.checkIn
+                ? formData.checkIn.toISOString().split("T")[0]
+                : ""
+            }
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                checkIn: e.target.value ? new Date(e.target.value) : undefined,
+              })
+            }
+            min={new Date().toISOString().split("T")[0]}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Check-out</label>
+          <Input
+            type="date"
+            value={
+              formData.checkOut
+                ? formData.checkOut.toISOString().split("T")[0]
+                : ""
+            }
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                checkOut: e.target.value ? new Date(e.target.value) : undefined,
+              })
+            }
+            min={
+              formData.checkIn
+                ? formData.checkIn.toISOString().split("T")[0]
+                : new Date().toISOString().split("T")[0]
+            }
+          />
+        </div>
       </div>
 
       {/* Guests & Rooms */}
@@ -90,21 +117,33 @@ export function HotelsSearch() {
               <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  onClick={() => setFormData({ 
-                    ...formData, 
-                    guests: { ...formData.guests, adults: Math.max(1, formData.guests.adults - 1) }
-                  })}
+                  onClick={() =>
+                    setFormData({
+                      ...formData,
+                      guests: {
+                        ...formData.guests,
+                        adults: Math.max(1, formData.guests.adults - 1),
+                      },
+                    })
+                  }
                   className="h-6 w-6 rounded-full border flex items-center justify-center hover:bg-accent"
                 >
                   -
                 </button>
-                <span className="w-6 text-center">{formData.guests.adults}</span>
+                <span className="w-6 text-center">
+                  {formData.guests.adults}
+                </span>
                 <button
                   type="button"
-                  onClick={() => setFormData({ 
-                    ...formData, 
-                    guests: { ...formData.guests, adults: formData.guests.adults + 1 }
-                  })}
+                  onClick={() =>
+                    setFormData({
+                      ...formData,
+                      guests: {
+                        ...formData.guests,
+                        adults: formData.guests.adults + 1,
+                      },
+                    })
+                  }
                   className="h-6 w-6 rounded-full border flex items-center justify-center hover:bg-accent"
                 >
                   +
@@ -116,21 +155,33 @@ export function HotelsSearch() {
               <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  onClick={() => setFormData({ 
-                    ...formData, 
-                    guests: { ...formData.guests, children: Math.max(0, formData.guests.children - 1) }
-                  })}
+                  onClick={() =>
+                    setFormData({
+                      ...formData,
+                      guests: {
+                        ...formData.guests,
+                        children: Math.max(0, formData.guests.children - 1),
+                      },
+                    })
+                  }
                   className="h-6 w-6 rounded-full border flex items-center justify-center hover:bg-accent"
                 >
                   -
                 </button>
-                <span className="w-6 text-center">{formData.guests.children}</span>
+                <span className="w-6 text-center">
+                  {formData.guests.children}
+                </span>
                 <button
                   type="button"
-                  onClick={() => setFormData({ 
-                    ...formData, 
-                    guests: { ...formData.guests, children: formData.guests.children + 1 }
-                  })}
+                  onClick={() =>
+                    setFormData({
+                      ...formData,
+                      guests: {
+                        ...formData.guests,
+                        children: formData.guests.children + 1,
+                      },
+                    })
+                  }
                   className="h-6 w-6 rounded-full border flex items-center justify-center hover:bg-accent"
                 >
                   +
@@ -148,10 +199,15 @@ export function HotelsSearch() {
               <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  onClick={() => setFormData({ 
-                    ...formData, 
-                    guests: { ...formData.guests, rooms: Math.max(1, formData.guests.rooms - 1) }
-                  })}
+                  onClick={() =>
+                    setFormData({
+                      ...formData,
+                      guests: {
+                        ...formData.guests,
+                        rooms: Math.max(1, formData.guests.rooms - 1),
+                      },
+                    })
+                  }
                   className="h-6 w-6 rounded-full border flex items-center justify-center hover:bg-accent"
                 >
                   -
@@ -159,10 +215,15 @@ export function HotelsSearch() {
                 <span className="w-6 text-center">{formData.guests.rooms}</span>
                 <button
                   type="button"
-                  onClick={() => setFormData({ 
-                    ...formData, 
-                    guests: { ...formData.guests, rooms: formData.guests.rooms + 1 }
-                  })}
+                  onClick={() =>
+                    setFormData({
+                      ...formData,
+                      guests: {
+                        ...formData.guests,
+                        rooms: formData.guests.rooms + 1,
+                      },
+                    })
+                  }
                   className="h-6 w-6 rounded-full border flex items-center justify-center hover:bg-accent"
                 >
                   +
@@ -184,15 +245,15 @@ export function HotelsSearch() {
       <div>
         <label className="mb-2 block text-sm font-medium">Star Rating</label>
         <div className="flex gap-2">
-          {['', '3', '4', '5'].map((stars) => (
+          {["", "3", "4", "5"].map((stars) => (
             <button
               key={stars}
               type="button"
               onClick={() => setFormData({ ...formData, starRating: stars })}
               className={`flex items-center gap-1 px-4 py-2 rounded-md border transition-colors ${
                 formData.starRating === stars
-                  ? 'bg-primary text-primary-foreground border-primary'
-                  : 'hover:bg-accent'
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "hover:bg-accent"
               }`}
             >
               {stars ? (
@@ -201,7 +262,7 @@ export function HotelsSearch() {
                   <Star className="h-4 w-4 fill-current" />
                 </>
               ) : (
-                'Any'
+                "Any"
               )}
             </button>
           ))}
