@@ -1,4 +1,4 @@
 {
-  "buildCommand": "pnpm run vercel-build",
-  "installCommand": "cd ../.. && pnpm install"
+  "buildCommand": "cd ../.. && pnpm install --no-frozen-lockfile && cd apps/web && pnpm build",
+  "installCommand": "echo 'Dependencies installed from root'"
 }
