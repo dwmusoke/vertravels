@@ -3,9 +3,9 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
-import { Button } from '@vertravels/ui';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@vertravels/ui';
-import { Alert, AlertDescription } from '@vertravels/ui';
+import { Button } from '@/components/ui';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui';
+import { Alert, AlertDescription } from '@/components/ui';
 import { Mail, CheckCircle, Loader2, ArrowLeft } from 'lucide-react';
 
 export default function VerifyEmailPage() {

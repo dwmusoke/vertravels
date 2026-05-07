@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { Button } from '@vertravels/ui';
-import { Card, CardContent } from '@vertravels/ui';
-import { Alert, AlertDescription } from '@vertravels/ui';
+import { Button } from '@/components/ui';
+import { Card, CardContent } from '@/components/ui';
+import { Alert, AlertDescription } from '@/components/ui';
 import { Loader2, Lock } from 'lucide-react';
 
 interface FlutterwavePaymentProps {

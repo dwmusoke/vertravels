@@ -1,11 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Button } from '@vertravels/ui';
-import { Card, CardContent } from '@vertravels/ui';
-import { Alert, AlertDescription } from '@vertravels/ui';
-import { Input } from '@vertravels/ui';
-import { Label } from '@vertravels/ui';
+import { Button } from '@/components/ui';
+import { Card, CardContent } from '@/components/ui';
+import { Alert, AlertDescription } from '@/components/ui';
+import { Input } from '@/components/ui';
+import { Label } from '@/components/ui';
 import { Loader2, Lock, CreditCard } from 'lucide-react';
 
 interface StripePaymentProps {

@@ -1,8 +1,8 @@
 'use client';
 
-import { Card, CardContent } from '@vertravels/ui';
-import { Button } from '@vertravels/ui';
-import { Badge } from '@vertravels/ui';
+import { Card, CardContent } from '@/components/ui';
+import { Button } from '@/components/ui';
+import { Badge } from '@/components/ui';
 import { Plane, Clock, Zap, Shield } from 'lucide-react';
 import { format } from 'date-fns';
 

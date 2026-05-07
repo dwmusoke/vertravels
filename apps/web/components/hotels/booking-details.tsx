@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@vertravels/ui';
-import { Button } from '@vertravels/ui';
-import { Badge } from '@vertravels/ui';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui';
+import { Button } from '@/components/ui';
+import { Badge } from '@/components/ui';
 import { Hotel, Calendar, Users, MapPin, Star, CreditCard, Download, Phone, Mail } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 

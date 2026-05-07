@@ -2,11 +2,11 @@
 
 import { useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Card, CardContent } from '@vertravels/ui';
-import { Slider } from '@vertravels/ui';
-import { Checkbox } from '@vertravels/ui';
-import { Button } from '@vertravels/ui';
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@vertravels/ui';
+import { Card, CardContent } from '@/components/ui';
+import { Slider } from '@/components/ui';
+import { Checkbox } from '@/components/ui';
+import { Button } from '@/components/ui';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui';
 import { Filter, X } from 'lucide-react';
 
 export function SearchFilters() {

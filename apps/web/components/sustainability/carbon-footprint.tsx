@@ -7,9 +7,9 @@
 'use client'
 
 import { useState } from 'react'
-import { Card } from '@vertravels/ui'
-import { Badge } from '@vertravels/ui'
-import { Button } from '@vertravels/ui'
+import { Card } from '@/components/ui'
+import { Badge } from '@/components/ui'
+import { Button } from '@/components/ui'
 import {
   Leaf,
   TreeDeciduous,

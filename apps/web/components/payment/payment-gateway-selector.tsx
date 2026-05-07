@@ -1,12 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@vertravels/ui';
-import { Button } from '@vertravels/ui';
-import { RadioGroup, RadioGroupItem } from '@vertravels/ui';
-import { Label } from '@vertravels/ui';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
+import { Button } from '@/components/ui';
+import { RadioGroup, RadioGroupItem } from '@/components/ui';
+import { Label } from '@/components/ui';
 import { CreditCard, Wallet, Building, Smartphone, Check } from 'lucide-react';
-import { cn } from '@vertravels/ui';
+import { cn } from '@/components/ui';
 
 interface PaymentGateway {
   id: string;

@@ -8,10 +8,10 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { cn } from '@vertravels/ui'
-import { Button } from '@vertravels/ui'
-import { Avatar, AvatarFallback, AvatarImage } from '@vertravels/ui'
-import { Badge } from '@vertravels/ui'
+import { cn } from '@/components/ui'
+import { Button } from '@/components/ui'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui'
+import { Badge } from '@/components/ui'
 import {
   Plane,
   Hotel,

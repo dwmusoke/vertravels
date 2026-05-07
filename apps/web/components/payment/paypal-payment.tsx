@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { Card, CardContent } from '@vertravels/ui';
-import { Alert, AlertDescription } from '@vertravels/ui';
+import { Card, CardContent } from '@/components/ui';
+import { Alert, AlertDescription } from '@/components/ui';
 import { Loader2 } from 'lucide-react';
 
 interface PayPalPaymentProps {

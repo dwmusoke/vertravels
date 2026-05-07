@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@vertravels/ui';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui';
 import { Plane, Hotel, Map, Car } from 'lucide-react';
 import { FlightsSearch } from './flights-search';
 import { HotelsSearch } from './hotels-search';

@@ -1,8 +1,8 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@vertravels/ui';
-import { Button } from '@vertravels/ui';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui';
+import { Button } from '@/components/ui';
 import { XCircle, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 

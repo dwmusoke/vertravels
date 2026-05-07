@@ -1,10 +1,10 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
-import { Card, CardContent } from '@vertravels/ui';
+import { Card, CardContent } from '@/components/ui';
 import { Hotel, Star, MapPin, Wifi, Coffee, Car, Dumbbell } from 'lucide-react';
-import { Button } from '@vertravels/ui';
-import { Badge } from '@vertravels/ui';
+import { Button } from '@/components/ui';
+import { Badge } from '@/components/ui';
 
 const mockHotels = [
   {

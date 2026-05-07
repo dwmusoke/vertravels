@@ -1,10 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, CardContent } from '@vertravels/ui';
-import { Slider } from '@vertravels/ui';
-import { Checkbox } from '@vertravels/ui';
-import { Button } from '@vertravels/ui';
+import { Card, CardContent } from '@/components/ui';
+import { Slider } from '@/components/ui';
+import { Checkbox } from '@/components/ui';
+import { Button } from '@/components/ui';
 import { Star, Filter, X } from 'lucide-react';
 
 export function SearchFilters() {

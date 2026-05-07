@@ -1,6 +1,6 @@
 'use client';
 
-import { Card, CardContent } from '@vertravels/ui';
+import { Card, CardContent } from '@/components/ui';
 import { Calendar, DollarSign, Plane, Hotel } from 'lucide-react';
 
 export function DashboardStats() {

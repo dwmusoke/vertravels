@@ -184,7 +184,7 @@ importers:
         specifier: ^0.0.10
         version: 0.0.10(@supabase/supabase-js@2.105.3)
       '@supabase/supabase-js':
-        specifier: ^2.38.4
+        specifier: ^2.105.3
         version: 2.105.3
       class-variance-authority:
         specifier: ^0.7.0

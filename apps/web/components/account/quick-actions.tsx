@@ -1,7 +1,7 @@
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@vertravels/ui';
-import { Button } from '@vertravels/ui';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
+import { Button } from '@/components/ui';
 import { Plane, Hotel, Map, Car, PlusCircle } from 'lucide-react';
 import Link from 'next/link';
 
