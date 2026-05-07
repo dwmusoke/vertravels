@@ -1,9 +1,9 @@
-{
-  "build": {
-    "command": "pnpm install && pnpm run build",
-    "output": ".next"
-  },
-  "install": {
-    "dont": true
-  }
-}
+node_modules
+.next/cache
+*.log
+.git
+.github
+docs
+packages/**
+apps/admin
+apps/api
