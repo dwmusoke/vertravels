@@ -14,6 +14,11 @@
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "db:migrate": "supabase db push"
   },
+  "dependencies": {
+    "next": "^14.0.4",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
   "devDependencies": {
     "@types/node": "^20.10.0",
     "@typescript-eslint/eslint-plugin": "^6.13.0",
