@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
-  transpilePackages: ["@vertravels/ui", "react-day-picker"],
+  transpilePackages: ["react-day-picker"],
   images: {
     domains: [
       "vertravels.supabase.co",
