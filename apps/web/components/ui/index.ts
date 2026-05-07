@@ -79,8 +79,8 @@ export {
   ToastClose,
   type ToastProps,
 } from "./Toast";
-export { Toaster } from "./Toaster";
-export { useToast } from "../hooks/use-toast";
+export { Toaster } from "./toaster";
+export { useToast } from "@/hooks/use-toast";
 export { Popover, PopoverTrigger, PopoverContent } from "./Popover";
 export { ScrollArea, ScrollBar } from "./ScrollArea";
 export { Separator, type SeparatorProps } from "./Separator";
@@ -135,4 +135,4 @@ export {
   isValidEmail,
   generateRandomString,
   copyToClipboard,
-} from "../lib/utils";
+} from "@/lib/utils";

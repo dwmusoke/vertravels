@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { Button } from "@vertravels/ui";
+import { Button } from "@/components/ui";
 import { FlightCard } from "./flight-card";
 
 // Mock flight data - in production, this would come from API

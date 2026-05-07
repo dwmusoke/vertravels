@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@vertravels/ui";
-import { Input } from "@vertravels/ui";
+import { Button } from "@/components/ui";
+import { Input } from "@/components/ui";
 import { Hotel, MapPin, Calendar, Users, Star } from "lucide-react";
 
 export function HotelsSearch() {

@@ -49,13 +49,13 @@ function createWrapper({ children }: { children: React.ReactNode }) {
 describe('UI Components', () => {
   describe('Button', () => {
     it('renders correctly with children', async () => {
-      const { Button } = await import('@vertravels/ui')
+      const { Button } = await import('@/components/ui')
       render(<Button>Click Me</Button>, { wrapper: createWrapper })
       expect(screen.getByRole('button', { name: /click me/i })).toBeInTheDocument()
     })
 
     it('applies variant styles correctly', async () => {
-      const { Button } = await import('@vertravels/ui')
+      const { Button } = await import('@/components/ui')
       const { container: primary } = render(<Button variant="default">Primary</Button>, { wrapper: createWrapper })
       const { container: destructive } = render(<Button variant="destructive">Destructive</Button>, { wrapper: createWrapper })
       const { container: outline } = render(<Button variant="outline">Outline</Button>, { wrapper: createWrapper })
@@ -66,13 +66,13 @@ describe('UI Components', () => {
     })
 
     it('handles disabled state', async () => {
-      const { Button } = await import('@vertravels/ui')
+      const { Button } = await import('@/components/ui')
       render(<Button disabled>Disabled</Button>, { wrapper: createWrapper })
       expect(screen.getByRole('button')).toBeDisabled()
     })
 
     it('calls onClick handler when clicked', async () => {
-      const { Button } = await import('@vertravels/ui')
+      const { Button } = await import('@/components/ui')
       const handleClick = vi.fn()
       render(<Button onClick={handleClick}>Click</Button>, { wrapper: createWrapper })
       screen.getByRole('button').click()
@@ -82,7 +82,7 @@ describe('UI Components', () => {
 
   describe('Input', () => {
     it('renders correctly with label', async () => {
-      const { Input, Label } = await import('@vertravels/ui')
+      const { Input, Label } = await import('@/components/ui')
       render(
         <div>
           <Label htmlFor="test">Test Label</Label>
@@ -94,7 +94,7 @@ describe('UI Components', () => {
     })
 
     it('handles different input types', async () => {
-      const { Input } = await import('@vertravels/ui')
+      const { Input } = await import('@/components/ui')
       const { container: text } = render(<Input type="text" />, { wrapper: createWrapper })
       const { container: email } = render(<Input type="email" />, { wrapper: createWrapper })
       const { container: password } = render(<Input type="password" />, { wrapper: createWrapper })
@@ -107,7 +107,7 @@ describe('UI Components', () => {
     })
 
     it('validates required fields', async () => {
-      const { Input } = await import('@vertravels/ui')
+      const { Input } = await import('@/components/ui')
       render(<Input required />, { wrapper: createWrapper })
       const input = screen.getByRole('textbox')
       expect(input).toHaveAttribute('required')
@@ -116,7 +116,7 @@ describe('UI Components', () => {
 
   describe('Card', () => {
     it('renders card structure correctly', async () => {
-      const { Card, CardHeader, CardTitle, CardContent } = await import('@vertravels/ui')
+      const { Card, CardHeader, CardTitle, CardContent } = await import('@/components/ui')
       render(
         <Card>
           <CardHeader>
@@ -133,7 +133,7 @@ describe('UI Components', () => {
 
   describe('Badge', () => {
     it('renders with different variants', async () => {
-      const { Badge } = await import('@vertravels/ui')
+      const { Badge } = await import('@/components/ui')
       render(
         <div>
           <Badge variant="default">Default</Badge>
@@ -152,7 +152,7 @@ describe('UI Components', () => {
 
   describe('Dialog', () => {
     it('opens and closes correctly', async () => {
-      const { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle } = await import('@vertravels/ui')
+      const { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle } = await import('@/components/ui')
       render(
         <Dialog>
           <DialogTrigger>Open Dialog</DialogTrigger>
@@ -206,7 +206,7 @@ describe('Utility Functions', () => {
 
   describe('cn (classNames)', () => {
     it('merges class names correctly', async () => {
-      const { cn } = await import('@vertravels/ui')
+      const { cn } = await import('@/components/ui')
       expect(cn('class1', 'class2')).toBe('class1 class2')
       expect(cn('class1', false && 'class2', true && 'class3')).toBe('class1 class3')
       expect(cn('class1', { class2: true, class3: false })).toBe('class1 class2')

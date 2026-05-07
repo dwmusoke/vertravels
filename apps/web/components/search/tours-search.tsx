@@ -2,15 +2,15 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@vertravels/ui";
-import { Input } from "@vertravels/ui";
+import { Button } from "@/components/ui";
+import { Input } from "@/components/ui";
 import {
   Select,
   SelectTrigger,
   SelectValue,
   SelectContent,
   SelectItem,
-} from "@vertravels/ui";
+} from "@/components/ui";
 import { Map, MapPin, Calendar, Users, Clock } from "lucide-react";
 
 export function ToursSearch() {

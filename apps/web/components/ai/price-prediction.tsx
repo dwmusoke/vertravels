@@ -7,8 +7,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Card } from "@vertravels/ui";
-import { Badge } from "@vertravels/ui";
+import { Card } from "@/components/ui";
+import { Badge } from "@/components/ui";
 import {
   TrendingUp,
   TrendingDown,
