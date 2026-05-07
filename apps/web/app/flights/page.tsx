@@ -26,9 +26,13 @@ export default function FlightsPage() {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    const params = new URLSearchParams(searchData);
-    params.set("module", "flights");
-    router.push(`/search?${params.toString()}`);
+    const params = new URLSearchParams();
+    params.set("from", searchData.from);
+    params.set("to", searchData.to);
+    params.set("depart", searchData.departDate);
+    params.set("return", searchData.returnDate || "");
+    params.set("pax", searchData.travelers);
+    router.push(`/flights/search?${params.toString()}`);
   };
 
   return (

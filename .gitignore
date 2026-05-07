@@ -65,3 +65,4 @@ temp/
 *.db
 
 .vercel
+.env*.local
