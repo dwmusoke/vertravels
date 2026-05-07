@@ -1,6 +1,6 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui";
 import { FlightCard } from "./flight-card";
 
@@ -76,29 +76,53 @@ const mockFlights = [
 
 export function SearchResults() {
   const searchParams = useSearchParams();
+  const router = useRouter();
 
-  const origin = searchParams.get("origin");
-  const destination = searchParams.get("destination");
-  const departure = searchParams.get("departure");
-  const trip = searchParams.get("trip");
+  const from = searchParams.get("from");
+  const to = searchParams.get("to");
+  const depart = searchParams.get("depart");
+  const returnDate = searchParams.get("return");
+  const pax = searchParams.get("pax") || "1";
+
+  const handleSelect = (flight: any) => {
+    router.push(
+      `/flights/${flight.id}?from=${from}&to=${to}&depart=${depart}&return=${returnDate || ""}&pax=${pax}`,
+    );
+  };
+
+  const handleDetails = (flight: any) => {
+    router.push(
+      `/flights/${flight.id}?from=${from}&to=${to}&depart=${depart}&return=${returnDate || ""}&pax=${pax}`,
+    );
+  };
 
   return (
     <div className="space-y-4">
       {/* Search Summary */}
-      <div className="bg-card rounded-lg border p-4">
+      <div className="bg-card rounded-lg border p-4 shadow-sm">
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-lg font-semibold">
-              {origin} → {destination}
+              {from?.toUpperCase()} → {to?.toUpperCase()}
             </h2>
             <p className="text-sm text-muted-foreground">
-              {new Date(departure!).toLocaleDateString("en-US", {
-                weekday: "long",
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              })}
-              {trip === "round" && " • Round Trip"}
+              {depart &&
+                new Date(depart).toLocaleDateString("en-US", {
+                  weekday: "long",
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}
+              {returnDate &&
+                " • Return: " +
+                  new Date(returnDate).toLocaleDateString("en-US", {
+                    weekday: "long",
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+              {" • "}
+              {pax} {parseInt(pax) > 1 ? "passengers" : "passenger"}
             </p>
           </div>
           <div className="text-right">
@@ -109,9 +133,13 @@ export function SearchResults() {
       </div>
 
       {/* Sorting Options */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 flex-wrap">
         <span className="text-sm text-muted-foreground">Sort by:</span>
-        <Button variant="outline" size="sm">
+        <Button
+          variant="outline"
+          size="sm"
+          className="bg-primary/10 text-primary"
+        >
           Recommended
         </Button>
         <Button variant="outline" size="sm">
@@ -128,13 +156,20 @@ export function SearchResults() {
       {/* Flight Results */}
       <div className="space-y-4">
         {mockFlights.map((flight) => (
-          <FlightCard key={flight.id} flight={flight} />
+          <FlightCard
+            key={flight.id}
+            flight={flight}
+            onSelect={handleSelect}
+            onDetails={handleDetails}
+          />
         ))}
       </div>
 
       {/* Load More */}
       <div className="text-center pt-8">
-        <Button variant="outline">Load More Flights</Button>
+        <Button variant="outline" className="min-w-[200px]">
+          Load More Flights
+        </Button>
       </div>
     </div>
   );

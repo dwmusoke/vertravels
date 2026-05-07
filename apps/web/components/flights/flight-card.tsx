@@ -1,10 +1,11 @@
-'use client';
+"use client";
 
-import { Card, CardContent } from '@/components/ui';
-import { Button } from '@/components/ui';
-import { Badge } from '@/components/ui';
-import { Plane, Clock, Zap, Shield } from 'lucide-react';
-import { format } from 'date-fns';
+import { Card, CardContent } from "@/components/ui";
+import { Button } from "@/components/ui";
+import { Badge } from "@/components/ui";
+import { Plane, Clock, Zap, Shield, ArrowRight } from "lucide-react";
+import { format } from "date-fns";
+import Link from "next/link";
 
 interface Flight {
   id: string;
@@ -26,9 +27,11 @@ interface Flight {
 
 interface FlightCardProps {
   flight: Flight;
+  onSelect?: (flight: Flight) => void;
+  onDetails?: (flight: Flight) => void;
 }
 
-export function FlightCard({ flight }: FlightCardProps) {
+export function FlightCard({ flight, onSelect, onDetails }: FlightCardProps) {
   const departureTime = new Date(flight.departure);
   const arrivalTime = new Date(flight.arrival);
 
@@ -43,7 +46,9 @@ export function FlightCard({ flight }: FlightCardProps) {
             </div>
             <div>
               <p className="font-medium">{flight.airline}</p>
-              <p className="text-sm text-muted-foreground">{flight.flightNumber}</p>
+              <p className="text-sm text-muted-foreground">
+                {flight.flightNumber}
+              </p>
             </div>
           </div>
 
@@ -53,10 +58,10 @@ export function FlightCard({ flight }: FlightCardProps) {
               <div className="text-center">
                 <p className="text-2xl font-bold">{flight.origin}</p>
                 <p className="text-sm text-muted-foreground">
-                  {format(departureTime, 'h:mm a')}
+                  {format(departureTime, "h:mm a")}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  {format(departureTime, 'MMM dd')}
+                  {format(departureTime, "MMM dd")}
                 </p>
               </div>
 
@@ -69,7 +74,9 @@ export function FlightCard({ flight }: FlightCardProps) {
                 </div>
                 <p className="text-xs text-center text-muted-foreground mt-1">
                   {flight.duration}
-                  {flight.stops === 0 ? ' • Non-stop' : ` • ${flight.stops} stop${flight.stops > 1 ? 's' : ''}`}
+                  {flight.stops === 0
+                    ? " • Non-stop"
+                    : ` • ${flight.stops} stop${flight.stops > 1 ? "s" : ""}`}
                   {flight.stopover && ` (${flight.stopover})`}
                 </p>
               </div>
@@ -77,10 +84,10 @@ export function FlightCard({ flight }: FlightCardProps) {
               <div className="text-center">
                 <p className="text-2xl font-bold">{flight.destination}</p>
                 <p className="text-sm text-muted-foreground">
-                  {format(arrivalTime, 'h:mm a')}
+                  {format(arrivalTime, "h:mm a")}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  {format(arrivalTime, 'MMM dd')}
+                  {format(arrivalTime, "MMM dd")}
                 </p>
               </div>
             </div>
@@ -88,11 +95,15 @@ export function FlightCard({ flight }: FlightCardProps) {
 
           {/* Cabin Class */}
           <div className="lg:col-span-2 flex items-center">
-            <Badge variant={flight.cabinClass === 'business' ? 'default' : 'secondary'}>
-              {flight.cabinClass === 'economy' && 'Economy'}
-              {flight.cabinClass === 'premium' && 'Premium Economy'}
-              {flight.cabinClass === 'business' && 'Business'}
-              {flight.cabinClass === 'first' && 'First Class'}
+            <Badge
+              variant={
+                flight.cabinClass === "business" ? "default" : "secondary"
+              }
+            >
+              {flight.cabinClass === "economy" && "Economy"}
+              {flight.cabinClass === "premium" && "Premium Economy"}
+              {flight.cabinClass === "business" && "Business"}
+              {flight.cabinClass === "first" && "First Class"}
             </Badge>
           </div>
 
@@ -104,14 +115,19 @@ export function FlightCard({ flight }: FlightCardProps) {
               </p>
               <p className="text-xs text-muted-foreground">per person</p>
             </div>
-            
+
             <div className="flex gap-2">
-              <Button size="sm" variant="outline">
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => onDetails?.(flight)}
+              >
                 <Zap className="h-4 w-4 mr-1" />
                 Details
               </Button>
-              <Button size="sm">
+              <Button size="sm" onClick={() => onSelect?.(flight)}>
                 Select
+                <ArrowRight className="h-4 w-4 ml-1" />
               </Button>
             </div>
 
