@@ -40,6 +40,8 @@ const featuredFlights = [
     from: "EBB",
     to: "DXB",
     route: "Entebbe → Dubai",
+    image:
+      "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800&q=80",
     price: 450,
     originalPrice: 650,
     stops: "Non-stop",
@@ -53,6 +55,8 @@ const featuredFlights = [
     from: "EBB",
     to: "NBO",
     route: "Entebbe → Nairobi",
+    image:
+      "https://images.unsplash.com/photo-1474302770737-173ee21bab45?w=800&q=80",
     price: 180,
     originalPrice: 250,
     stops: "Non-stop",
@@ -66,6 +70,8 @@ const featuredFlights = [
     from: "EBB",
     to: "LHR",
     route: "Entebbe → London",
+    image:
+      "https://images.unsplash.com/photo-1506012787146-f92b2d7d6d96?w=800&q=80",
     price: 680,
     originalPrice: 890,
     stops: "1 stop",
@@ -79,6 +85,8 @@ const featuredFlights = [
     from: "EBB",
     to: "ADD",
     route: "Entebbe → Addis Ababa",
+    image:
+      "https://images.unsplash.com/photo-1488085061387-422e29b40080?w=800&q=80",
     price: 220,
     originalPrice: 320,
     stops: "Non-stop",
@@ -92,7 +100,8 @@ const featuredHotels = [
     id: 1,
     name: "Serena Hotel Kampala",
     location: "Kampala",
-    image: "🏨",
+    image:
+      "https://images.unsplash.com/photo-1562983078-daa1dac6dc90?w=800&q=80",
     rating: 4.8,
     reviews: 1250,
     price: 180,
@@ -104,7 +113,8 @@ const featuredHotels = [
     id: 2,
     name: "Lake Victoria Resort",
     location: "Entebbe",
-    image: "🌊",
+    image:
+      "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800&q=80",
     rating: 4.6,
     reviews: 890,
     price: 150,
@@ -116,7 +126,8 @@ const featuredHotels = [
     id: 3,
     name: "Wild Rift Lodge",
     location: "Murchison Falls",
-    image: "🦁",
+    image:
+      "https://images.unsplash.com/photo-1496417263034-38ec4f0d665a?w=800&q=80",
     rating: 4.9,
     reviews: 560,
     price: 250,
@@ -128,7 +139,8 @@ const featuredHotels = [
     id: 4,
     name: "Jinja Nile Resort",
     location: "Jinja",
-    image: "🌊",
+    image:
+      "https://images.unsplash.com/photo-1571003123894-1f6678cb2cc0?w=800&q=80",
     rating: 4.7,
     reviews: 720,
     price: 120,
@@ -143,7 +155,8 @@ const featuredTours = [
     id: 1,
     name: "Gorilla Trekking Adventure",
     location: "Bwindi Forest",
-    image: "🦍",
+    image:
+      "https://images.unsplash.com/photo-1535941339077-2dd1c7963098?w=800&q=80",
     duration: "2 Days",
     price: 890,
     rating: 4.9,
@@ -154,7 +167,8 @@ const featuredTours = [
     id: 2,
     name: "Murchison Falls Safari",
     location: "Murchison Falls",
-    image: "🦁",
+    image:
+      "https://images.unsplash.com/photo-1516426122078-c23e76319801?w=800&q=80",
     duration: "3 Days",
     price: 1250,
     rating: 4.8,
@@ -165,7 +179,8 @@ const featuredTours = [
     id: 3,
     name: "Source of Nile Tour",
     location: "Jinja",
-    image: "⛵",
+    image:
+      "https://images.unsplash.com/photo-1568379697888-3c5a06e8602f?w=800&q=80",
     duration: "1 Day",
     price: 150,
     rating: 4.7,
@@ -176,7 +191,8 @@ const featuredTours = [
     id: 4,
     name: "Kampala City Tour",
     location: "Kampala",
-    image: "🏙️",
+    image:
+      "https://images.unsplash.com/photo-1557142046-c704a3aec804?w=800&q=80",
     duration: "Half Day",
     price: 80,
     rating: 4.5,

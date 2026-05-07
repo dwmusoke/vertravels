@@ -15,7 +15,8 @@ const mockHotels = [
     reviews: 1250,
     location: "1st Arrondissement, Paris",
     distance: "0.5 km from center",
-    image: "/hotels/hotel1.jpg",
+    image:
+      "https://images.unsplash.com/photo-1566073771259-6a8506099945a?w=800&q=80",
     price: 250,
     currency: "USD",
     amenities: ["wifi", "breakfast", "parking", "gym"],
@@ -29,7 +30,8 @@ const mockHotels = [
     reviews: 890,
     location: "Le Marais, Paris",
     distance: "1.2 km from center",
-    image: "/hotels/hotel2.jpg",
+    image:
+      "https://images.unsplash.com/photo-1582719508461-905c673771fd?w=800&q=80",
     price: 180,
     currency: "USD",
     amenities: ["wifi", "breakfast"],
@@ -43,7 +45,8 @@ const mockHotels = [
     reviews: 650,
     location: "Latin Quarter, Paris",
     distance: "0.8 km from center",
-    image: "/hotels/hotel3.jpg",
+    image:
+      "https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=800&q=80",
     price: 200,
     currency: "USD",
     amenities: ["wifi", "gym", "breakfast"],

@@ -27,7 +27,8 @@ const tourCategories = [
     description: "Experience the wild!",
     icon: "🦁",
     color: "from-amber-600 to-yellow-500",
-    image: "safari",
+    image:
+      "https://images.unsplash.com/photo-1516426122078-c23e76319801?w=800&q=80",
   },
   {
     id: "cultural",
@@ -35,7 +36,8 @@ const tourCategories = [
     description: "Explore local heritage",
     icon: "🏛️",
     color: "from-indigo-600 to-purple-500",
-    image: "cultural",
+    image:
+      "https://images.unsplash.com/photo-1523906834658-6e4ef728dcba?w=800&q=80",
   },
   {
     id: "adventure",
@@ -43,7 +45,8 @@ const tourCategories = [
     description: "Get your adrenaline rushing",
     icon: "🧗",
     color: "from-emerald-600 to-teal-500",
-    image: "adventure",
+    image:
+      "https://images.unsplash.com/photo-1527637493608-7163c71f5e84?w=800&q=80",
   },
   {
     id: "beach",
@@ -51,7 +54,8 @@ const tourCategories = [
     description: "Relax and unwind",
     icon: "🏖️",
     color: "from-sky-600 to-blue-500",
-    image: "beach",
+    image:
+      "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80",
   },
 ];
 
@@ -64,7 +68,8 @@ const featuredTours = [
     price: 890,
     rating: 4.9,
     reviews: 328,
-    image: "gorilla",
+    image:
+      "https://images.unsplash.com/photo-1535941339077-2dd1c7963098?w=800&q=80",
     tag: "Best Seller",
   },
   {
@@ -75,7 +80,8 @@ const featuredTours = [
     price: 1250,
     rating: 4.8,
     reviews: 256,
-    image: "safari-lodge",
+    image:
+      "https://images.unsplash.com/photo-1516426122078-c23e76319801?w=800&q=80",
     tag: "Popular",
   },
   {
@@ -86,7 +92,8 @@ const featuredTours = [
     price: 150,
     rating: 4.7,
     reviews: 189,
-    image: "city",
+    image:
+      "https://images.unsplash.com/photo-1557142046-c704a3aec804?w=800&q=80",
     tag: "Top Rated",
   },
   {
@@ -97,7 +104,8 @@ const featuredTours = [
     price: 120,
     rating: 4.6,
     reviews: 145,
-    image: "river",
+    image:
+      "https://images.unsplash.com/photo-1568379697888-3c5a06e8602f?w=800&q=80",
     tag: null,
   },
 ];
