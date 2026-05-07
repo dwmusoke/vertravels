@@ -14,7 +14,12 @@ import {
   ArrowLeft,
   Check,
   AlertCircle,
+  Wallet,
+  Building2,
+  Smartphone,
+  Landmark,
 } from "lucide-react";
+import { paymentMethods, calculateFee, getTotal } from "@/lib/api/payments";
 
 interface FlightOption {
   id: string;
@@ -28,6 +33,14 @@ interface FlightOption {
   price: number;
   currency: string;
   stops: number;
+}
+
+interface PaymentMethodOption {
+  id: string;
+  name: string;
+  logo: string;
+  color: string;
+  icon: any;
 }
 
 function CheckoutContent() {
@@ -55,6 +68,7 @@ function CheckoutContent() {
     cardCvv: "",
     cardName: "",
     travelInsurance: false,
+    paymentMethod: "card",
   });
 
   useEffect(() => {
@@ -300,8 +314,73 @@ function CheckoutContent() {
               <div className="bg-white rounded-xl shadow-sm p-6">
                 <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
                   <CreditCard className="w-5 h-5" />
-                  Payment Details
+                  Select Payment Method
                 </h2>
+
+                <div className="space-y-3 mb-6">
+                  {paymentMethods
+                    .filter((m) => m.enabled)
+                    .map((method) => (
+                      <label
+                        key={method.id}
+                        className={`flex items-center justify-between p-4 border-2 rounded-lg cursor-pointer transition ${
+                          formData.paymentMethod === method.id
+                            ? "border-sky-500 bg-sky-50"
+                            : "border-gray-200 hover:border-gray-300"
+                        }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <input
+                            type="radio"
+                            name="paymentMethod"
+                            value={method.id}
+                            checked={formData.paymentMethod === method.id}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                paymentMethod: e.target.value,
+                              })
+                            }
+                            className="w-4 h-4 text-sky-600"
+                          />
+                          <span className="text-2xl">{method.logo}</span>
+                          <div>
+                            <p className="font-medium">{method.name}</p>
+                            <p className="text-xs text-gray-500">
+                              {method.fee > 0 ? `${method.fee}% fee` : "No fee"}{" "}
+                              • {method.processingTime}
+                            </p>
+                          </div>
+                        </div>
+                        {method.type === "card" && (
+                          <CreditCard className="w-5 h-5 text-gray-400" />
+                        )}
+                        {method.type === "mobile_money" && (
+                          <Smartphone className="w-5 h-5 text-gray-400" />
+                        )}
+                        {method.type === "bank_transfer" && (
+                          <Building2 className="w-5 h-5 text-gray-400" />
+                        )}
+                        {method.type === "wallet" && (
+                          <Wallet className="w-5 h-5 text-gray-400" />
+                        )}
+                      </label>
+                    ))}
+                </div>
+
+                {formData.paymentMethod === "bank_transfer" && (
+                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
+                    <h3 className="font-semibold text-yellow-800 mb-2">
+                      Bank Transfer Details
+                    </h3>
+                    <div className="text-sm text-yellow-700 space-y-1 font-mono">
+                      <p>Bank: Stanbic Bank Uganda</p>
+                      <p>Account: 9030012345678</p>
+                      <p>Name: VerTravels Ltd</p>
+                      <p>Reference: VT-{Date.now().toString().slice(-6)}</p>
+                    </div>
+                  </div>
+                )}
                 <form onSubmit={handlePaymentSubmit} className="space-y-4">
                   {error && (
                     <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-center gap-2">
