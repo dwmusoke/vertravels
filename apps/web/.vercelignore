@@ -2,8 +2,4 @@ node_modules
 .next/cache
 *.log
 .git
-.github
-docs
-packages/**
-apps/admin
-apps/api
+.env*
