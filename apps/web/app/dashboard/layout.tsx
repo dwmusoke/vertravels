@@ -32,6 +32,7 @@ import {
   UserCircle,
   PlaneTakeoff,
   Ticket,
+  Warehouse,
 } from "lucide-react";
 
 interface MenuGroup {
@@ -41,6 +42,14 @@ interface MenuGroup {
 }
 
 const menuGroups: MenuGroup[] = [
+  {
+    title: "Multi-Tenant",
+    icon: Warehouse,
+    items: [
+      { name: "Tenants", href: "/dashboard/tenants", icon: Building2 },
+      { name: "Corporate", href: "/dashboard/corporate", icon: Users },
+    ],
+  },
   {
     title: "Operations",
     icon: PlaneTakeoff,
