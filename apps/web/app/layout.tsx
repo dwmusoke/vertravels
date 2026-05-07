@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "VerTravels - Modern Travel ERP",
-  description: "Enterprise travel booking management system",
+  title: "VerTravels - Book Flights, Hotels, Tours & More",
+  description: "Your trusted travel companion.",
 };
 
 export default function RootLayout({
@@ -13,11 +13,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="bg-gray-50 antialiased overflow-x-hidden">
-        <div className="min-h-screen">
-          <main>{children}</main>
-        </div>
-      </body>
+      <body className="bg-gray-50 antialiased">{children}</body>
     </html>
   );
 }

@@ -1,9 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { Plane, Hotel, MapPin, Car, Search } from "lucide-react";
+import { Plane, Hotel, MapPin, Car, Search, Menu, X } from "lucide-react";
+import { useState } from "react";
 
 export default function HomePage() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -16,6 +19,8 @@ export default function HomePage() {
                 VerTravels
               </span>
             </Link>
+
+            {/* Desktop Nav */}
             <nav className="hidden md:flex items-center gap-6">
               <Link
                 href="/flights"
@@ -42,7 +47,20 @@ export default function HomePage() {
                 Cars
               </Link>
             </nav>
-            <div className="flex items-center gap-3">
+
+            {/* Mobile menu button */}
+            <button
+              className="md:hidden p-2"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            >
+              {mobileMenuOpen ? (
+                <X className="w-6 h-6" />
+              ) : (
+                <Menu className="w-6 h-6" />
+              )}
+            </button>
+
+            <div className="hidden md:flex items-center gap-3">
               <Link
                 href="/login"
                 className="text-gray-600 hover:text-primary font-medium"
@@ -58,6 +76,50 @@ export default function HomePage() {
             </div>
           </div>
         </div>
+
+        {/* Mobile Nav */}
+        {mobileMenuOpen && (
+          <div className="md:hidden border-t bg-white">
+            <div className="px-4 py-2 space-y-2">
+              <Link
+                href="/flights"
+                className="block py-2 text-gray-600 hover:text-primary"
+              >
+                Flights
+              </Link>
+              <Link
+                href="/hotels"
+                className="block py-2 text-gray-600 hover:text-primary"
+              >
+                Hotels
+              </Link>
+              <Link
+                href="/tours"
+                className="block py-2 text-gray-600 hover:text-primary"
+              >
+                Tours
+              </Link>
+              <Link
+                href="/cars"
+                className="block py-2 text-gray-600 hover:text-primary"
+              >
+                Cars
+              </Link>
+              <Link
+                href="/login"
+                className="block py-2 text-gray-600 hover:text-primary"
+              >
+                Login
+              </Link>
+              <Link
+                href="/signup"
+                className="block py-2 text-primary font-medium"
+              >
+                Sign Up
+              </Link>
+            </div>
+          </div>
+        )}
       </header>
 
       {/* Hero Section */}
@@ -179,6 +241,76 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Footer */}
+      <footer className="bg-gray-900 text-gray-400 py-12 mt-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            <div>
+              <h4 className="text-white font-semibold mb-4">Products</h4>
+              <ul className="space-y-2">
+                <li>
+                  <Link href="/flights" className="hover:text-white">
+                    Flights
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/hotels" className="hover:text-white">
+                    Hotels
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/tours" className="hover:text-white">
+                    Tours
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/cars" className="hover:text-white">
+                    Cars
+                  </Link>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-white font-semibold mb-4">Company</h4>
+              <ul className="space-y-2">
+                <li>
+                  <Link href="/about" className="hover:text-white">
+                    About Us
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/contact" className="hover:text-white">
+                    Contact
+                  </Link>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-white font-semibold mb-4">Support</h4>
+              <ul className="space-y-2">
+                <li>
+                  <Link href="/help" className="hover:text-white">
+                    Help Center
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/terms" className="hover:text-white">
+                    Terms
+                  </Link>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-white font-semibold mb-4">VerTravels</h4>
+              <p className="text-sm">Modern travel booking platform.</p>
+            </div>
+          </div>
+          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm">
+            <p>&copy; 2026 VerTravels. All rights reserved.</p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
