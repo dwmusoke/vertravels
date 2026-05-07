@@ -80,11 +80,11 @@ export default function HotelsPage() {
 
       {/* Hero Section */}
       <div className="relative bg-gradient-to-br from-emerald-600 via-teal-500 to-sky-600 overflow-hidden">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-10 left-10 text-9xl">🏨</div>
-          <div className="absolute top-20 right-20 text-8xl">🛎️</div>
-          <div className="absolute bottom-10 left-1/4 text-9xl">🛏️</div>
-          <div className="absolute bottom-20 right-1/3 text-8xl">🧳</div>
+        <div className="absolute inset-0 opacity-30">
+          <img
+            src="https://images.unsplash.com/photo-1566073771259-6a8506099945a?w=1920&q=80"
+            className="w-full h-full object-cover"
+          />
         </div>
         <div className="max-w-6xl mx-auto px-4 py-16 relative z-10">
           <h1 className="text-5xl md:text-6xl font-bold text-white mb-4">
@@ -262,9 +262,11 @@ export default function HotelsPage() {
             href="/hotels/search?destination=Kampala"
             className="relative h-48 rounded-2xl overflow-hidden group"
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-emerald-800 to-teal-600 flex items-center justify-center">
-              <span className="text-7xl">🏙️</span>
-            </div>
+            <img
+              src="https://images.unsplash.com/photo-1557142046-c704a3aec804?w=600&q=80"
+              alt="Kampala"
+              className="w-full h-full object-cover"
+            />
             <div className="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors flex items-end p-6">
               <div className="text-white">
                 <h3 className="text-xl font-bold flex items-center gap-2">
@@ -279,9 +281,11 @@ export default function HotelsPage() {
             href="/hotels/search?destination=Entebbe"
             className="relative h-48 rounded-2xl overflow-hidden group"
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-sky-800 to-blue-600 flex items-center justify-center">
-              <span className="text-7xl">✈️</span>
-            </div>
+            <img
+              src="https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=600&q=80"
+              alt="Entebbe"
+              className="w-full h-full object-cover"
+            />
             <div className="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors flex items-end p-6">
               <div className="text-white">
                 <h3 className="text-xl font-bold flex items-center gap-2">
@@ -296,9 +300,11 @@ export default function HotelsPage() {
             href="/hotels/search?destination=Jinja"
             className="relative h-48 rounded-2xl overflow-hidden group"
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-amber-800 to-orange-600 flex items-center justify-center">
-              <span className="text-7xl">🌊</span>
-            </div>
+            <img
+              src="https://images.unsplash.com/photo-1568379697888-3c5a06e8602f?w=600&q=80"
+              alt="Jinja"
+              className="w-full h-full object-cover"
+            />
             <div className="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors flex items-end p-6">
               <div className="text-white">
                 <h3 className="text-xl font-bold flex items-center gap-2">

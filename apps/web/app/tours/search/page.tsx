@@ -17,13 +17,14 @@ import { Clock, Star, MapPin, ArrowRight } from "lucide-react";
 const mockTours = [
   {
     id: "TR001",
-    name: "Gorilla Trekking Adventure",
+    name: "Bwindi Gorilla Trekking",
     location: "Bwindi Forest",
     duration: "2 Days",
     price: 890,
     rating: 4.9,
     reviews: 328,
-    image: "🦍",
+    image:
+      "https://images.unsplash.com/photo-1535941339077-2dd1c7963098?w=800&q=80",
     tag: "Best Seller",
   },
   {
@@ -34,7 +35,8 @@ const mockTours = [
     price: 1250,
     rating: 4.8,
     reviews: 256,
-    image: "🦁",
+    image:
+      "https://images.unsplash.com/photo-1516426122078-c23e76319801?w=800&q=80",
     tag: "Popular",
   },
   {
@@ -45,7 +47,8 @@ const mockTours = [
     price: 150,
     rating: 4.7,
     reviews: 189,
-    image: "⛵",
+    image:
+      "https://images.unsplash.com/photo-1568379697888-3c5a06e8602f?w=800&q=80",
     tag: "Top Rated",
   },
   {
@@ -56,7 +59,8 @@ const mockTours = [
     price: 80,
     rating: 4.5,
     reviews: 145,
-    image: "🏙️",
+    image:
+      "https://images.unsplash.com/photo-1557142046-c704a3aec804?w=800&q=80",
     tag: null,
   },
 ];
@@ -79,11 +83,11 @@ export default function ToursSearchPage() {
 
       {/* Hero Section */}
       <div className="relative bg-gradient-to-br from-amber-700 via-orange-600 to-rose-700 py-12 overflow-hidden">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-4 left-10 text-8xl">🦁</div>
-          <div className="absolute top-10 right-20 text-7xl">🐘</div>
-          <div className="absolute bottom-4 left-1/3 text-8xl">🦍</div>
-          <div className="absolute bottom-10 right-1/4 text-7xl">🦓</div>
+        <div className="absolute inset-0 opacity-20">
+          <img
+            src="https://images.unsplash.com/photo-1516426122078-c23e76319801?w=1200&q=80"
+            className="w-full h-full object-cover"
+          />
         </div>
         <div className="max-w-7xl mx-auto px-4 relative z-10">
           <Link

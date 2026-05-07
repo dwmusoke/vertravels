@@ -38,11 +38,11 @@ export default function HotelsSearchPage() {
 
       {/* Hero Section */}
       <div className="relative bg-gradient-to-br from-emerald-700 via-teal-600 to-sky-700 py-12 overflow-hidden">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-4 left-10 text-8xl">🏨</div>
-          <div className="absolute top-10 right-20 text-7xl">🛎️</div>
-          <div className="absolute bottom-4 left-1/3 text-8xl">🛏️</div>
-          <div className="absolute bottom-10 right-1/4 text-7xl">🧳</div>
+        <div className="absolute inset-0 opacity-20">
+          <img
+            src="https://images.unsplash.com/photo-1566073771259-6a8506099945a?w=1200&q=80"
+            className="w-full h-full object-cover"
+          />
         </div>
         <div className="max-w-7xl mx-auto px-4 relative z-10">
           <Link

@@ -82,11 +82,11 @@ export default function FlightsPage() {
 
       {/* Hero Section */}
       <div className="relative bg-gradient-to-br from-sky-600 via-blue-500 to-indigo-600 overflow-hidden">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-10 left-10 text-9xl">✈️</div>
-          <div className="absolute top-20 right-20 text-8xl">🌍</div>
-          <div className="absolute bottom-10 left-1/4 text-9xl">🛫</div>
-          <div className="absolute bottom-20 right-1/3 text-8xl">🌎</div>
+        <div className="absolute inset-0 opacity-30">
+          <img
+            src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1920&q=80"
+            className="w-full h-full object-cover"
+          />
         </div>
         <div className="max-w-6xl mx-auto px-4 py-16 relative z-10">
           <h1 className="text-5xl md:text-6xl font-bold text-white mb-4">
