@@ -79,7 +79,7 @@ export {
   ToastClose,
   type ToastProps,
 } from "./Toast";
-export { Toaster } from "./toaster";
+export { Toaster } from "./Toaster";
 export { useToast } from "@/hooks/use-toast";
 export { Popover, PopoverTrigger, PopoverContent } from "./Popover";
 export { ScrollArea, ScrollBar } from "./ScrollArea";
