@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
 import {
   Plane,
   Hotel,
@@ -22,33 +23,99 @@ import {
   Receipt,
   Briefcase,
   TrendingUp,
+  ChevronDown,
+  ChevronRight,
+  Building2,
+  Globe,
+  Wallet,
+  UsersRound,
+  UserCircle,
+  PlaneTakeoff,
+  Ticket,
 } from "lucide-react";
 
-const menuItems = [
-  { name: "Dashboard", href: "/dashboard", icon: Home },
-  { name: "Bookings", href: "/dashboard/bookings", icon: Calendar },
-  { name: "Flights", href: "/dashboard/flights", icon: Plane },
-  { name: "Hotels", href: "/dashboard/hotels", icon: Hotel },
-  { name: "Tours", href: "/dashboard/tours", icon: MapPin },
-  { name: "Cars", href: "/dashboard/cars", icon: Car },
-  { name: "Customers", href: "/dashboard/customers", icon: Users },
-  { name: "Agents", href: "/dashboard/agents", icon: UserCheck },
-  { name: "Contacts", href: "/dashboard/contacts", icon: Mail },
-  { name: "CRM", href: "/dashboard/crm", icon: Users },
-  { name: "Mid-Office", href: "/dashboard/midoffice", icon: Briefcase },
-  { name: "Invoices", href: "/dashboard/invoices", icon: Receipt },
-  { name: "Quotations", href: "/dashboard/quotations", icon: FileText },
-  { name: "Itinerary", href: "/dashboard/itinerary", icon: Map },
-  { name: "Payments", href: "/dashboard/payments", icon: CreditCard },
-  { name: "Reports", href: "/dashboard/reports", icon: BarChart3 },
-  { name: "Finance", href: "/dashboard/finance", icon: DollarSign },
+interface MenuGroup {
+  title: string;
+  icon: any;
+  items: { name: string; href: string; icon: any }[];
+}
+
+const menuGroups: MenuGroup[] = [
   {
-    name: "Fare Optimization",
-    href: "/dashboard/fare-optimization",
-    icon: TrendingUp,
+    title: "Operations",
+    icon: PlaneTakeoff,
+    items: [
+      { name: "Dashboard", href: "/dashboard", icon: Home },
+      { name: "Bookings", href: "/dashboard/bookings", icon: Calendar },
+      { name: "Itinerary", href: "/dashboard/itinerary", icon: Map },
+    ],
   },
-  { name: "API Settings", href: "/dashboard/api", icon: Key },
-  { name: "Settings", href: "/dashboard/settings", icon: Settings },
+  {
+    title: "Inventory",
+    icon: Plane,
+    items: [
+      { name: "Flights", href: "/dashboard/flights", icon: Plane },
+      { name: "Hotels", href: "/dashboard/hotels", icon: Hotel },
+      { name: "Tours", href: "/dashboard/tours", icon: MapPin },
+      { name: "Cars", href: "/dashboard/cars", icon: Car },
+    ],
+  },
+  {
+    title: "Customers",
+    icon: UsersRound,
+    items: [
+      { name: "Contacts", href: "/dashboard/contacts", icon: Mail },
+      { name: "Customers", href: "/dashboard/customers", icon: Users },
+      { name: "Agents", href: "/dashboard/agents", icon: UserCheck },
+      { name: "CRM", href: "/dashboard/crm", icon: UserCircle },
+    ],
+  },
+  {
+    title: "Partners",
+    icon: Globe,
+    items: [
+      {
+        name: "IATA Agents",
+        href: "/dashboard/partners/iata",
+        icon: Building2,
+      },
+      { name: "Non-IATA", href: "/dashboard/partners/non-iata", icon: Users },
+      { name: "Suppliers", href: "/dashboard/partners/suppliers", icon: Key },
+      { name: "APIs", href: "/dashboard/api", icon: Globe },
+    ],
+  },
+  {
+    title: "Sales",
+    icon: DollarSign,
+    items: [
+      { name: "Invoices", href: "/dashboard/invoices", icon: Receipt },
+      { name: "Quotations", href: "/dashboard/quotations", icon: FileText },
+      { name: "Payments", href: "/dashboard/payments", icon: CreditCard },
+    ],
+  },
+  {
+    title: "Finance",
+    icon: Wallet,
+    items: [
+      { name: "Finance", href: "/dashboard/finance", icon: DollarSign },
+      { name: "Reports", href: "/dashboard/reports", icon: BarChart3 },
+      { name: "Credit Control", href: "/dashboard/credit", icon: CreditCard },
+      { name: "BSP Reconciliation", href: "/dashboard/bsp", icon: Ticket },
+    ],
+  },
+  {
+    title: "Control",
+    icon: Briefcase,
+    items: [
+      { name: "Mid-Office", href: "/dashboard/midoffice", icon: Briefcase },
+      {
+        name: "Fare Optimization",
+        href: "/dashboard/fare-optimization",
+        icon: TrendingUp,
+      },
+      { name: "Settings", href: "/dashboard/settings", icon: Settings },
+    ],
+  },
 ];
 
 export default function DashboardLayout({
@@ -57,6 +124,13 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>(
+    {},
+  );
+
+  const toggleGroup = (title: string) => {
+    setExpandedGroups((prev) => ({ ...prev, [title]: !prev[title] }));
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
@@ -70,27 +144,59 @@ export default function DashboardLayout({
             </div>
           </Link>
         </div>
-        <nav className="p-3 space-y-1 overflow-y-auto h-[calc(100vh-140px)]">
-          {menuItems.map((item) => {
-            const isActive =
-              pathname === item.href ||
-              (item.href !== "/dashboard" && pathname.startsWith(item.href));
+
+        <nav className="p-2 overflow-y-auto h-[calc(100vh-140px)]">
+          {menuGroups.map((group) => {
+            const isExpanded = expandedGroups[group.title] !== false;
+
             return (
-              <Link
-                key={item.name}
-                href={item.href}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition ${
-                  isActive
-                    ? "bg-sky-600 text-white"
-                    : "text-gray-300 hover:bg-gray-800 hover:text-white"
-                }`}
-              >
-                <item.icon className="w-5 h-5 flex-shrink-0" />
-                <span className="text-sm font-medium">{item.name}</span>
-              </Link>
+              <div key={group.title} className="mb-1">
+                <button
+                  onClick={() => toggleGroup(group.title)}
+                  className="flex items-center justify-between w-full px-3 py-2 text-gray-400 hover:text-white"
+                >
+                  <div className="flex items-center gap-2">
+                    <group.icon className="w-4 h-4" />
+                    <span className="text-xs font-semibold uppercase tracking-wider">
+                      {group.title}
+                    </span>
+                  </div>
+                  {isExpanded ? (
+                    <ChevronDown className="w-4 h-4" />
+                  ) : (
+                    <ChevronRight className="w-4 h-4" />
+                  )}
+                </button>
+
+                {isExpanded && (
+                  <div className="ml-2 space-y-0.5">
+                    {group.items.map((item) => {
+                      const isActive =
+                        pathname === item.href ||
+                        (item.href !== "/dashboard" &&
+                          pathname.startsWith(item.href));
+                      return (
+                        <Link
+                          key={item.name}
+                          href={item.href}
+                          className={`flex items-center gap-3 px-3 py-2 rounded-lg transition ${
+                            isActive
+                              ? "bg-sky-600 text-white"
+                              : "text-gray-300 hover:bg-gray-800 hover:text-white"
+                          }`}
+                        >
+                          <item.icon className="w-4 h-4 flex-shrink-0" />
+                          <span className="text-sm">{item.name}</span>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
             );
           })}
         </nav>
+
         <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-800">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-sky-600 flex items-center justify-center">
