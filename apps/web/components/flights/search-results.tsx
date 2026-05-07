@@ -85,14 +85,46 @@ export function SearchResults() {
   const pax = searchParams.get("pax") || "1";
 
   const handleSelect = (flight: any) => {
+    sessionStorage.setItem(
+      "selectedFlight",
+      JSON.stringify({
+        id: flight.id,
+        airline: flight.airline,
+        flightNumber: flight.flightNumber,
+        from: flight.origin,
+        to: flight.destination,
+        departure: flight.departure,
+        arrival: flight.arrival,
+        duration: flight.duration,
+        price: flight.price,
+        currency: flight.currency,
+        stops: flight.stops,
+      }),
+    );
     router.push(
-      `/flights/${flight.id}?from=${from}&to=${to}&depart=${depart}&return=${returnDate || ""}&pax=${pax}`,
+      `/flights/checkout?from=${from}&to=${to}&depart=${depart}&return=${returnDate || ""}&pax=${pax}`,
     );
   };
 
   const handleDetails = (flight: any) => {
+    sessionStorage.setItem(
+      "selectedFlight",
+      JSON.stringify({
+        id: flight.id,
+        airline: flight.airline,
+        flightNumber: flight.flightNumber,
+        from: flight.origin,
+        to: flight.destination,
+        departure: flight.departure,
+        arrival: flight.arrival,
+        duration: flight.duration,
+        price: flight.price,
+        currency: flight.currency,
+        stops: flight.stops,
+      }),
+    );
     router.push(
-      `/flights/${flight.id}?from=${from}&to=${to}&depart=${depart}&return=${returnDate || ""}&pax=${pax}`,
+      `/flights/checkout?from=${from}&to=${to}&depart=${depart}&return=${returnDate || ""}&pax=${pax}`,
     );
   };
 

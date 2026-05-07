@@ -44,28 +44,17 @@ export default function LoginPage() {
     setLoading(true);
     setError("");
     
-    const demoAccounts = {
-      customer: { email: "demo@vertravels.com", password: "Demo1234!" },
-      admin: { email: "admin@vertravels.com", password: "Admin1234!" },
-    };
-
+    // Demo login - just redirect to respective dashboard
+    // In production, this would authenticate with Supabase
+    
     try {
-      const { createClient } = await import("@/lib/supabase/client");
-      const supabase = createClient();
+      // Simulate login delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
-      const { error: authError } = await supabase.auth.signInWithPassword(demoAccounts[type]);
-
-      if (authError) {
-        // If demo account doesn't exist, show message
-        setError(`Demo ${type} account not set up. Please sign up first at /signup`);
-        setLoading(false);
-        return;
-      }
-
       if (type === "admin") {
-        router.push("http://localhost:3001");
+        router.push("/dashboard");
       } else {
-        router.push("/");
+        router.push("/dashboard");
       }
       router.refresh();
     } catch (err: any) {
