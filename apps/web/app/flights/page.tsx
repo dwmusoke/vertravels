@@ -18,7 +18,9 @@ import {
 
 export default function FlightsPage() {
   const router = useRouter();
-  const [tripType, setTripType] = useState<"roundtrip" | "oneway">("roundtrip");
+  const [tripType, setTripType] = useState<
+    "roundtrip" | "oneway" | "multicity"
+  >("roundtrip");
   const [searchData, setSearchData] = useState({
     from: "",
     to: "",
@@ -27,6 +29,10 @@ export default function FlightsPage() {
     travelers: "1",
     class: "economy",
   });
+  const [multiCity, setMultiCity] = useState([
+    { from: "", to: "", date: "" },
+    { from: "", to: "", date: "" },
+  ]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -141,6 +147,7 @@ export default function FlightsPage() {
           {/* Trip Type */}
           <div className="flex gap-4 mb-6">
             <button
+              type="button"
               onClick={() => setTripType("roundtrip")}
               className={`px-4 py-2 rounded-lg font-medium ${
                 tripType === "roundtrip"
@@ -151,6 +158,7 @@ export default function FlightsPage() {
               Round Trip
             </button>
             <button
+              type="button"
               onClick={() => setTripType("oneway")}
               className={`px-4 py-2 rounded-lg font-medium ${
                 tripType === "oneway"
@@ -159,6 +167,17 @@ export default function FlightsPage() {
               }`}
             >
               One Way
+            </button>
+            <button
+              type="button"
+              onClick={() => setTripType("multicity")}
+              className={`px-4 py-2 rounded-lg font-medium ${
+                tripType === "multicity"
+                  ? "bg-sky-100 text-sky-600"
+                  : "text-gray-600"
+              }`}
+            >
+              Multi-City
             </button>
           </div>
 
@@ -295,6 +314,152 @@ export default function FlightsPage() {
               </div>
             </div>
           </form>
+
+          {/* Multi-City Form */}
+          {tripType === "multicity" && (
+            <div className="mt-6 pt-6 border-t">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="font-bold text-gray-900">
+                  Multi-City Itinerary
+                </h3>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setMultiCity([...multiCity, { from: "", to: "", date: "" }])
+                  }
+                  className="text-sky-600 hover:text-sky-700 text-sm font-medium"
+                >
+                  + Add Flight
+                </button>
+              </div>
+              <div className="space-y-3 max-h-64 overflow-y-auto">
+                {multiCity.map((flight, idx) => (
+                  <div
+                    key={idx}
+                    className="grid grid-cols-1 md:grid-cols-4 gap-3 p-3 bg-gray-50 rounded-lg"
+                  >
+                    <div>
+                      <label className="block text-xs text-gray-500 mb-1">
+                        From
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Origin"
+                        value={flight.from}
+                        onChange={(e) => {
+                          const updated = [...multiCity];
+                          updated[idx].from = e.target.value;
+                          setMultiCity(updated);
+                        }}
+                        className="w-full px-3 py-2 border rounded-lg text-sm"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-gray-500 mb-1">
+                        To
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Destination"
+                        value={flight.to}
+                        onChange={(e) => {
+                          const updated = [...multiCity];
+                          updated[idx].to = e.target.value;
+                          setMultiCity(updated);
+                        }}
+                        className="w-full px-3 py-2 border rounded-lg text-sm"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-gray-500 mb-1">
+                        Date
+                      </label>
+                      <input
+                        type="date"
+                        value={flight.date}
+                        onChange={(e) => {
+                          const updated = [...multiCity];
+                          updated[idx].date = e.target.value;
+                          setMultiCity(updated);
+                        }}
+                        className="w-full px-3 py-2 border rounded-lg text-sm"
+                        required
+                      />
+                    </div>
+                    <div className="flex items-end">
+                      {multiCity.length > 2 && (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setMultiCity(multiCity.filter((_, i) => i !== idx))
+                          }
+                          className="w-full px-3 py-2 border border-red-200 text-red-600 rounded-lg text-sm hover:bg-red-50"
+                        >
+                          Remove
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-600 mb-1">
+                    Travelers
+                  </label>
+                  <select
+                    value={searchData.travelers}
+                    onChange={(e) =>
+                      setSearchData({
+                        ...searchData,
+                        travelers: e.target.value,
+                      })
+                    }
+                    className="w-full px-4 py-3 border rounded-lg"
+                  >
+                    {[1, 2, 3, 4, 5, 6].map((n) => (
+                      <option key={n} value={n}>
+                        {n} Adult{n > 1 ? "s" : ""}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-600 mb-1">
+                    Class
+                  </label>
+                  <select
+                    value={searchData.class}
+                    onChange={(e) =>
+                      setSearchData({ ...searchData, class: e.target.value })
+                    }
+                    className="w-full px-4 py-3 border rounded-lg"
+                  >
+                    <option value="economy">Economy</option>
+                    <option value="business">Business</option>
+                    <option value="first">First Class</option>
+                  </select>
+                </div>
+                <div className="flex items-end">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const params = new URLSearchParams();
+                      params.set("type", "multicity");
+                      params.set("flights", JSON.stringify(multiCity));
+                      params.set("pax", searchData.travelers);
+                      router.push(`/flights/search?${params.toString()}`);
+                    }}
+                    className="w-full bg-gradient-to-r from-sky-600 to-blue-500 hover:from-sky-700 text-white py-3 rounded-lg font-bold"
+                  >
+                    Search Multi-City
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
