@@ -1,12 +1,18 @@
 "use client";
 
-import { useSearchParams, useRouter } from "next/navigation";
-import { Suspense } from "react";
 import Link from "next/link";
-import { Card, CardContent } from "@/components/ui";
+import {
+  Car as CarIcon,
+  ArrowLeft,
+  Home,
+  Plane,
+  Hotel,
+  MapPin,
+} from "lucide-react";
 import { Button } from "@/components/ui";
 import { Badge } from "@/components/ui";
-import { Car as CarIcon, Users, Fuel, Star, ArrowRight } from "lucide-react";
+import { Card, CardContent } from "@/components/ui";
+import { Clock, MapPin as PinIcon, ArrowRight, Users } from "lucide-react";
 
 const mockCars = [
   {
@@ -14,175 +20,165 @@ const mockCars = [
     name: "Toyota Corolla",
     type: "Compact",
     seats: 5,
-    transmission: "Automatic",
-    fuel: "Petrol",
-    pricePerDay: 45,
-    currency: "USD",
-    available: true,
+    price: 45,
+    image: "🚗",
+    tag: "Popular",
   },
   {
     id: "CAR002",
     name: "Honda CR-V",
     type: "SUV",
     seats: 5,
-    transmission: "Automatic",
-    fuel: "Petrol",
-    pricePerDay: 75,
-    currency: "USD",
-    available: true,
+    price: 75,
+    image: "🚙",
+    tag: null,
   },
   {
     id: "CAR003",
     name: "Tesla Model 3",
     type: "Electric",
     seats: 5,
-    transmission: "Automatic",
-    fuel: "Electric",
-    pricePerDay: 120,
-    currency: "USD",
-    available: true,
+    price: 120,
+    image: "⚡",
+    tag: "Top Rated",
+  },
+  {
+    id: "CAR004",
+    name: "Toyota Prado",
+    type: "4x4",
+    seats: 7,
+    price: 95,
+    image: "🚙",
+    tag: "Best Seller",
   },
 ];
 
-function SearchResults() {
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const location = searchParams.get("location");
-
-  const handleSelect = (car: any) => {
-    sessionStorage.setItem(
-      "selectedCar",
-      JSON.stringify({
-        id: car.id,
-        name: car.name,
-        type: car.type,
-        location: location || "Airport",
-        pickupDate:
-          searchParams.get("pickup") || new Date().toISOString().split("T")[0],
-        dropoffDate:
-          searchParams.get("dropoff") ||
-          new Date(Date.now() + 3 * 24 * 60 * 60 * 1000)
-            .toISOString()
-            .split("T")[0],
-        pricePerDay: car.pricePerDay,
-        totalPrice: car.pricePerDay * 3,
-        currency: car.currency,
-      }),
-    );
-    router.push(
-      `/cars/checkout?location=${location}&pickup=${searchParams.get("pickup") || ""}&dropoff=${searchParams.get("dropoff") || ""}`,
-    );
-  };
-
-  return (
-    <div className="space-y-4">
-      <div className="bg-card rounded-lg border p-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-lg font-semibold">
-              {location || "All Locations"}
-            </h2>
-            <p className="text-sm text-muted-foreground">
-              {searchParams.get("pickup") || "Flexible"} to{" "}
-              {searchParams.get("dropoff") || "Flexible"}
-            </p>
-          </div>
-          <div className="text-right">
-            <p className="text-2xl font-bold">{mockCars.length}</p>
-            <p className="text-sm text-muted-foreground">cars available</p>
-          </div>
-        </div>
-      </div>
-
-      <div className="space-y-4">
-        {mockCars.map((car) => (
-          <Card key={car.id} className="overflow-hidden">
-            <CardContent className="p-0">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="h-48 md:h-full bg-blue-100 rounded-lg overflow-hidden">
-                  <div className="w-full h-full flex items-center justify-center">
-                    <CarIcon className="h-16 w-16 text-blue-600" />
-                  </div>
-                </div>
-
-                <div className="md:col-span-2 p-4 flex flex-col justify-between">
-                  <div>
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <h3 className="text-xl font-bold">{car.name}</h3>
-                        <p className="text-sm text-muted-foreground">
-                          {car.type}
-                        </p>
-                      </div>
-                      <Badge variant="success">Available</Badge>
-                    </div>
-
-                    <div className="flex gap-4 mt-3">
-                      <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                        <Users className="h-4 w-4" />
-                        <span>{car.seats} seats</span>
-                      </div>
-                      <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                        <CarIcon className="h-4 w-4" />
-                        <span>{car.transmission}</span>
-                      </div>
-                      <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                        <Fuel className="h-4 w-4" />
-                        <span>{car.fuel}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-end justify-between mt-4 pt-4 border-t">
-                    <div>
-                      <p className="text-3xl font-bold text-primary">
-                        ${car.pricePerDay}
-                      </p>
-                      <p className="text-xs text-muted-foreground">per day</p>
-                    </div>
-                    <Button onClick={() => handleSelect(car)}>
-                      Book Now
-                      <ArrowRight className="w-4 h-4 ml-1" />
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    </div>
-  );
-}
-
 export default function CarsSearchPage() {
   return (
-    <div className="min-h-screen bg-background">
-      <div className="bg-purple-600 text-white py-8">
-        <div className="container mx-auto px-4">
-          <h1 className="text-3xl font-bold">Car Rental Search Results</h1>
-          <p className="mt-2 opacity-90">
+    <div className="min-h-screen bg-gray-50">
+      {/* Navigation */}
+      <header className="bg-white shadow-sm sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+          <Link href="/" className="flex items-center gap-2">
+            <CarIcon className="w-8 h-8 text-purple-600" />
+            <span className="text-xl font-bold text-gray-900">VerTravels</span>
+          </Link>
+          <Link href="/login" className="text-gray-600">
+            Sign In
+          </Link>
+        </div>
+      </header>
+
+      {/* Hero Section */}
+      <div className="relative bg-gradient-to-br from-purple-700 via-violet-600 to-indigo-700 py-12 overflow-hidden">
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-4 left-10 text-8xl">🚗</div>
+          <div className="absolute top-10 right-20 text-7xl">🚙</div>
+          <div className="absolute bottom-4 left-1/3 text-8xl">🛻</div>
+          <div className="absolute bottom-10 right-1/4 text-7xl">🚐</div>
+        </div>
+        <div className="max-w-7xl mx-auto px-4 relative z-10">
+          <Link
+            href="/cars"
+            className="inline-flex items-center gap-2 text-white/80 hover:text-white mb-4"
+          >
+            <ArrowLeft className="w-4 h-4" /> Back to Cars
+          </Link>
+          <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
+            Car Rental Results
+          </h1>
+          <p className="text-white/80 text-lg">
             Find the perfect vehicle for your journey
           </p>
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          <aside className="lg:col-span-1">
-            <div className="bg-card rounded-lg border p-6">
-              <h2 className="text-lg font-semibold mb-4">Filters</h2>
-              <p className="text-sm text-muted-foreground">
-                Car rental filters coming soon...
-              </p>
-            </div>
-          </aside>
+      {/* Quick Links */}
+      <div className="bg-white border-b">
+        <div className="max-w-7xl mx-auto px-4 py-2 flex justify-center gap-6">
+          <Link
+            href="/flights"
+            className="flex items-center gap-2 text-sky-600 hover:text-sky-700 font-medium"
+          >
+            <Plane className="w-4 h-4" /> Flights
+          </Link>
+          <Link
+            href="/hotels"
+            className="flex items-center gap-2 text-emerald-600 hover:text-emerald-700 font-medium"
+          >
+            <Hotel className="w-4 h-4" /> Hotels
+          </Link>
+          <Link
+            href="/tours"
+            className="flex items-center gap-2 text-amber-600 hover:text-amber-700 font-medium"
+          >
+            <MapPin className="w-4 h-4" /> Tours
+          </Link>
+          <Link
+            href="/cars"
+            className="flex items-center gap-2 text-purple-600 hover:text-purple-700 font-medium"
+          >
+            <CarIcon className="w-4 h-4" /> Cars
+          </Link>
+          <Link
+            href="/"
+            className="flex items-center gap-2 text-gray-600 hover:text-gray-700 font-medium"
+          >
+            <Home className="w-4 h-4" /> Home
+          </Link>
+        </div>
+      </div>
 
-          <main className="lg:col-span-3">
-            <Suspense fallback={<div>Loading cars...</div>}>
-              <SearchResults />
-            </Suspense>
-          </main>
+      {/* Results */}
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <div className="space-y-4">
+          {mockCars.map((car) => (
+            <Card
+              key={car.id}
+              className="overflow-hidden hover:shadow-xl transition"
+            >
+              <CardContent className="p-0">
+                <div className="grid md:grid-cols-4 gap-4">
+                  <div className="md:col-span-1 h-40 md:h-auto bg-gradient-to-br from-purple-100 to-indigo-50 flex items-center justify-center">
+                    <span className="text-7xl">{car.image}</span>
+                  </div>
+                  <div className="md:col-span-3 p-6">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <Badge className="bg-purple-100 text-purple-700 mb-2">
+                          {car.type}
+                        </Badge>
+                        <h3 className="text-xl font-bold text-gray-900">
+                          {car.name}
+                        </h3>
+                        <p className="text-gray-500 flex items-center gap-1 mt-1">
+                          <Users className="w-4 h-4" /> {car.seats} seats
+                        </p>
+                      </div>
+                      {car.tag && (
+                        <Badge className="bg-purple-500 text-white">
+                          {car.tag}
+                        </Badge>
+                      )}
+                    </div>
+                    <div className="flex justify-between items-end mt-4 pt-4 border-t">
+                      <div>
+                        <p className="text-3xl font-bold text-purple-600">
+                          ${car.price}
+                        </p>
+                        <p className="text-xs text-gray-500">per day</p>
+                      </div>
+                      <Link href={`/cars/checkout?car=${car.id}`}>
+                        <Button>
+                          Book Now <ArrowRight className="w-4 h-4 ml-1" />
+                        </Button>
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
       </div>
     </div>
