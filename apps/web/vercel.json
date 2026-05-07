@@ -1,5 +1,4 @@
 {
-  "buildCommand": "pnpm build",
-  "installCommand": "pnpm install",
-  "outputDirectory": ".next"
+  "buildCommand": "pnpm build && cp -r .next/* .next/../public/ 2>/dev/null || true",
+  "installCommand": "pnpm install"
 }
