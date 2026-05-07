@@ -20,6 +20,8 @@ import {
   CreditCard,
   Map,
   Receipt,
+  Briefcase,
+  TrendingUp,
 } from "lucide-react";
 
 const menuItems = [
@@ -33,12 +35,18 @@ const menuItems = [
   { name: "Agents", href: "/dashboard/agents", icon: UserCheck },
   { name: "Contacts", href: "/dashboard/contacts", icon: Mail },
   { name: "CRM", href: "/dashboard/crm", icon: Users },
+  { name: "Mid-Office", href: "/dashboard/midoffice", icon: Briefcase },
   { name: "Invoices", href: "/dashboard/invoices", icon: Receipt },
   { name: "Quotations", href: "/dashboard/quotations", icon: FileText },
   { name: "Itinerary", href: "/dashboard/itinerary", icon: Map },
   { name: "Payments", href: "/dashboard/payments", icon: CreditCard },
   { name: "Reports", href: "/dashboard/reports", icon: BarChart3 },
   { name: "Finance", href: "/dashboard/finance", icon: DollarSign },
+  {
+    name: "Fare Optimization",
+    href: "/dashboard/fare-optimization",
+    icon: TrendingUp,
+  },
   { name: "API Settings", href: "/dashboard/api", icon: Key },
   { name: "Settings", href: "/dashboard/settings", icon: Settings },
 ];
