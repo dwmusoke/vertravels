@@ -31,23 +31,23 @@ module.exports = {
           200: '#bfdbfe',
           300: '#93c5fd',
           400: '#60a5fa',
-          500: '#0EA5E9', // VerTravels Blue
-          600: '#0284c7',
-          700: '#0369a1',
-          800: '#075985',
-          900: '#0c4a6e',
+          500: '#2563EB',
+          600: '#1D4ED8',
+          700: '#1e40af',
+          800: '#1e3a8a',
+          900: '#172554',
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
-          500: '#14B8A6', // Ocean Teal
+          500: '#14B8A6',
           600: '#0d9488',
           700: '#0f766e',
         },
         accent: {
           DEFAULT: "hsl(var(--accent))",
           foreground: "hsl(var(--accent-foreground))",
-          500: '#F97316', // Sunset Orange
+          500: '#F97316',
           600: '#ea580c',
           700: '#c2410c',
         },
@@ -67,9 +67,8 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        // Module-specific colors
         modules: {
-          flights: '#3B82F6',
+          flights: '#2563EB',
           hotels: '#10B981',
           tours: '#F59E0B',
           cars: '#8B5CF6',
@@ -99,12 +98,22 @@ module.exports = {
           from: { transform: "translateY(10px)", opacity: 0 },
           to: { transform: "translateY(0)", opacity: 1 },
         },
+        "slide-in-left": {
+          from: { transform: "translateX(-20px)", opacity: 0 },
+          to: { transform: "translateX(0)", opacity: 1 },
+        },
+        "shimmer": {
+          "0%": { backgroundPosition: "-200% 0" },
+          "100%": { backgroundPosition: "200% 0" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "fade-in": "fade-in 0.3s ease-out",
         "slide-in": "slide-in 0.4s ease-out",
+        "slide-in-left": "slide-in-left 0.3s ease-out",
+        "shimmer": "shimmer 1.5s infinite",
       },
       fontFamily: {
         heading: ['Plus Jakarta Sans', 'sans-serif'],

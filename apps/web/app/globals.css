@@ -4,13 +4,13 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: 220 14% 97%;
     --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-    --primary: 220 100% 5%;
+    --primary: 221 83% 53%;
     --primary-foreground: 210 40% 98%;
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
@@ -22,7 +22,7 @@
     --destructive-foreground: 210 40% 98%;
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --ring: 221 83% 53%;
     --radius: 0.75rem;
   }
 
@@ -31,25 +31,73 @@
   }
 
   body {
-    @apply bg-gray-50 text-foreground antialiased;
-    font-family:
-      "Inter",
-      system-ui,
-      -apple-system,
-      sans-serif;
+    @apply bg-[#F5F7FB] text-[#0F172A] antialiased;
+    font-family: "Inter", system-ui, -apple-system, sans-serif;
   }
 
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    font-family: "Poppins", system-ui, sans-serif;
+  h1, h2, h3, h4, h5, h6 {
+    font-family: "Plus Jakarta Sans", system-ui, sans-serif;
   }
 }
 
-/* Custom scrollbar */
+@layer components {
+  .card-premium {
+    @apply bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-lg transition-all duration-300;
+  }
+
+  .card-premium:hover {
+    @apply border-blue-200;
+  }
+
+  .badge-soft {
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
+  }
+
+  .badge-soft-blue {
+    @apply badge-soft bg-blue-50 text-blue-700;
+  }
+
+  .badge-soft-green {
+    @apply badge-soft bg-emerald-50 text-emerald-700;
+  }
+
+  .badge-soft-amber {
+    @apply badge-soft bg-amber-50 text-amber-700;
+  }
+
+  .badge-soft-gray {
+    @apply badge-soft bg-slate-100 text-slate-600;
+  }
+
+  .shimmer-bg {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+
+  .flight-route-line {
+    @apply relative flex items-center justify-center;
+  }
+
+  .flight-route-line::before {
+    content: '';
+    @apply absolute top-1/2 left-0 right-0 h-0.5 -translate-y-1/2;
+    background: repeating-linear-gradient(
+      90deg,
+      #cbd5e1,
+      #cbd5e1 6px,
+      transparent 6px,
+      transparent 10px
+    );
+  }
+}
+
+@layer utilities {
+  .text-gradient-blue {
+    @apply bg-gradient-to-r from-blue-600 to-blue-500 bg-clip-text text-transparent;
+  }
+}
+
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -68,23 +116,7 @@
   background: #94a3b8;
 }
 
-/* Smooth transitions */
 * {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-/* Professional card styles */
-.card-professional {
-  @apply bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200;
-}
-
-/* Compact widget */
-.widget-compact {
-  @apply p-4 rounded-xl bg-white border border-gray-100 shadow-sm;
-}
-
-/* Sidebar active state */
-.sidebar-active {
-  @apply bg-accent/10 text-accent border-r-2 border-accent;
 }
