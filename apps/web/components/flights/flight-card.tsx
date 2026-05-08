@@ -41,21 +41,25 @@ export function FlightCard({ flight, onSelect, onDetails }: FlightCardProps) {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Airline Info */}
           <div className="lg:col-span-2 flex items-center gap-3">
-            <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-sky-100 to-blue-50 flex items-center justify-center overflow-hidden">
+            <div className="h-14 w-14 rounded-lg bg-gradient-to-br from-sky-100 to-blue-50 flex items-center justify-center overflow-hidden border border-sky-200 shadow-sm flex-shrink-0">
               <img
                 src={`https://content.airhex.com/airline-logos/${flight.airlineCode}_square.png`}
                 alt={flight.airline}
-                className="h-10 w-10 object-contain"
+                className="h-12 w-12 object-contain"
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
-                  target.src = "https://cdn-icons-png.flaticon.com/32/733/733590.png";
+                  target.style.display = 'none';
+                  const parent = target.parentElement;
+                  if (parent) {
+                    parent.innerHTML = '<Plane class="h-8 w-8 text-sky-600" />';
+                  }
                 }}
               />
             </div>
             <div>
-              <p className="font-medium">{flight.airline}</p>
-              <p className="text-sm text-muted-foreground">
-                {flight.flightNumber}
+              <p className="font-semibold text-gray-900">{flight.airline}</p>
+              <p className="text-sm text-gray-500">
+                Flight {flight.flightNumber}
               </p>
             </div>
           </div>
