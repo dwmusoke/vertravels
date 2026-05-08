@@ -82,8 +82,13 @@ export default function HotelsPage() {
       <div className="relative bg-gradient-to-br from-emerald-600 via-teal-500 to-sky-600 overflow-hidden">
         <div className="absolute inset-0 opacity-30">
           <img
-            src="https://images.unsplash.com/photo-1566073771259-6a8506099945a?w=1920&q=80"
+            src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1920&q=80"
+            alt="Hotel background"
             className="w-full h-full object-cover"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.src = "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=1920&q=80";
+            }}
           />
         </div>
         <div className="max-w-6xl mx-auto px-4 py-16 relative z-10">
@@ -264,8 +269,12 @@ export default function HotelsPage() {
           >
             <img
               src="https://images.unsplash.com/photo-1557142046-c704a3aec804?w=600&q=80"
-              alt="Kampala"
-              className="w-full h-full object-cover"
+              alt="Kampala skyline"
+              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.src = "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=600&q=80";
+              }}
             />
             <div className="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors flex items-end p-6">
               <div className="text-white">
@@ -283,8 +292,12 @@ export default function HotelsPage() {
           >
             <img
               src="https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=600&q=80"
-              alt="Entebbe"
-              className="w-full h-full object-cover"
+              alt="Entebbe beach resort"
+              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.src = "https://images.unsplash.com/photo-1540541338287-41700207dee6?w=600&q=80";
+              }}
             />
             <div className="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors flex items-end p-6">
               <div className="text-white">
@@ -302,8 +315,12 @@ export default function HotelsPage() {
           >
             <img
               src="https://images.unsplash.com/photo-1568379697888-3c5a06e8602f?w=600&q=80"
-              alt="Jinja"
-              className="w-full h-full object-cover"
+              alt="Jinja source of the Nile"
+              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.src = "https://images.unsplash.com/photo-1544644181-1484b3fdfba6?w=600&q=80";
+              }}
             />
             <div className="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors flex items-end p-6">
               <div className="text-white">

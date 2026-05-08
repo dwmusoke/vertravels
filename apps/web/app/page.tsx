@@ -207,6 +207,7 @@ const popularDestinations = [
     name: "Dubai",
     country: "UAE",
     emoji: "🏙️",
+    image: "https://images.unsplash.com/photo-1512453979798-5ea904ac22ac?w=800&q=80",
     flights: 45,
     hotels: 280,
     from: "$450",
@@ -215,7 +216,8 @@ const popularDestinations = [
     id: 2,
     name: "Nairobi",
     country: "Kenya",
-    emoji: "🏙️",
+    emoji: "🦁",
+    image: "https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?w=800&q=80",
     flights: 38,
     hotels: 156,
     from: "$180",
@@ -225,6 +227,7 @@ const popularDestinations = [
     name: "London",
     country: "UK",
     emoji: "🇬🇧",
+    image: "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=800&q=80",
     flights: 25,
     hotels: 450,
     from: "$680",
@@ -234,6 +237,7 @@ const popularDestinations = [
     name: "Kampala",
     country: "Uganda",
     emoji: "🏙️",
+    image: "https://images.unsplash.com/photo-1557142046-c704a3aec804?w=800&q=80",
     flights: 15,
     hotels: 85,
     from: "$50",
@@ -243,6 +247,7 @@ const popularDestinations = [
     name: "Zanzibar",
     country: "Tanzania",
     emoji: "🏖️",
+    image: "https://images.unsplash.com/photo-1586861616093-24a1b84dc6e5?w=800&q=80",
     flights: 22,
     hotels: 120,
     from: "$350",
@@ -251,7 +256,8 @@ const popularDestinations = [
     id: 6,
     name: "Kigali",
     country: "Rwanda",
-    emoji: "🏙️",
+    emoji: "🌿",
+    image: "https://images.unsplash.com/photo-1586861616093-24a1b84dc6e5?w=800&q=80",
     flights: 18,
     hotels: 65,
     from: "$200",
@@ -624,10 +630,18 @@ export default function HomePage() {
                 href="/hotels/search"
                 className="bg-white rounded-xl border hover:border-emerald-300 hover:shadow-xl transition overflow-hidden group"
               >
-                <div className="h-40 bg-gradient-to-br from-emerald-100 to-teal-50 flex items-center justify-center relative">
-                  <span className="text-6xl">{hotel.image}</span>
+                <div className="relative h-40 overflow-hidden">
+                  <img
+                    src={hotel.image}
+                    alt={hotel.name}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.src = "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&q=80";
+                    }}
+                  />
                   {hotel.tag && (
-                    <span className="absolute top-2 right-2 bg-emerald-500 text-white text-xs px-2 py-1 rounded-full">
+                    <span className="absolute top-2 left-2 bg-emerald-500 text-white text-xs px-2 py-1 rounded-full">
                       {hotel.tag}
                     </span>
                   )}
@@ -768,16 +782,32 @@ export default function HomePage() {
               <Link
                 key={dest.id}
                 href={`/flights/search?from=EBB&to=${dest.name}`}
-                className="bg-white rounded-xl p-4 text-center hover:shadow-xl transition group"
+                className="bg-white rounded-xl overflow-hidden hover:shadow-xl transition group"
               >
-                <span className="text-4xl block mb-2">{dest.emoji}</span>
-                <h3 className="font-bold text-gray-900 group-hover:text-sky-600">
-                  {dest.name}
-                </h3>
-                <p className="text-xs text-gray-500">{dest.country}</p>
-                <p className="text-sm text-sky-600 font-bold mt-2">
-                  From {dest.from}
-                </p>
+                <div className="relative h-32 overflow-hidden">
+                  <img
+                    src={dest.image}
+                    alt={dest.name}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.src = "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=400&q=80";
+                    }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                  <span className="absolute bottom-2 left-2 text-2xl">
+                    {dest.emoji}
+                  </span>
+                </div>
+                <div className="p-3 text-center">
+                  <h3 className="font-bold text-gray-900 group-hover:text-sky-600">
+                    {dest.name}
+                  </h3>
+                  <p className="text-xs text-gray-500">{dest.country}</p>
+                  <p className="text-sm text-sky-600 font-bold mt-1">
+                    From {dest.from}
+                  </p>
+                </div>
               </Link>
             ))}
           </div>
