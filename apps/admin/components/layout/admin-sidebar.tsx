@@ -26,6 +26,7 @@ import {
   Compass,
   ChevronDown,
   ChevronRight,
+  FileCheck,
 } from "lucide-react";
 
 interface NavItem {
@@ -38,6 +39,17 @@ interface NavItem {
 const navigation: NavItem[] = [
   { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
   { name: "Bookings", href: "/admin/bookings", icon: FileText },
+  {
+    name: "Documents",
+    href: "/admin/documents",
+    icon: FileCheck,
+    children: [
+      { name: "Invoices", href: "/admin/documents/invoices", icon: FileText },
+      { name: "Quotations", href: "/admin/documents/quotations", icon: FileCheck },
+      { name: "Receipts", href: "/admin/documents/receipts", icon: CreditCard },
+      { name: "Statements", href: "/admin/documents/statements", icon: FileText },
+    ],
+  },
   { name: "Reconciliation", href: "/admin/reconciliation", icon: RefreshCcw },
   { name: "IATA Tracking", href: "/admin/iata-tracking", icon: Building2 },
   { name: "Daily Sales", href: "/admin/daily-sales", icon: TrendingUp },
