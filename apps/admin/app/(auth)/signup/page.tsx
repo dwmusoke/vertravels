@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Mail, Lock, Loader2, Plane, User, Shield } from "lucide-react";
@@ -10,6 +10,7 @@ export default function AdminSignupPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [existingUsers, setExistingUsers] = useState<number | null>(null);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -17,6 +18,18 @@ export default function AdminSignupPage() {
     fname: "",
     lname: "",
   });
+
+  // Check if this is the first user
+  useEffect(() => {
+    const checkFirstUser = async () => {
+      const supabase = createClient();
+      const { count } = await supabase
+        .from("auth_users")
+        .select("*", { count: "exact", head: true });
+      setExistingUsers(count || 0);
+    };
+    checkFirstUser();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,13 +65,20 @@ export default function AdminSignupPage() {
       if (authError) throw authError;
 
       if (authData.user) {
+        // Check if this is the first user
+        const { count: existingUsers } = await supabase
+          .from("auth_users")
+          .select("*", { count: "exact", head: true });
+
+        const isFirstUser = (existingUsers || 0) === 0;
+
         // Create user profile
         await supabase.from("auth_users").insert({
           supabase_user_id: authData.user.id,
           email: formData.email,
           password_hash: "hashed_by_supabase",
           status: "active",
-          email_verified: false,
+          email_verified: true, // Auto-verify first user
         });
 
         // Create user profile
@@ -68,11 +88,11 @@ export default function AdminSignupPage() {
           lname: formData.lname,
         });
 
-        // Assign default role (agent)
+        // Assign role - super_admin for first user, agent for others
         const { data: role } = await supabase
           .from("user_roles")
           .select("id")
-          .eq("role_slug", "agent")
+          .eq("role_slug", isFirstUser ? "super_admin" : "agent")
           .single();
 
         if (role) {
@@ -223,9 +243,13 @@ export default function AdminSignupPage() {
               <div className="flex items-start gap-2">
                 <Shield className="w-5 h-5 text-blue-600 mt-0.5" />
                 <div className="text-sm text-blue-700">
-                  <p className="font-medium mb-1">Default Role: Agent</p>
+                  <p className="font-medium mb-1">
+                    {existingUsers === 0 ? "First User = Super Admin" : "Default Role: Agent"}
+                  </p>
                   <p className="text-xs text-blue-600">
-                    Your account will be created with the Agent role. Contact a super admin to upgrade your permissions.
+                    {existingUsers === 0
+                      ? "As the first user, you'll be granted Super Admin access."
+                      : "Contact a super admin to upgrade your permissions."}
                   </p>
                 </div>
               </div>
