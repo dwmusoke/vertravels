@@ -4,9 +4,11 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Mail, Lock, Loader2, Plane } from "lucide-react";
+import { useSupabase } from "@/components/providers/supabase-provider";
 
 export default function AdminLoginPage() {
   const router = useRouter();
+  const { supabase } = useSupabase();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [formData, setFormData] = useState({
@@ -20,10 +22,7 @@ export default function AdminLoginPage() {
     setLoading(true);
 
     try {
-      const { createClient } = await import("@/lib/supabase/client");
-      const supabase = createClient();
-      
-      const { data, error: authError } = await supabase.auth.signInWithPassword({
+      const { error: authError } = await supabase.auth.signInWithPassword({
         email: formData.email,
         password: formData.password,
       });

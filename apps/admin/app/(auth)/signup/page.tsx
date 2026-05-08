@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
 import { Mail, Lock, Loader2, Plane, User, Shield } from "lucide-react";
+import { useSupabase } from "@/components/providers/supabase-provider";
 
 export default function AdminSignupPage() {
   const router = useRouter();
+  const { supabase } = useSupabase();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
@@ -22,14 +23,13 @@ export default function AdminSignupPage() {
   // Check if this is the first user
   useEffect(() => {
     const checkFirstUser = async () => {
-      const supabase = createClient();
       const { count } = await supabase
         .from("auth_users")
         .select("*", { count: "exact", head: true });
       setExistingUsers(count || 0);
     };
     checkFirstUser();
-  }, []);
+  }, [supabase]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,8 +48,6 @@ export default function AdminSignupPage() {
     setLoading(true);
 
     try {
-      const supabase = createClient();
-
       // Sign up via Supabase Auth
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: formData.email,
@@ -104,7 +102,7 @@ export default function AdminSignupPage() {
 
         setSuccess(true);
         setTimeout(() => {
-          router.push("/admin/login");
+          router.push("/login");
         }, 3000);
       }
     } catch (err: any) {
@@ -274,7 +272,7 @@ export default function AdminSignupPage() {
           <p className="mt-6 text-center text-gray-600">
             Already have an account?{" "}
             <a
-              href="/admin/login"
+              href="/login"
               className="text-sky-600 hover:underline font-medium"
             >
               Sign In
