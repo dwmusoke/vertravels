@@ -5,20 +5,23 @@ import { createClient } from "@/lib/supabase/client";
 import {
   Plus,
   Search,
-  Filter,
   Edit2,
   Trash2,
   X,
   CheckCircle,
   Clock,
-  AlertCircle,
   RefreshCw,
-  Plane,
-  User,
-  Calendar,
-  DollarSign,
-  Save,
+  Download,
+  Upload,
+  FileSpreadsheet,
+  Square,
+  CheckSquare,
 } from "lucide-react";
+import { exportToExcel, getTemplateColumns, getValidationRules } from "@/lib/excel-utils";
+import { ExcelImporter } from "@/components/ui/excel-importer";
+import { BulkToolbar } from "@/components/ui/bulk-toolbar";
+import { EditableCell } from "@/components/ui/editable-cell";
+import { AuditTrailInline } from "@/components/ui/audit-trail";
 
 interface ManualPosting {
   id: string;
@@ -51,10 +54,13 @@ interface ManualPosting {
 export default function ManualPostingsPage() {
   const [postings, setPostings] = useState<ManualPosting[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showForm, setShowForm] = useState(false);
+  const [expandedRowId, setExpandedRowId] = useState<string | null>(null);
   const [editingPosting, setEditingPosting] = useState<ManualPosting | null>(null);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [showImporter, setShowImporter] = useState(false);
+  const [showAuditTrail, setShowAuditTrail] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
     posting_type: "flight",
@@ -104,7 +110,6 @@ export default function ManualPostingsPage() {
       const net = total - commission;
 
       if (editingPosting) {
-        // Update existing
         const { error } = await supabase
           .from("manual_postings")
           .update({
@@ -128,7 +133,6 @@ export default function ManualPostingsPage() {
 
         if (error) throw error;
       } else {
-        // Create new
         const postingNumber = `MAN-${Date.now()}`;
 
         const { error } = await supabase.from("manual_postings").insert([
@@ -157,7 +161,7 @@ export default function ManualPostingsPage() {
         if (error) throw error;
       }
 
-      setShowForm(false);
+      setExpandedRowId(null);
       setEditingPosting(null);
       resetForm();
       fetchPostings();
@@ -196,6 +200,47 @@ export default function ManualPostingsPage() {
     }
   }
 
+  async function handleBulkDelete() {
+    if (!confirm(`Delete ${selectedIds.size} postings? This cannot be undone.`)) return;
+
+    try {
+      const { error } = await supabase
+        .from("manual_postings")
+        .delete()
+        .in("id", Array.from(selectedIds));
+
+      if (error) throw error;
+      setSelectedIds(new Set());
+      fetchPostings();
+    } catch (error: any) {
+      console.error("Error bulk deleting:", error);
+    }
+  }
+
+  async function handleBulkExport() {
+    const selectedPostings = postings.filter((p) => selectedIds.has(p.id));
+    const columns = getTemplateColumns("manual_postings");
+    
+    await exportToExcel(selectedPostings, "manual-postings-export", {
+      columns,
+      branded: true,
+    });
+  }
+
+  async function handleStatusChange(id: string, newStatus: string) {
+    try {
+      const { error } = await supabase
+        .from("manual_postings")
+        .update({ status: newStatus })
+        .eq("id", id);
+
+      if (error) throw error;
+      fetchPostings();
+    } catch (error: any) {
+      console.error("Error updating status:", error);
+    }
+  }
+
   function resetForm() {
     setFormData({
       posting_type: "flight",
@@ -227,7 +272,37 @@ export default function ManualPostingsPage() {
       airline_code: posting.airline_code || "",
       notes: posting.notes || "",
     });
-    setShowForm(true);
+    setExpandedRowId(posting.id);
+  }
+
+  function toggleSelect(id: string) {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  }
+
+  function toggleSelectAll() {
+    if (selectedIds.size === postings.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(postings.map((p) => p.id)));
+    }
+  }
+
+  async function handleImport(data: any[]) {
+    try {
+      const { error } = await supabase.from("manual_postings").insert(data);
+      if (error) throw error;
+      fetchPostings();
+    } catch (error: any) {
+      throw error;
+    }
   }
 
   const stats = {
@@ -248,6 +323,13 @@ export default function ManualPostingsPage() {
     return matchesSearch && matchesFilter;
   });
 
+  const statusMap = {
+    draft: { label: "Draft", color: "bg-gray-100 text-gray-700" },
+    pending: { label: "Pending", color: "bg-yellow-100 text-yellow-700" },
+    verified: { label: "Verified", color: "bg-green-100 text-green-700" },
+    posted: { label: "Posted", color: "bg-blue-100 text-blue-700" },
+  };
+
   return (
     <div className="p-8">
       <div className="flex justify-between items-center mb-8">
@@ -259,17 +341,36 @@ export default function ManualPostingsPage() {
             Manually enter bookings from phone, email, or walk-in customers
           </p>
         </div>
-        <button
-          onClick={() => {
-            resetForm();
-            setEditingPosting(null);
-            setShowForm(true);
-          }}
-          className="flex items-center gap-2 px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700"
-        >
-          <Plus className="w-4 h-4" />
-          New Posting
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setShowImporter(true)}
+            className="flex items-center gap-2 px-4 py-2 border rounded-lg hover:bg-gray-50"
+          >
+            <Upload className="w-4 h-4" />
+            Import Excel
+          </button>
+          <button
+            onClick={async () => {
+              const columns = getTemplateColumns("manual_postings");
+              await exportToExcel(filtered, "manual-postings", { columns, branded: true });
+            }}
+            className="flex items-center gap-2 px-4 py-2 border rounded-lg hover:bg-gray-50"
+          >
+            <Download className="w-4 h-4" />
+            Export Excel
+          </button>
+          <button
+            onClick={() => {
+              resetForm();
+              setEditingPosting(null);
+              setExpandedRowId(postings.length > 0 ? "new" : null);
+            }}
+            className="flex items-center gap-2 px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700"
+          >
+            <Plus className="w-4 h-4" />
+            New Posting
+          </button>
+        </div>
       </div>
 
       {/* Stats */}
@@ -284,29 +385,32 @@ export default function ManualPostingsPage() {
         </div>
         <div className="bg-white p-4 rounded-xl shadow-sm border">
           <p className="text-sm text-gray-600">Pending</p>
-          <p className="text-2xl font-bold text-yellow-600">
-            {stats.pending}
-          </p>
+          <p className="text-2xl font-bold text-yellow-600">{stats.pending}</p>
         </div>
         <div className="bg-white p-4 rounded-xl shadow-sm border">
           <p className="text-sm text-gray-600">Verified</p>
-          <p className="text-2xl font-bold text-green-600">
-            {stats.verified}
-          </p>
+          <p className="text-2xl font-bold text-green-600">{stats.verified}</p>
         </div>
         <div className="bg-white p-4 rounded-xl shadow-sm border">
           <p className="text-sm text-gray-600">Total Amount</p>
-          <p className="text-2xl font-bold text-sky-600">
-            ${stats.totalAmount.toLocaleString()}
-          </p>
+          <p className="text-2xl font-bold text-sky-600">${stats.totalAmount.toLocaleString()}</p>
         </div>
         <div className="bg-white p-4 rounded-xl shadow-sm border">
           <p className="text-sm text-gray-600">Commission</p>
-          <p className="text-2xl font-bold text-green-600">
-            ${stats.totalCommission.toLocaleString()}
-          </p>
+          <p className="text-2xl font-bold text-green-600">${stats.totalCommission.toLocaleString()}</p>
         </div>
       </div>
+
+      {/* Bulk Toolbar */}
+      <BulkToolbar
+        selectedCount={selectedIds.size}
+        onSelectAll={toggleSelectAll}
+        allSelected={selectedIds.size === postings.length && postings.length > 0}
+        entityType="postings"
+        onDelete={handleBulkDelete}
+        onExport={handleBulkExport}
+        disabledActions={["email", "edit"]}
+      />
 
       {/* Filters */}
       <div className="bg-white rounded-xl shadow-sm border p-4 mb-6">
@@ -353,6 +457,15 @@ export default function ManualPostingsPage() {
           <table className="w-full">
             <thead className="bg-gray-50">
               <tr>
+                <th className="px-4 py-3">
+                  <button onClick={toggleSelectAll} className="p-1 hover:bg-gray-200 rounded">
+                    {selectedIds.size === postings.length && postings.length > 0 ? (
+                      <CheckSquare className="w-4 h-4 text-sky-600" />
+                    ) : (
+                      <Square className="w-4 h-4 text-gray-400" />
+                    )}
+                  </button>
+                </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                   Posting #
                 </th>
@@ -361,9 +474,6 @@ export default function ManualPostingsPage() {
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                   PNR / Ticket
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                  Route
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                   Travel Date
@@ -384,335 +494,323 @@ export default function ManualPostingsPage() {
             </thead>
             <tbody className="divide-y">
               {filtered.map((posting) => (
-                <tr key={posting.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 font-mono text-sm">
-                    {posting.posting_number}
-                  </td>
-                  <td className="px-6 py-4">
-                    <div>
-                      <p className="font-medium">{posting.passenger_name}</p>
-                      <p className="text-xs text-gray-500">
-                        {posting.posting_type}
-                      </p>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-sm">
-                    {posting.pnr && (
-                      <div className="font-mono">{posting.pnr}</div>
-                    )}
-                    {posting.ticket_number && (
-                      <div className="font-mono text-xs text-gray-500">
-                        {posting.ticket_number}
+                <>
+                  <tr key={posting.id} className="hover:bg-gray-50">
+                    <td className="px-4 py-4">
+                      <button
+                        onClick={() => toggleSelect(posting.id)}
+                        className="p-1 hover:bg-gray-200 rounded"
+                      >
+                        {selectedIds.has(posting.id) ? (
+                          <CheckSquare className="w-4 h-4 text-sky-600" />
+                        ) : (
+                          <Square className="w-4 h-4 text-gray-400" />
+                        )}
+                      </button>
+                    </td>
+                    <td className="px-6 py-4 font-mono text-sm">
+                      {posting.posting_number}
+                    </td>
+                    <td className="px-6 py-4">
+                      <div>
+                        <p className="font-medium">{posting.passenger_name}</p>
+                        <p className="text-xs text-gray-500">{posting.posting_type}</p>
                       </div>
-                    )}
-                  </td>
-                  <td className="px-6 py-4 text-sm">{posting.route_description}</td>
-                  <td className="px-6 py-4 text-sm">
-                    {new Date(posting.travel_date).toLocaleDateString()}
-                  </td>
-                  <td className="px-6 py-4 font-medium">
-                    ${posting.total_amount.toLocaleString()}
-                  </td>
-                  <td className="px-6 py-4 text-green-600 font-medium">
-                    ${posting.commission.toLocaleString()}
-                  </td>
-                  <td className="px-6 py-4">
-                    <span
-                      className={`px-2 py-1 text-xs rounded-full ${
-                        posting.status === "verified"
-                          ? "bg-green-100 text-green-700"
-                          : posting.status === "pending"
-                          ? "bg-yellow-100 text-yellow-700"
-                          : posting.status === "posted"
-                          ? "bg-blue-100 text-blue-700"
-                          : "bg-gray-100 text-gray-700"
-                      }`}
-                    >
-                      {posting.status === "verified" && (
-                        <CheckCircle className="w-3 h-3 inline mr-1" />
+                    </td>
+                    <td className="px-6 py-4 text-sm">
+                      {posting.pnr && (
+                        <div className="font-mono">{posting.pnr}</div>
                       )}
-                      {posting.status === "pending" && (
-                        <Clock className="w-3 h-3 inline mr-1" />
+                      {posting.ticket_number && (
+                        <div className="font-mono text-xs text-gray-500">
+                          {posting.ticket_number}
+                        </div>
                       )}
-                      {posting.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => handleEdit(posting)}
-                        className="p-1.5 text-sky-600 hover:bg-sky-50 rounded"
-                        title="Edit"
-                      >
-                        <Edit2 className="w-4 h-4" />
-                      </button>
-                      {posting.status === "pending" && (
+                    </td>
+                    <td className="px-6 py-4 text-sm">
+                      {new Date(posting.travel_date).toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-4 font-medium">
+                      ${posting.total_amount.toLocaleString()}
+                    </td>
+                    <td className="px-6 py-4 text-green-600 font-medium">
+                      ${posting.commission.toLocaleString()}
+                    </td>
+                    <td className="px-6 py-4">
+                      <EditableCell
+                        value={posting.status}
+                        type="select"
+                        options={Object.entries(statusMap).map(([key, config]) => ({
+                          label: config.label,
+                          value: key,
+                        }))}
+                        onSave={(value) => handleStatusChange(posting.id, value)}
+                      />
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex gap-2">
                         <button
-                          onClick={() => handleVerify(posting.id)}
-                          className="p-1.5 text-green-600 hover:bg-green-50 rounded"
-                          title="Verify"
+                          onClick={() => handleEdit(posting)}
+                          className="p-1.5 text-sky-600 hover:bg-sky-50 rounded"
+                          title="Edit"
                         >
-                          <CheckCircle className="w-4 h-4" />
+                          <Edit2 className="w-4 h-4" />
                         </button>
-                      )}
-                      <button
-                        onClick={() => handleDelete(posting.id)}
-                        className="p-1.5 text-red-600 hover:bg-red-50 rounded"
-                        title="Delete"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
+                        {posting.status === "pending" && (
+                          <button
+                            onClick={() => handleVerify(posting.id)}
+                            className="p-1.5 text-green-600 hover:bg-green-50 rounded"
+                            title="Verify"
+                          >
+                            <CheckCircle className="w-4 h-4" />
+                          </button>
+                        )}
+                        <button
+                          onClick={() => handleDelete(posting.id)}
+                          className="p-1.5 text-red-600 hover:bg-red-50 rounded"
+                          title="Delete"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  {expandedRowId === posting.id && (
+                    <tr>
+                      <td colSpan={9} className="p-0">
+                        <div className="bg-sky-50 border-t">
+                          <form onSubmit={handleSubmit} className="p-6">
+                            <div className="grid grid-cols-2 gap-4 mb-4">
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  Posting Type *
+                                </label>
+                                <select
+                                  value={formData.posting_type}
+                                  onChange={(e) =>
+                                    setFormData({ ...formData, posting_type: e.target.value })
+                                  }
+                                  className="w-full px-3 py-2 border rounded-lg"
+                                  required
+                                >
+                                  <option value="flight">Flight</option>
+                                  <option value="hotel">Hotel</option>
+                                  <option value="tour">Tour</option>
+                                  <option value="car">Car</option>
+                                  <option value="visa">Visa</option>
+                                  <option value="other">Other</option>
+                                </select>
+                              </div>
+
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  Airline Code
+                                </label>
+                                <input
+                                  type="text"
+                                  value={formData.airline_code}
+                                  onChange={(e) =>
+                                    setFormData({ ...formData, airline_code: e.target.value })
+                                  }
+                                  className="w-full px-3 py-2 border rounded-lg uppercase"
+                                  placeholder="e.g., AA, EK, QR"
+                                  maxLength={3}
+                                />
+                              </div>
+
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  PNR
+                                </label>
+                                <input
+                                  type="text"
+                                  value={formData.pnr}
+                                  onChange={(e) =>
+                                    setFormData({ ...formData, pnr: e.target.value })
+                                  }
+                                  className="w-full px-3 py-2 border rounded-lg uppercase"
+                                  placeholder="6-character PNR"
+                                  maxLength={10}
+                                />
+                              </div>
+
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  Ticket Number
+                                </label>
+                                <input
+                                  type="text"
+                                  value={formData.ticket_number}
+                                  onChange={(e) =>
+                                    setFormData({ ...formData, ticket_number: e.target.value })
+                                  }
+                                  className="w-full px-3 py-2 border rounded-lg"
+                                  placeholder="13-digit ticket number"
+                                  maxLength={15}
+                                />
+                              </div>
+
+                              <div className="col-span-2">
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  Passenger Name *
+                                </label>
+                                <input
+                                  type="text"
+                                  value={formData.passenger_name}
+                                  onChange={(e) =>
+                                    setFormData({ ...formData, passenger_name: e.target.value })
+                                  }
+                                  className="w-full px-3 py-2 border rounded-lg"
+                                  placeholder="Lastname/Firstname"
+                                  required
+                                />
+                              </div>
+
+                              <div className="col-span-2">
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  Route Description *
+                                </label>
+                                <input
+                                  type="text"
+                                  value={formData.route_description}
+                                  onChange={(e) =>
+                                    setFormData({ ...formData, route_description: e.target.value })
+                                  }
+                                  className="w-full px-3 py-2 border rounded-lg"
+                                  placeholder="e.g., EBB → LHR → JFK"
+                                  required
+                                />
+                              </div>
+
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  Travel Date *
+                                </label>
+                                <input
+                                  type="date"
+                                  value={formData.travel_date}
+                                  onChange={(e) =>
+                                    setFormData({ ...formData, travel_date: e.target.value })
+                                  }
+                                  className="w-full px-3 py-2 border rounded-lg"
+                                  required
+                                />
+                              </div>
+
+                              <div className="col-span-2 border-t pt-4 mt-4">
+                                <h3 className="font-semibold mb-3">Financial Details</h3>
+                              </div>
+
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  Base Fare *
+                                </label>
+                                <input
+                                  type="number"
+                                  step="0.01"
+                                  value={formData.fare}
+                                  onChange={(e) =>
+                                    setFormData({ ...formData, fare: e.target.value })
+                                  }
+                                  className="w-full px-3 py-2 border rounded-lg"
+                                  placeholder="0.00"
+                                  required
+                                />
+                              </div>
+
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  Tax *
+                                </label>
+                                <input
+                                  type="number"
+                                  step="0.01"
+                                  value={formData.tax}
+                                  onChange={(e) =>
+                                    setFormData({ ...formData, tax: e.target.value })
+                                  }
+                                  className="w-full px-3 py-2 border rounded-lg"
+                                  placeholder="0.00"
+                                  required
+                                />
+                              </div>
+
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  Commission
+                                </label>
+                                <input
+                                  type="number"
+                                  step="0.01"
+                                  value={formData.commission}
+                                  onChange={(e) =>
+                                    setFormData({ ...formData, commission: e.target.value })
+                                  }
+                                  className="w-full px-3 py-2 border rounded-lg"
+                                  placeholder="0.00"
+                                />
+                              </div>
+
+                              <div className="col-span-2">
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  Notes
+                                </label>
+                                <textarea
+                                  value={formData.notes}
+                                  onChange={(e) =>
+                                    setFormData({ ...formData, notes: e.target.value })
+                                  }
+                                  className="w-full px-3 py-2 border rounded-lg"
+                                  rows={3}
+                                  placeholder="Additional notes or special requests..."
+                                />
+                              </div>
+                            </div>
+
+                            <div className="flex gap-3 pt-4 border-t">
+                              <button
+                                type="submit"
+                                className="flex-1 px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 flex items-center justify-center gap-2"
+                              >
+                                <Save className="w-4 h-4" />
+                                {editingPosting ? "Update" : "Create"} Posting
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setExpandedRowId(null);
+                                  setEditingPosting(null);
+                                }}
+                                className="flex-1 px-4 py-2 border rounded-lg hover:bg-gray-50"
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          </form>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </>
               ))}
             </tbody>
           </table>
         </div>
       )}
 
-      {/* Form Modal */}
-      {showForm && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl w-full max-w-3xl max-h-[90vh] overflow-hidden shadow-xl">
-            <div className="px-6 py-4 border-b flex justify-between items-center">
-              <h2 className="font-semibold text-xl">
-                {editingPosting ? "Edit Posting" : "New Manual Posting"}
-              </h2>
-              <button
-                onClick={() => {
-                  setShowForm(false);
-                  setEditingPosting(null);
-                }}
-                className="p-1 hover:bg-gray-100 rounded"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            <form onSubmit={handleSubmit} className="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
-              <div className="grid grid-cols-2 gap-4 mb-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Posting Type *
-                  </label>
-                  <select
-                    value={formData.posting_type}
-                    onChange={(e) =>
-                      setFormData({ ...formData, posting_type: e.target.value })
-                    }
-                    className="w-full px-3 py-2 border rounded-lg"
-                    required
-                  >
-                    <option value="flight">Flight</option>
-                    <option value="hotel">Hotel</option>
-                    <option value="tour">Tour</option>
-                    <option value="car">Car</option>
-                    <option value="visa">Visa</option>
-                    <option value="other">Other</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Airline Code
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.airline_code}
-                    onChange={(e) =>
-                      setFormData({ ...formData, airline_code: e.target.value })
-                    }
-                    className="w-full px-3 py-2 border rounded-lg uppercase"
-                    placeholder="e.g., AA, EK, QR"
-                    maxLength={3}
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    PNR
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.pnr}
-                    onChange={(e) =>
-                      setFormData({ ...formData, pnr: e.target.value })
-                    }
-                    className="w-full px-3 py-2 border rounded-lg uppercase"
-                    placeholder="6-character PNR"
-                    maxLength={10}
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Ticket Number
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.ticket_number}
-                    onChange={(e) =>
-                      setFormData({ ...formData, ticket_number: e.target.value })
-                    }
-                    className="w-full px-3 py-2 border rounded-lg"
-                    placeholder="13-digit ticket number"
-                    maxLength={15}
-                  />
-                </div>
-
-                <div className="col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Passenger Name *
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.passenger_name}
-                    onChange={(e) =>
-                      setFormData({ ...formData, passenger_name: e.target.value })
-                    }
-                    className="w-full px-3 py-2 border rounded-lg"
-                    placeholder="Lastname/Firstname"
-                    required
-                  />
-                </div>
-
-                <div className="col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Route Description *
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.route_description}
-                    onChange={(e) =>
-                      setFormData({ ...formData, route_description: e.target.value })
-                    }
-                    className="w-full px-3 py-2 border rounded-lg"
-                    placeholder="e.g., EBB → LHR → JFK"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Travel Date *
-                  </label>
-                  <input
-                    type="date"
-                    value={formData.travel_date}
-                    onChange={(e) =>
-                      setFormData({ ...formData, travel_date: e.target.value })
-                    }
-                    className="w-full px-3 py-2 border rounded-lg"
-                    required
-                  />
-                </div>
-
-                <div className="col-span-2 border-t pt-4 mt-4">
-                  <h3 className="font-semibold mb-3">Financial Details</h3>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Base Fare *
-                  </label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={formData.fare}
-                    onChange={(e) =>
-                      setFormData({ ...formData, fare: e.target.value })
-                    }
-                    className="w-full px-3 py-2 border rounded-lg"
-                    placeholder="0.00"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Tax *
-                  </label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={formData.tax}
-                    onChange={(e) =>
-                      setFormData({ ...formData, tax: e.target.value })
-                    }
-                    className="w-full px-3 py-2 border rounded-lg"
-                    placeholder="0.00"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Commission
-                  </label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={formData.commission}
-                    onChange={(e) =>
-                      setFormData({ ...formData, commission: e.target.value })
-                    }
-                    className="w-full px-3 py-2 border rounded-lg"
-                    placeholder="0.00"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Total (Fare + Tax)
-                  </label>
-                  <input
-                    type="text"
-                    value={(
-                      parseFloat(formData.fare) || 0
-                    ).toLocaleString()}
-                    className="w-full px-3 py-2 border rounded-lg bg-gray-50"
-                    readOnly
-                  />
-                </div>
-
-                <div className="col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Notes
-                  </label>
-                  <textarea
-                    value={formData.notes}
-                    onChange={(e) =>
-                      setFormData({ ...formData, notes: e.target.value })
-                    }
-                    className="w-full px-3 py-2 border rounded-lg"
-                    rows={3}
-                    placeholder="Additional notes or special requests..."
-                  />
-                </div>
-              </div>
-
-              <div className="flex gap-3 pt-4 border-t">
-                <button
-                  type="submit"
-                  className="flex-1 px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 flex items-center justify-center gap-2"
-                >
-                  <Save className="w-4 h-4" />
-                  {editingPosting ? "Update" : "Create"} Posting
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowForm(false);
-                    setEditingPosting(null);
-                  }}
-                  className="flex-1 px-4 py-2 border rounded-lg hover:bg-gray-50"
-                >
-                  Cancel
-                </button>
-              </div>
-            </form>
-          </div>
+      {showAuditTrail && (
+        <div className="mt-6">
+          <AuditTrailInline recordId={showAuditTrail} tableName="manual_postings" />
         </div>
+      )}
+
+      {showImporter && (
+        <ExcelImporter
+          entityType="manual_postings"
+          onImport={handleImport}
+          validationRules={getValidationRules("manual_postings")}
+          onClose={() => setShowImporter(false)}
+        />
       )}
     </div>
   );
