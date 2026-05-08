@@ -1,475 +1,290 @@
-'use client'
+"use client";
 
-import { useEffect, useState } from 'react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-import { Card } from '@vertravels/ui'
-import { Button } from '@vertravels/ui'
-import { Input } from '@vertravels/ui'
-import { Badge } from '@vertravels/ui'
-import { Avatar, AvatarFallback, AvatarImage } from '@vertravels/ui'
+import { useState, useEffect } from "react";
+import { createClient } from "@/lib/supabase/client";
 import {
   Users,
+  Plus,
   Search,
-  Filter,
-  Edit,
-  Ban,
-  CheckCircle,
-  Mail,
-  Calendar,
-  DollarSign,
-  MoreVertical,
+  Edit2,
+  Trash2,
   Shield,
-  UserCheck,
-  RefreshCcw
-} from 'lucide-react'
+  Building2,
+  Mail,
+  Phone,
+  RefreshCw,
+  CheckCircle,
+  XCircle,
+  Clock,
+} from "lucide-react";
 
 interface User {
-  id: string
-  email: string
-  full_name: string
-  phone?: string
-  nationality?: string
-  date_of_birth?: string
-  gender?: string
-  avatar_url?: string
-  role: 'user' | 'admin' | 'staff'
-  status: 'active' | 'banned' | 'suspended'
-  created_at: string
-  last_login?: string
-  total_bookings: number
-  total_spent: number
+  id: string;
+  email: string;
+  fname?: string;
+  lname?: string;
+  phone?: string;
+  status: "active" | "suspended" | "banned";
+  role_name?: string;
+  role_slug?: string;
+  agency_name?: string;
+  department?: string;
+  employee_id?: string;
+  email_verified: boolean;
+  created_at: string;
+  last_login?: string;
 }
 
-export default function AdminUsersPage() {
-  const supabase = createClientComponentClient()
-  const [users, setUsers] = useState<User[]>([])
-  const [loading, setLoading] = useState(true)
-  const [searchQuery, setSearchQuery] = useState('')
-  const [filterRole, setFilterRole] = useState<string>('all')
-  const [filterStatus, setFilterStatus] = useState<string>('all')
-  const [selectedUser, setSelectedUser] = useState<User | null>(null)
-  const [showEditModal, setShowEditModal] = useState(false)
+interface Role {
+  id: number;
+  role_name: string;
+  role_slug: string;
+}
+
+interface Agency {
+  id: string;
+  agency_name: string;
+  agency_code: string;
+}
+
+export default function UsersPage() {
+  const [users, setUsers] = useState<User[]>([]);
+  const [roles, setRoles] = useState<Role[]>([]);
+  const [agencies, setAgencies] = useState<Agency[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [expandedUserId, setExpandedUserId] = useState<string | null>(null);
+  const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [search, setSearch] = useState("");
+  const [filterStatus, setFilterStatus] = useState("all");
+  const [filterRole, setFilterRole] = useState("all");
+  const [showCreateModal, setShowCreateModal] = useState(false);
+
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    fname: "",
+    lname: "",
+    phone: "",
+    role_id: "",
+    agency_id: "",
+    department: "",
+    employee_id: "",
+    status: "active",
+  });
+
+  const supabase = createClient();
 
   useEffect(() => {
-    fetchUsers()
-  }, [])
+    fetchUsers();
+    fetchRoles();
+    fetchAgencies();
+  }, []);
 
   async function fetchUsers() {
     try {
-      setLoading(true)
+      setLoading(true);
+      const { data: authData, error: authError } = await supabase
+        .from("auth_users")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (authError) throw authError;
 
       const { data: profiles } = await supabase
-        .from('profiles')
-        .select(`
-          *,
-          auth_users (
-            id,
-            email,
-            role,
-            status,
-            last_sign_in_at,
-            created_at
-          )
-        `)
-        .order('created_at', { ascending: false })
-        .limit(100)
+        .from("user_profiles")
+        .select("user_id, fname, lname, phone, agency_id, department, employee_id");
 
-      // Get booking counts for each user
-      const usersWithStats = await Promise.all(
-        (profiles || []).map(async (profile: any) => {
-          const { count: bookingCount } = await supabase
-            .from('bookings')
-            .select('*', { count: 'exact', head: true })
-            .eq('user_id', profile.id)
+      const { data: roleAssignments } = await supabase
+        .from("user_role_assignments")
+        .select("user_id, role_id")
+        .join("user_roles", "role_id=id");
 
-          const { data: bookings } = await supabase
-            .from('bookings')
-            .select('total_amount')
-            .eq('user_id', profile.id)
-            .eq('payment_status', 'paid')
+      const { data: agenciesData } = await supabase.from("agencies").select("id, agency_name");
 
-          const totalSpent = bookings?.reduce((sum, b) => sum + (b.total_amount || 0), 0) || 0
+      const usersWithDetails = authData?.map((user) => {
+        const profile = profiles?.find((p) => p.user_id === user.id);
+        const role = roleAssignments?.find((r) => r.user_id === user.id);
+        const agency = agenciesData?.find((a) => a.id === profile?.agency_id);
 
-          return {
-            id: profile.id,
-            email: profile.auth_users?.email || profile.email,
-            full_name: profile.full_name,
-            phone: profile.phone,
-            nationality: profile.nationality,
-            date_of_birth: profile.date_of_birth,
-            gender: profile.gender,
-            avatar_url: profile.avatar_url,
-            role: profile.auth_users?.role || 'user',
-            status: profile.auth_users?.status || 'active',
-            created_at: profile.auth_users?.created_at || profile.created_at,
-            last_login: profile.auth_users?.last_sign_in_at,
-            total_bookings: bookingCount || 0,
-            total_spent,
-          } as User
-        })
-      )
+        return {
+          id: user.id,
+          email: user.email,
+          fname: profile?.fname,
+          lname: profile?.lname,
+          phone: profile?.phone || user.phone,
+          status: user.status,
+          role_name: role?.user_roles?.role_name,
+          role_slug: role?.user_roles?.role_slug,
+          agency_name: agency?.agency_name,
+          department: profile?.department,
+          employee_id: profile?.employee_id,
+          email_verified: user.email_verified,
+          created_at: user.created_at,
+          last_login: user.last_login,
+        };
+      }) || [];
 
-      setUsers(usersWithStats)
-    } catch (error) {
-      console.error('Error fetching users:', error)
+      setUsers(usersWithDetails);
+    } catch (error: any) {
+      console.error("Error fetching users:", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
-  async function updateUserStatus(userId: string, status: 'active' | 'banned' | 'suspended') {
+  async function fetchRoles() {
+    try {
+      const { data, error } = await supabase
+        .from("user_roles")
+        .select("*")
+        .order("role_name");
+
+      if (!error && data) setRoles(data);
+    } catch (error) {
+      console.error("Error fetching roles:", error);
+    }
+  }
+
+  async function fetchAgencies() {
+    try {
+      const { data, error } = await supabase
+        .from("agencies")
+        .select("*")
+        .eq("status", "active")
+        .order("agency_name");
+
+      if (!error && data) setAgencies(data);
+    } catch (error) {
+      console.error("Error fetching agencies:", error);
+    }
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+
+    try {
+      if (editingUser) {
+        const { error } = await supabase
+          .from("auth_users")
+          .update({ status: formData.status, updated_at: new Date().toISOString() })
+          .eq("id", editingUser.id);
+
+        if (error) throw error;
+
+        await supabase
+          .from("user_profiles")
+          .upsert({
+            user_id: editingUser.id,
+            fname: formData.fname,
+            lname: formData.lname,
+            phone: formData.phone,
+            department: formData.department,
+            employee_id: formData.employee_id,
+            agency_id: formData.agency_id || null,
+          })
+          .eq("user_id", editingUser.id);
+
+        if (formData.role_id) {
+          await supabase
+            .from("user_role_assignments")
+            .upsert({ user_id: editingUser.id, role_id: parseInt(formData.role_id) });
+        }
+      }
+      setShowCreateModal(false);
+      setEditingUser(null);
+      resetForm();
+      fetchUsers();
+    } catch (error: any) {
+      console.error("Error saving user:", error);
+      alert("Failed to save: " + error.message);
+    }
+  }
+
+  async function handleDelete(id: string) {
+    if (!confirm("Are you sure you want to delete this user?")) return;
+    try {
+      const { error } = await supabase.from("auth_users").delete().eq("id", id);
+      if (error) throw error;
+      fetchUsers();
+    } catch (error: any) {
+      console.error("Error deleting user:", error);
+    }
+  }
+
+  async function handleToggleEmailVerified(id: string, current: boolean) {
     try {
       const { error } = await supabase
-        .from('auth_users')
-        .update({ status })
-        .eq('id', userId)
-
-      if (error) throw error
-
-      setUsers(users.map(u => 
-        u.id === userId ? { ...u, status } : u
-      ))
-
-      alert(`User ${status} successfully`)
-    } catch (error) {
-      console.error('Error updating user status:', error)
-      alert('Failed to update user status')
+        .from("auth_users")
+        .update({ email_verified: !current })
+        .eq("id", id);
+      if (error) throw error;
+      fetchUsers();
+    } catch (error: any) {
+      console.error("Error updating email verification:", error);
     }
   }
 
-  async function updateUserRole(userId: string, role: 'user' | 'admin' | 'staff') {
+  async function handleSuspendUser(id: string, currentStatus: string) {
     try {
+      const newStatus = currentStatus === "active" ? "suspended" : "active";
       const { error } = await supabase
-        .from('auth_users')
-        .update({ role })
-        .eq('id', userId)
-
-      if (error) throw error
-
-      setUsers(users.map(u => 
-        u.id === userId ? { ...u, role } : u
-      ))
-
-      alert(`User role updated to ${role}`)
-    } catch (error) {
-      console.error('Error updating user role:', error)
-      alert('Failed to update user role')
+        .from("auth_users")
+        .update({ status: newStatus })
+        .eq("id", id);
+      if (error) throw error;
+      fetchUsers();
+    } catch (error: any) {
+      console.error("Error updating user status:", error);
     }
   }
 
-  function filteredUsers() {
-    return users.filter(user => {
-      const matchesSearch = searchQuery === '' || 
-        user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        user.full_name.toLowerCase().includes(searchQuery.toLowerCase())
-
-      const matchesRole = filterRole === 'all' || user.role === filterRole
-      const matchesStatus = filterStatus === 'all' || user.status === filterStatus
-
-      return matchesSearch && matchesRole && matchesStatus
-    })
+  function resetForm() {
+    setFormData({
+      email: "",
+      password: "",
+      fname: "",
+      lname: "",
+      phone: "",
+      role_id: "",
+      agency_id: "",
+      department: "",
+      employee_id: "",
+      status: "active",
+    });
   }
 
-  function formatDate(dateString: string) {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    })
+  function handleEdit(user: User) {
+    setEditingUser(user);
+    setFormData({
+      email: user.email,
+      password: "",
+      fname: user.fname || "",
+      lname: user.lname || "",
+      phone: user.phone || "",
+      role_id: user.role_slug ? (roles.find((r) => r.role_slug === user.role_slug)?.id.toString() || "") : "",
+      agency_id: user.agency_name ? (agencies.find((a) => a.agency_name === user.agency_name)?.id || "") : "",
+      department: user.department || "",
+      employee_id: user.employee_id || "",
+      status: user.status,
+    });
+    setExpandedUserId(user.id);
   }
 
-  const roleConfig: Record<string, { label: string; variant: 'default' | 'success' | 'warning' }> = {
-    admin: { label: 'Admin', variant: 'success' },
-    staff: { label: 'Staff', variant: 'warning' },
-    user: { label: 'User', variant: 'default' }
-  }
+  const filtered = users.filter((user) => {
+    const matchesSearch =
+      user.email.toLowerCase().includes(search.toLowerCase()) ||
+      user.fname?.toLowerCase().includes(search.toLowerCase()) ||
+      user.lname?.toLowerCase().includes(search.toLowerCase());
+    const matchesStatus = filterStatus === "all" || user.status === filterStatus;
+    const matchesRole = filterRole === "all" || user.role_slug === filterRole;
+    return matchesSearch && matchesStatus && matchesRole;
+  });
 
-  const statusConfig: Record<string, { label: string; variant: 'success' | 'error' | 'warning' }> = {
-    active: { label: 'Active', variant: 'success' },
-    banned: { label: 'Banned', variant: 'error' },
-    suspended: { label: 'Suspended', variant: 'warning' }
-  }
+  const stats = {
+    total: users.length,
+    active: users.filter((u) => u.status === "active").length,
+    suspended: users.filter((u) => u.status === "suspended").length,
+    verified: users.filter((u) => u.email_verified).length,
+  };
 
-  return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">User Management</h1>
-          <p className="text-gray-600 mt-1">Manage customer accounts and permissions</p>
-        </div>
-        <Button onClick={fetchUsers} disabled={loading} variant="outline">
-          <RefreshCcw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-          Refresh
-        </Button>
-      </div>
-
-      {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="p-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-sky-100 rounded-lg flex items-center justify-center">
-              <Users className="w-5 h-5 text-sky-600" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Total Users</p>
-              <p className="text-2xl font-bold">{users.length}</p>
-            </div>
-          </div>
-        </Card>
-        <Card className="p-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-              <UserCheck className="w-5 h-5 text-green-600" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Active</p>
-              <p className="text-2xl font-bold text-green-600">
-                {users.filter(u => u.status === 'active').length}
-              </p>
-            </div>
-          </div>
-        </Card>
-        <Card className="p-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-              <Shield className="w-5 h-5 text-purple-600" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Admins</p>
-              <p className="text-2xl font-bold text-purple-600">
-                {users.filter(u => u.role === 'admin').length}
-              </p>
-            </div>
-          </div>
-        </Card>
-        <Card className="p-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
-              <DollarSign className="w-5 h-5 text-orange-600" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Total Revenue</p>
-              <p className="text-2xl font-bold text-orange-600">
-                ${users.reduce((sum, u) => sum + u.total_spent, 0).toLocaleString()}
-              </p>
-            </div>
-          </div>
-        </Card>
-      </div>
-
-      {/* Filters */}
-      <Card className="p-4">
-        <div className="flex flex-wrap gap-4">
-          <div className="flex-1 min-w-[250px]">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search by name or email..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500"
-              />
-            </div>
-          </div>
-          <div className="w-[150px]">
-            <select
-              value={filterRole}
-              onChange={(e) => setFilterRole(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500"
-            >
-              <option value="all">All Roles</option>
-              <option value="admin">Admin</option>
-              <option value="staff">Staff</option>
-              <option value="user">User</option>
-            </select>
-          </div>
-          <div className="w-[150px]">
-            <select
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500"
-            >
-              <option value="all">All Status</option>
-              <option value="active">Active</option>
-              <option value="suspended">Suspended</option>
-              <option value="banned">Banned</option>
-            </select>
-          </div>
-        </div>
-      </Card>
-
-      {/* Users Table */}
-      <Card className="overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50 border-b">
-              <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">User</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Role</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Bookings</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total Spent</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Joined</th>
-                <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {loading ? (
-                <tr>
-                  <td colSpan={7} className="px-4 py-8 text-center">
-                    <div className="flex justify-center">
-                      <div className="w-6 h-6 border-4 border-sky-600 border-t-transparent rounded-full animate-spin"></div>
-                    </div>
-                  </td>
-                </tr>
-              ) : filteredUsers().length === 0 ? (
-                <tr>
-                  <td colSpan={7} className="px-4 py-8 text-center text-gray-500">
-                    No users found
-                  </td>
-                </tr>
-              ) : (
-                filteredUsers().map((user) => (
-                  <tr key={user.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-3">
-                        <Avatar>
-                          <AvatarImage src={user.avatar_url} />
-                          <AvatarFallback>
-                            {user.full_name?.charAt(0) || user.email?.charAt(0) || 'U'}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <div className="font-medium text-gray-900">{user.full_name || 'N/A'}</div>
-                          <div className="text-sm text-gray-500">{user.email}</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3">
-                      <Badge variant={roleConfig[user.role]?.variant || 'default'}>
-                        {roleConfig[user.role]?.label || user.role}
-                      </Badge>
-                    </td>
-                    <td className="px-4 py-3">
-                      <Badge variant={statusConfig[user.status]?.variant || 'success'}>
-                        {statusConfig[user.status]?.label || user.status}
-                      </Badge>
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="text-sm text-gray-900">{user.total_bookings} bookings</div>
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="font-medium text-gray-900">
-                        ${user.total_spent.toLocaleString()}
-                      </div>
-                    </td>
-                    <td className="px-4 py-3 text-sm text-gray-600">
-                      {formatDate(user.created_at)}
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center justify-end gap-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => {
-                            setSelectedUser(user)
-                            setShowEditModal(true)
-                          }}
-                        >
-                          <Edit className="w-4 h-4" />
-                        </Button>
-                        <select
-                          value={user.status}
-                          onChange={(e) => updateUserStatus(user.id, e.target.value as any)}
-                          className="text-xs border border-gray-300 rounded px-2 py-1"
-                        >
-                          <option value="active">Active</option>
-                          <option value="suspended">Suspended</option>
-                          <option value="banned">Banned</option>
-                        </select>
-                        <select
-                          value={user.role}
-                          onChange={(e) => updateUserRole(user.id, e.target.value as any)}
-                          className="text-xs border border-gray-300 rounded px-2 py-1"
-                        >
-                          <option value="user">User</option>
-                          <option value="staff">Staff</option>
-                          <option value="admin">Admin</option>
-                        </select>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      </Card>
-
-      {/* Edit User Modal */}
-      {showEditModal && selectedUser && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <Card className="p-6 w-full max-w-md">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-semibold">Edit User</h2>
-              <Button variant="ghost" size="sm" onClick={() => setShowEditModal(false)}>
-                ✕
-              </Button>
-            </div>
-            <div className="space-y-4">
-              <div>
-                <Label>Full Name</Label>
-                <Input defaultValue={selectedUser.full_name || ''} />
-              </div>
-              <div>
-                <Label>Email</Label>
-                <Input defaultValue={selectedUser.email} disabled />
-              </div>
-              <div>
-                <Label>Phone</Label>
-                <Input defaultValue={selectedUser.phone || ''} />
-              </div>
-              <div>
-                <Label>Nationality</Label>
-                <Input defaultValue={selectedUser.nationality || ''} />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label>Role</Label>
-                  <select
-                    defaultValue={selectedUser.role}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                  >
-                    <option value="user">User</option>
-                    <option value="staff">Staff</option>
-                    <option value="admin">Admin</option>
-                  </select>
-                </div>
-                <div>
-                  <Label>Status</Label>
-                  <select
-                    defaultValue={selectedUser.status}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                  >
-                    <option value="active">Active</option>
-                    <option value="suspended">Suspended</option>
-                    <option value="banned">Banned</option>
-                  </select>
-                </div>
-              </div>
-              <div className="flex gap-2 pt-4">
-                <Button className="flex-1" onClick={() => setShowEditModal(false)}>
-                  Save Changes
-                </Button>
-                <Button variant="outline" className="flex-1" onClick={() => setShowEditModal(false)}>
-                  Cancel
-                </Button>
-              </div>
-            </div>
-          </Card>
-        </div>
-      )}
-    </div>
-  )
-}
+  const roleColors: Record<string, st
