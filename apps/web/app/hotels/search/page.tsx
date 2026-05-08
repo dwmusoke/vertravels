@@ -1,122 +1,164 @@
 "use client";
 
+import { useState, Suspense } from "react";
 import Link from "next/link";
-import { Suspense } from "react";
 import { SearchResults } from "@/components/hotels/search-results";
 import { SearchFilters } from "@/components/hotels/search-filters";
-import { Building2, ArrowLeft, Home, Plane, MapPin, Car } from "lucide-react";
+import { MobileFiltersDrawer } from "@/components/hotels/mobile-filters-drawer";
+import {
+  Building2,
+  Plane,
+  MapPin,
+  Car,
+  ChevronDown,
+  Search,
+  ArrowRightLeft,
+  Calendar,
+  Users,
+  Hotel,
+} from "lucide-react";
+import { Button } from "@/components/ui";
 
-export default function HotelsSearchPage() {
+function SearchPageContent() {
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Navigation */}
-      <header className="bg-white shadow-sm sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
-          <Link href="/" className="flex items-center gap-2">
-            <Building2 className="w-8 h-8 text-emerald-600" />
-            <span className="text-xl font-bold text-gray-900">VerTravels</span>
+    <div className="min-h-screen bg-[#F5F7FB]">
+      {/* Sticky Top Navigation */}
+      <header className="bg-white border-b border-slate-200 sticky top-0 z-50 h-[72px]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-full flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-2.5 flex-shrink-0">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-600 to-teal-500 flex items-center justify-center shadow-sm">
+              <Hotel className="w-5 h-5 text-white" />
+            </div>
+            <span className="text-lg font-bold text-slate-900">VerTravels</span>
           </Link>
-          <nav className="hidden md:flex gap-4">
-            <Link href="/flights" className="text-gray-600 hover:text-sky-600">
+
+          <nav className="hidden md:flex items-center gap-1">
+            <Link
+              href="/flights"
+              className="px-4 py-2 rounded-lg text-sm font-medium text-slate-500 hover:text-slate-700 hover:bg-slate-50 transition-colors"
+            >
               Flights
             </Link>
-            <Link href="/hotels" className="text-emerald-600 font-medium">
+            <Link
+              href="/hotels"
+              className="px-4 py-2 rounded-lg text-sm font-semibold text-emerald-600 bg-emerald-50"
+            >
               Hotels
             </Link>
-            <Link href="/tours" className="text-gray-600 hover:text-amber-600">
+            <Link
+              href="/tours"
+              className="px-4 py-2 rounded-lg text-sm font-medium text-slate-500 hover:text-slate-700 hover:bg-slate-50 transition-colors"
+            >
               Tours
             </Link>
-            <Link href="/cars" className="text-gray-600 hover:text-purple-600">
+            <Link
+              href="/cars"
+              className="px-4 py-2 rounded-lg text-sm font-medium text-slate-500 hover:text-slate-700 hover:bg-slate-50 transition-colors"
+            >
               Cars
             </Link>
           </nav>
-          <Link href="/login" className="text-gray-600">
-            Sign In
-          </Link>
+
+          <div className="flex items-center gap-2">
+            <button className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 transition-colors">
+              USD
+              <ChevronDown className="w-3 h-3" />
+            </button>
+            <Link
+              href="/login"
+              className="h-9 px-4 rounded-xl bg-slate-900 text-white text-sm font-semibold hover:bg-slate-800 transition-colors flex items-center"
+            >
+              Sign In
+            </Link>
+          </div>
         </div>
       </header>
 
-      {/* Hero Section */}
-      <div className="relative bg-gradient-to-br from-emerald-700 via-teal-600 to-sky-700 py-12 overflow-hidden">
-        <div className="absolute inset-0 opacity-20">
-          <img
-            src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1200&q=80"
-            alt="Hotel background"
-            className="w-full h-full object-cover"
-            onError={(e) => {
-              const target = e.target as HTMLImageElement;
-              target.src = "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=1200&q=80";
-            }}
-          />
-        </div>
-        <div className="max-w-7xl mx-auto px-4 relative z-10">
-          <Link
-            href="/hotels"
-            className="inline-flex items-center gap-2 text-white/80 hover:text-white mb-4"
-          >
-            <ArrowLeft className="w-4 h-4" /> Back to Search
-          </Link>
-          <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
-            Hotel Search Results
-          </h1>
-          <p className="text-white/80 text-lg">
-            Find the perfect accommodation for your stay
-          </p>
-        </div>
-      </div>
-
-      {/* Quick Links */}
-      <div className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 py-2 flex justify-center gap-6">
-          <Link
-            href="/flights"
-            className="flex items-center gap-2 text-sky-600 hover:text-sky-700 font-medium"
-          >
-            <Plane className="w-4 h-4" /> Book Flights
-          </Link>
-          <Link
-            href="/hotels"
-            className="flex items-center gap-2 text-emerald-600 hover:text-emerald-700 font-medium"
-          >
-            <Building2 className="w-4 h-4" /> Find Hotels
-          </Link>
-          <Link
-            href="/tours"
-            className="flex items-center gap-2 text-amber-600 hover:text-amber-700 font-medium"
-          >
-            <MapPin className="w-4 h-4" /> Tours & Safaris
-          </Link>
-          <Link
-            href="/cars"
-            className="flex items-center gap-2 text-purple-600 hover:text-purple-700 font-medium"
-          >
-            <Car className="w-4 h-4" /> Rent a Car
-          </Link>
-          <Link
-            href="/"
-            className="flex items-center gap-2 text-gray-600 hover:text-gray-700 font-medium"
-          >
-            <Home className="w-4 h-4" /> Back to Home
-          </Link>
+      {/* Compact Search Modification Bar */}
+      <div className="sticky top-[72px] z-40 bg-[#F5F7FB] py-3">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-md shadow-slate-200/50 p-3 flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-1 flex-wrap">
+              <div className="flex items-center gap-2 bg-emerald-50 rounded-xl px-3.5 py-2 flex-1 min-w-[160px]">
+                <MapPin className="w-4 h-4 text-emerald-500" />
+                <span className="text-sm font-semibold text-slate-900">Paris</span>
+              </div>
+              <div className="flex items-center gap-2 bg-slate-50 rounded-xl px-3.5 py-2 min-w-[120px]">
+                <Calendar className="w-4 h-4 text-emerald-500" />
+                <span className="text-sm font-medium text-slate-700">May 8</span>
+              </div>
+              <div className="flex items-center gap-2 bg-slate-50 rounded-xl px-3.5 py-2 min-w-[120px]">
+                <Calendar className="w-4 h-4 text-emerald-500" />
+                <span className="text-sm font-medium text-slate-700">May 11</span>
+              </div>
+              <div className="flex items-center gap-2 bg-slate-50 rounded-xl px-3.5 py-2 min-w-[100px]">
+                <Users className="w-4 h-4 text-emerald-500" />
+                <span className="text-sm font-medium text-slate-700">2 Guests</span>
+              </div>
+            </div>
+            <Button className="rounded-xl bg-emerald-600 hover:bg-emerald-700 h-10 px-6 shadow-sm flex-shrink-0">
+              <Search className="w-4 h-4 mr-1.5" />
+              Search
+            </Button>
+          </div>
         </div>
       </div>
 
-      {/* Search Results */}
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          <aside className="lg:col-span-1">
-            <Suspense fallback={<div>Loading filters...</div>}>
-              <SearchFilters />
-            </Suspense>
+      {/* Main Layout */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 pb-12">
+        <div className="flex gap-6">
+          <aside className="hidden lg:block w-[300px] flex-shrink-0">
+            <div className="sticky top-[160px] space-y-4">
+              <Suspense fallback={<div className="h-96 bg-white rounded-2xl animate-pulse" />}>
+                <SearchFilters />
+              </Suspense>
+            </div>
           </aside>
 
-          <main className="lg:col-span-3 space-y-4">
-            <Suspense fallback={<div>Loading hotels...</div>}>
-              <SearchResults />
+          <main className="flex-1 min-w-0 space-y-4">
+            <Suspense
+              fallback={
+                <div className="space-y-4">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="bg-white rounded-2xl border border-slate-200 p-6 animate-pulse">
+                      <div className="h-5 w-48 bg-slate-200 rounded mb-4" />
+                      <div className="h-16 bg-slate-100 rounded-lg" />
+                    </div>
+                  ))}
+                </div>
+              }
+            >
+              <SearchResults onOpenFilters={() => setMobileFiltersOpen(true)} />
             </Suspense>
           </main>
         </div>
       </div>
+
+      <MobileFiltersDrawer
+        open={mobileFiltersOpen}
+        onClose={() => setMobileFiltersOpen(false)}
+      />
     </div>
+  );
+}
+
+export default function HotelsSearchPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-[#F5F7FB] flex items-center justify-center">
+          <div className="text-center">
+            <div className="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center mx-auto mb-3 animate-pulse">
+              <Building2 className="w-6 h-6 text-emerald-500" />
+            </div>
+            <p className="text-slate-500 text-sm">Loading hotels...</p>
+          </div>
+        </div>
+      }
+    >
+      <SearchPageContent />
+    </Suspense>
   );
 }

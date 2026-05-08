@@ -36,6 +36,7 @@ import {
   Globe,
   ChevronRight,
 } from "lucide-react";
+import { HotelCarousel } from "@/components/hotels/hotel-carousel";
 
 const featuredFlights = [
   {
@@ -524,62 +525,18 @@ export default function HomePage() {
       {/* Featured Hotels */}
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="flex justify-between items-end mb-10">
+          <div className="flex justify-between items-end mb-8">
             <div>
               <span className="text-xs font-semibold text-emerald-600 uppercase tracking-widest">Stay</span>
-              <h2 className="text-3xl font-bold text-gray-900 mt-1">Featured Hotels</h2>
-              <p className="text-gray-500 mt-1">Handpicked properties for your comfort</p>
+              <h2 className="text-3xl font-bold text-slate-900 mt-1">Featured Hotels</h2>
+              <p className="text-slate-500 mt-1">Handpicked properties for your comfort</p>
             </div>
             <Link href="/hotels" className="hidden md:flex items-center gap-2 text-emerald-600 hover:text-emerald-700 font-semibold text-sm">
               View All <ChevronRight className="w-4 h-4" />
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-            {featuredHotels.map((hotel) => (
-              <Link
-                key={hotel.id}
-                href="/hotels/search"
-                className="group bg-white rounded-2xl border border-gray-100 hover:border-emerald-200 hover:shadow-xl transition-all duration-300 overflow-hidden"
-              >
-                <div className="relative h-48 overflow-hidden">
-                  <img
-                    src={hotel.image}
-                    alt={hotel.name}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                    onError={(e) => { (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&q=80"; }}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
-                  {hotel.tag && (
-                    <span className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm text-emerald-700 text-xs font-bold px-3 py-1 rounded-full">
-                      {hotel.tag}
-                    </span>
-                  )}
-                  <div className="absolute bottom-3 left-3 flex items-center gap-1 bg-black/50 backdrop-blur-sm text-white px-2 py-1 rounded-lg text-xs">
-                    <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                    <span>{hotel.rating}</span>
-                    <span className="opacity-70">({hotel.reviews})</span>
-                  </div>
-                </div>
-                <div className="p-5">
-                  <h3 className="font-bold text-gray-900 group-hover:text-emerald-600 transition">{hotel.name}</h3>
-                  <p className="text-sm text-gray-500 mb-3 flex items-center gap-1">
-                    <MapPin className="w-3 h-3" /> {hotel.location}
-                  </p>
-                  <div className="flex gap-1.5 mb-4">
-                    {hotel.amenities.map((a, i) => (
-                      <span key={i} className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-md">{a}</span>
-                    ))}
-                  </div>
-                  <div className="flex items-baseline gap-2">
-                    <p className="text-2xl font-bold text-emerald-600">${hotel.price}</p>
-                    <p className="text-sm text-gray-400 line-through">${hotel.originalPrice}</p>
-                    <p className="text-xs text-gray-400">/night</p>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
+          <HotelCarousel hotels={featuredHotels} />
         </div>
       </section>
 
