@@ -2,6 +2,7 @@
   "name": "vertravels",
   "version": "1.0.0",
   "private": true,
+  "packageManager": "npm@10.2.4",
   "description": "VerTravels - Modern Travel Booking Platform",
   "workspaces": [
     "apps/*",

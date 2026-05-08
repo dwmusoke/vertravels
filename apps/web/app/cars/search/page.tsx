@@ -52,10 +52,6 @@ const mockCars = [
     tag: null,
   },
 ];
-    image: "🚙",
-    tag: "Best Seller",
-  },
-];
 
 export default function CarsSearchPage() {
   return (

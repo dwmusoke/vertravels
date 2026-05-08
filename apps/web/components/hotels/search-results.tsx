@@ -21,6 +21,7 @@ const mockHotels = [
     currency: "USD",
     amenities: ["wifi", "breakfast", "parking", "gym"],
     available: true,
+    tag: "Top Pick",
   },
   {
     id: "HTL002",
@@ -36,6 +37,7 @@ const mockHotels = [
     currency: "USD",
     amenities: ["wifi", "breakfast"],
     available: true,
+    tag: null,
   },
   {
     id: "HTL003",
@@ -51,6 +53,7 @@ const mockHotels = [
     currency: "USD",
     amenities: ["wifi", "gym", "breakfast"],
     available: true,
+    tag: "Best Value",
   },
 ];
 
