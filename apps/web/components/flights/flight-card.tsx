@@ -42,19 +42,19 @@ export function FlightCard({ flight, onSelect, onDetails }: FlightCardProps) {
           {/* Airline Info */}
           <div className="lg:col-span-2 flex items-center gap-3">
             <div className="h-14 w-14 rounded-lg bg-gradient-to-br from-sky-100 to-blue-50 flex items-center justify-center overflow-hidden border border-sky-200 shadow-sm flex-shrink-0">
-              <img
-                src={`https://content.airhex.com/airline-logos/${flight.airlineCode}_square.png`}
-                alt={flight.airline}
-                className="h-12 w-12 object-contain"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.style.display = 'none';
-                  const parent = target.parentElement;
-                  if (parent) {
-                    parent.innerHTML = '<Plane class="h-8 w-8 text-sky-600" />';
-                  }
-                }}
-              />
+              {flight.airlineCode ? (
+                <img
+                  src={`https://content.airhex.com/airline-logos/${flight.airlineCode}_square.png`}
+                  alt={flight.airline}
+                  className="h-10 w-10 object-contain p-1"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMDI4NGM3IiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTIgMTJoMjAiLz48cGF0aCBkPSJNMjAgMTJ2LTZhMiAyIDAgMCAwLTItMmgtNmwtMi0yaC00YTIgMiAwIDAgMC0yIDJ2NmgtMnY2aDJ2NmEyIDIgMCAwIDAgMiAyaDRsMi0yaDZhMiAyIDAgMCAwIDItMnYtNnoiLz48L3N2Zz4=';
+                  }}
+                />
+              ) : (
+                <Plane className="h-8 w-8 text-sky-600" />
+              )}
             </div>
             <div>
               <p className="font-semibold text-gray-900">{flight.airline}</p>

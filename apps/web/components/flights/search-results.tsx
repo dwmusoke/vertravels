@@ -82,7 +82,18 @@ export function SearchResults() {
   const to = searchParams.get("to");
   const depart = searchParams.get("depart");
   const returnDate = searchParams.get("return");
-  const pax = searchParams.get("pax") || "1";
+  const adults = searchParams.get("adults") || "1";
+  const children = searchParams.get("children") || "0";
+  const infants = searchParams.get("infants") || "0";
+  const cabin = searchParams.get("cabin") || "economy";
+
+  const totalPax = parseInt(adults) + parseInt(children) + parseInt(infants);
+  
+  const paxText = [
+    `${adults} Adult${parseInt(adults) > 1 ? 's' : ''}`,
+    parseInt(children) > 0 && `${children} Child${children > 1 ? 'ren' : ''}`,
+    parseInt(infants) > 0 && `${infants} Infant${infants > 1 ? 's' : ''}`,
+  ].filter(Boolean).join(', ');
 
   const handleSelect = (flight: any) => {
     sessionStorage.setItem(
@@ -99,11 +110,20 @@ export function SearchResults() {
         price: flight.price,
         currency: flight.currency,
         stops: flight.stops,
+        cabinClass: flight.cabinClass,
       }),
     );
-    router.push(
-      `/flights/checkout?from=${from}&to=${to}&depart=${depart}&return=${returnDate || ""}&pax=${pax}`,
-    );
+    const params = new URLSearchParams({
+      from: from || '',
+      to: to || '',
+      depart: depart || '',
+      return: returnDate || '',
+      adults,
+      children,
+      infants,
+      cabin,
+    });
+    router.push(`/flights/checkout?${params.toString()}`);
   };
 
   const handleDetails = (flight: any) => {
@@ -121,11 +141,20 @@ export function SearchResults() {
         price: flight.price,
         currency: flight.currency,
         stops: flight.stops,
+        cabinClass: flight.cabinClass,
       }),
     );
-    router.push(
-      `/flights/checkout?from=${from}&to=${to}&depart=${depart}&return=${returnDate || ""}&pax=${pax}`,
-    );
+    const params = new URLSearchParams({
+      from: from || '',
+      to: to || '',
+      depart: depart || '',
+      return: returnDate || '',
+      adults,
+      children,
+      infants,
+      cabin,
+    });
+    router.push(`/flights/checkout?${params.toString()}`);
   };
 
   return (
@@ -138,8 +167,7 @@ export function SearchResults() {
               {from?.toUpperCase()} → {to?.toUpperCase()}
             </h2>
             <p className="text-sm text-muted-foreground">
-              {depart &&
-                new Date(depart).toLocaleDateString("en-US", {
+              {new Date(depart).toLocaleDateString("en-US", {
                   weekday: "long",
                   year: "numeric",
                   month: "long",
@@ -154,7 +182,9 @@ export function SearchResults() {
                     day: "numeric",
                   })}
               {" • "}
-              {pax} {parseInt(pax) > 1 ? "passengers" : "passenger"}
+              {paxText}
+              {" • "}
+              <span className="capitalize">{cabin}</span>
             </p>
           </div>
           <div className="text-right">

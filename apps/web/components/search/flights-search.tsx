@@ -198,9 +198,12 @@ export function FlightsSearch() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
           <label className="mb-2 block text-sm font-medium">Passengers</label>
-          <div className="border rounded-md p-3 space-y-2">
+          <div className="border rounded-md p-3 space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-sm">Adults</span>
+              <div>
+                <span className="text-sm font-medium">Adults</span>
+                <p className="text-xs text-muted-foreground">12+ years</p>
+              </div>
               <div className="flex items-center gap-2">
                 <button
                   type="button"
@@ -213,11 +216,11 @@ export function FlightsSearch() {
                       },
                     })
                   }
-                  className="h-6 w-6 rounded-full border flex items-center justify-center"
+                  className="h-8 w-8 rounded-full border flex items-center justify-center hover:bg-accent"
                 >
                   -
                 </button>
-                <span className="w-6 text-center">
+                <span className="w-8 text-center font-medium">
                   {formData.passengers.adults}
                 </span>
                 <button
@@ -231,14 +234,17 @@ export function FlightsSearch() {
                       },
                     })
                   }
-                  className="h-6 w-6 rounded-full border flex items-center justify-center"
+                  className="h-8 w-8 rounded-full border flex items-center justify-center hover:bg-accent"
                 >
                   +
                 </button>
               </div>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm">Children</span>
+              <div>
+                <span className="text-sm font-medium">Children</span>
+                <p className="text-xs text-muted-foreground">2-11 years</p>
+              </div>
               <div className="flex items-center gap-2">
                 <button
                   type="button"
@@ -251,11 +257,11 @@ export function FlightsSearch() {
                       },
                     })
                   }
-                  className="h-6 w-6 rounded-full border flex items-center justify-center"
+                  className="h-8 w-8 rounded-full border flex items-center justify-center hover:bg-accent"
                 >
                   -
                 </button>
-                <span className="w-6 text-center">
+                <span className="w-8 text-center font-medium">
                   {formData.passengers.children}
                 </span>
                 <button
@@ -269,7 +275,48 @@ export function FlightsSearch() {
                       },
                     })
                   }
-                  className="h-6 w-6 rounded-full border flex items-center justify-center"
+                  className="h-8 w-8 rounded-full border flex items-center justify-center hover:bg-accent"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+            <div className="flex items-center justify-between pt-2 border-t">
+              <div>
+                <span className="text-sm font-medium">Infants</span>
+                <p className="text-xs text-muted-foreground">Under 2 years</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() =>
+                    setFormData({
+                      ...formData,
+                      passengers: {
+                        ...formData.passengers,
+                        infants: Math.max(0, formData.passengers.infants - 1),
+                      },
+                    })
+                  }
+                  className="h-8 w-8 rounded-full border flex items-center justify-center hover:bg-accent"
+                >
+                  -
+                </button>
+                <span className="w-8 text-center font-medium">
+                  {formData.passengers.infants}
+                </span>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setFormData({
+                      ...formData,
+                      passengers: {
+                        ...formData.passengers,
+                        infants: formData.passengers.infants + 1,
+                      },
+                    })
+                  }
+                  className="h-8 w-8 rounded-full border flex items-center justify-center hover:bg-accent"
                 >
                   +
                 </button>
