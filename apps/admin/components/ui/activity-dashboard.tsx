@@ -57,13 +57,13 @@ export function ActivityDashboard() {
 
       // Calculate stats
       const totalBookings = bookings?.length || 0;
-      const totalRevenue = bookings?.reduce((sum, b) => sum + (b.total_amount || 0), 0) || 0;
-      const activeCustomers = new Set(customers?.map((c) => c.customer_email)).size || 0;
-      const pendingQuotations = quotations?.filter((q) => q.status === "sent").length || 0;
+      const totalRevenue = bookings?.reduce((sum: number, b: any) => sum + (b.total_amount || 0), 0) || 0;
+      const activeCustomers = new Set(customers?.map((c: any) => c.customer_email)).size || 0;
+      const pendingQuotations = quotations?.filter((q: any) => q.status === "sent").length || 0;
 
       // Bookings by status
       const bookingsByStatus: Record<string, number> = {};
-      bookings?.forEach((b) => {
+      bookings?.forEach((b: any) => {
         bookingsByStatus[b.status] = (bookingsByStatus[b.status] || 0) + 1;
       });
 
@@ -76,7 +76,7 @@ export function ActivityDashboard() {
         revenueByMonth[key] = 0;
       }
 
-      bookings?.forEach((b) => {
+      bookings?.forEach((b: any) => {
         if (b.created_at) {
           const date = new Date(b.created_at);
           const key = date.toLocaleString("default", { month: "short", year: "2-digit" });
@@ -88,7 +88,7 @@ export function ActivityDashboard() {
 
       // Top destinations
       const destinationCount: Record<string, number> = {};
-      bookings?.forEach((b) => {
+      bookings?.forEach((b: any) => {
         if (b.destination) {
           destinationCount[b.destination] = (destinationCount[b.destination] || 0) + 1;
         }
@@ -101,7 +101,7 @@ export function ActivityDashboard() {
 
       // Recent activity (last 10 bookings)
       const recentActivity = bookings
-        ?.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+        ?.sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
         .slice(0, 10) || [];
 
       setStats({

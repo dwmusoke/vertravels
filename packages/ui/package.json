@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "exports": {
+    ".": "./components/index.ts",
     "./*": "./components/*/index.ts"
   },
   "main": "./components/index.ts",

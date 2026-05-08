@@ -97,8 +97,8 @@ export default function StatementsPage() {
           .gte("payment_date", dateRange.start)
           .lte("payment_date", dateRange.end);
 
-        const totalInvoices = invoices?.reduce((sum, inv) => sum + (inv.total || 0), 0) || 0;
-        const totalPayments = payments?.reduce((sum, pay) => sum + (pay.amount || 0), 0) || 0;
+        const totalInvoices = invoices?.reduce((sum: number, inv: any) => sum + (inv.total || 0), 0) || 0;
+        const totalPayments = payments?.reduce((sum: number, pay: any) => sum + (pay.amount || 0), 0) || 0;
         const closingBalance = totalInvoices - totalPayments;
 
         const statementNumber = `STMT-${Date.now()}-${Math.random().toString(36).substring(7)}`;

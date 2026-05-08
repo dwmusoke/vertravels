@@ -20,6 +20,7 @@ import {
   Trash2,
   Edit2,
   Eye,
+  Mail,
 } from "lucide-react";
 
 interface AutomationRule {

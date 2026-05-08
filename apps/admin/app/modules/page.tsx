@@ -1,13 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-import { Card } from '@vertravels/ui'
-import { Button } from '@vertravels/ui'
-import { Badge } from '@vertravels/ui'
-import { Input } from '@vertravels/ui'
-import { Label } from '@vertravels/ui'
-import { Switch } from '@vertravels/ui'
+import { createClient } from "@/lib/supabase/client";
+import { Card, Button, Badge, Input, Label, Switch } from '@vertravels/ui'
 import {
   Plane,
   Hotel,
@@ -51,7 +46,7 @@ const moduleIcons: Record<string, React.ReactNode> = {
 }
 
 export default function AdminModulesPage() {
-  const supabase = createClientComponentClient()
+  const supabase = createClient()
   const [modules, setModules] = useState<Module[]>([])
   const [gateways, setGateways] = useState<Gateway[]>([])
   const [loading, setLoading] = useState(true)
@@ -209,7 +204,7 @@ export default function AdminModulesPage() {
                   <div>
                     <div className="flex items-center gap-2">
                       <h3 className="font-semibold text-gray-900">{module.name}</h3>
-                      <Badge variant={module.enabled ? 'success' : 'error'}>
+                      <Badge variant={module.enabled ? 'success' : 'destructive'}>
                         {module.enabled ? 'Active' : 'Inactive'}
                       </Badge>
                     </div>
@@ -415,7 +410,7 @@ export default function AdminModulesPage() {
                 <div>
                   <div className="flex items-center gap-2">
                     <h3 className="font-semibold text-gray-900">{gateway.name}</h3>
-                    <Badge variant={gateway.enabled ? 'success' : 'error'}>
+                    <Badge variant={gateway.enabled ? 'success' : 'destructive'}>
                       {gateway.enabled ? 'Active' : 'Inactive'}
                     </Badge>
                   </div>

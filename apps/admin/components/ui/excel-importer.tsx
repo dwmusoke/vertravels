@@ -80,7 +80,7 @@ export function ExcelImporter({
       setCurrentStep("preview");
 
       const dbColumns = getTemplateColumns(entityType);
-      const initialMapping: ColumnMapping[] = result.preview?.columns.map((col: string) => ({
+      const initialMapping: ColumnMapping[] = preview?.columns.map((col: string) => ({
         excelColumn: col,
         databaseField: dbColumns.find((c) => c.header.toLowerCase() === col.toLowerCase())?.key || "",
       })) || [];

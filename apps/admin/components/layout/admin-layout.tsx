@@ -1,16 +1,34 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { useSupabase } from '@/components/providers/supabase-provider';
 import { redirect } from 'next/navigation';
 import { AdminHeader } from './admin-header';
 import { AdminSidebar } from './admin-sidebar';
+import type { User } from '@supabase/supabase-js';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
 }
 
 export function AdminLayout({ children }: AdminLayoutProps) {
-  const { user, loading } = useSupabase();
+  const { supabase } = useSupabase();
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      setUser(data.user);
+      setLoading(false);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [supabase]);
 
   if (loading) {
     return (

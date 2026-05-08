@@ -1,11 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@vertravels/ui";
-import { Button } from "@vertravels/ui";
-import { Badge } from "@vertravels/ui";
-import { Input } from "@vertravels/ui";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { Card, CardContent, CardHeader, CardTitle, Button, Badge, Input } from '@vertravels/ui';
+import { createClient } from "@/lib/supabase/client";
 import {
   RefreshCcw,
   Download,
@@ -66,7 +63,7 @@ interface ReconciliationStats {
 }
 
 export default function ReconciliationPage() {
-  const supabase = createClientComponentClient();
+  const supabase = createClient();
   const [loading, setLoading] = useState(true);
   const [reconciling, setReconciling] = useState(false);
   const [items, setItems] = useState<ReconciliationItem[]>([]);
@@ -590,7 +587,7 @@ export default function ReconciliationPage() {
                         item.status === "matched"
                           ? "success"
                           : item.status === "mismatch"
-                            ? "error"
+                            ? "destructive"
                             : item.status === "missing_bsp"
                               ? "warning"
                               : "default"

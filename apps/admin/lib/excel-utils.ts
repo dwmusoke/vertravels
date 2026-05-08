@@ -19,6 +19,10 @@ export interface ExcelImportResult<T> {
     valid: number;
     invalid: number;
   };
+  preview?: {
+    columns: string[];
+    rows: any[];
+  };
 }
 
 export interface ImportError {

@@ -91,8 +91,8 @@ export function SearchResults() {
   
   const paxText = [
     `${adults} Adult${parseInt(adults) > 1 ? 's' : ''}`,
-    parseInt(children) > 0 && `${children} Child${children > 1 ? 'ren' : ''}`,
-    parseInt(infants) > 0 && `${infants} Infant${infants > 1 ? 's' : ''}`,
+    parseInt(children) > 0 && `${children} Child${parseInt(children) > 1 ? 'ren' : ''}`,
+    parseInt(infants) > 0 && `${infants} Infant${parseInt(infants) > 1 ? 's' : ''}`,
   ].filter(Boolean).join(', ');
 
   const handleSelect = (flight: any) => {
@@ -167,7 +167,7 @@ export function SearchResults() {
               {from?.toUpperCase()} → {to?.toUpperCase()}
             </h2>
             <p className="text-sm text-muted-foreground">
-              {new Date(depart).toLocaleDateString("en-US", {
+              {depart && new Date(depart).toLocaleDateString("en-US", {
                   weekday: "long",
                   year: "numeric",
                   month: "long",

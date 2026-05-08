@@ -16,6 +16,8 @@ import {
   Calendar,
   CheckCircle,
   FileText,
+  Edit2,
+  Trash2,
 } from "lucide-react";
 import { exportToExcel } from "@/lib/excel-utils";
 import { ExcelImporter } from "@/components/ui/excel-importer";

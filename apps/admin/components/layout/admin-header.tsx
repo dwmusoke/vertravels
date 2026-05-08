@@ -1,15 +1,29 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { Bell, Search, LogOut } from 'lucide-react';
-import { Button } from '@vertravels/ui';
-import { Avatar, AvatarFallback, AvatarImage } from '@vertravels/ui';
+import { Button, Avatar, AvatarFallback, AvatarImage } from '@vertravels/ui';
 import { useSupabase } from '@/components/providers/supabase-provider';
+import type { User } from '@supabase/supabase-js';
 
 export function AdminHeader() {
-  const { user, signOut } = useSupabase();
+  const { supabase } = useSupabase();
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      setUser(data.user);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [supabase]);
 
   const handleSignOut = async () => {
-    await signOut();
+    await supabase.auth.signOut();
   };
 
   return (
