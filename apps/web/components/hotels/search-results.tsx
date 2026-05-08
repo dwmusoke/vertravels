@@ -16,7 +16,7 @@ const mockHotels = [
     location: "1st Arrondissement, Paris",
     distance: "0.5 km from center",
     image:
-      "https://images.unsplash.com/photo-1566073771259-6a8506099945a?w=800&q=80",
+      "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80",
     price: 250,
     currency: "USD",
     amenities: ["wifi", "breakfast", "parking", "gym"],
@@ -106,10 +106,21 @@ export function SearchResults() {
             <CardContent className="p-0">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {/* Image */}
-                <div className="h-48 md:h-full bg-muted rounded-lg overflow-hidden">
-                  <div className="w-full h-full flex items-center justify-center">
-                    <Hotel className="h-16 w-16 text-muted-foreground" />
-                  </div>
+                <div className="h-48 md:h-full relative overflow-hidden group">
+                  <img
+                    src={hotel.image}
+                    alt={hotel.name}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.src = "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&q=80";
+                    }}
+                  />
+                  {hotel.tag && (
+                    <Badge className="absolute top-2 left-2 bg-success text-white">
+                      {hotel.tag}
+                    </Badge>
+                  )}
                 </div>
 
                 {/* Content */}

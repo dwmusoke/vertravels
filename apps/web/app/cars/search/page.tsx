@@ -21,7 +21,7 @@ const mockCars = [
     type: "Compact",
     seats: 5,
     price: 45,
-    image: "🚗",
+    image: "https://images.unsplash.com/photo-1590362891991-f7204c847022?w=800&q=80",
     tag: "Popular",
   },
   {
@@ -30,7 +30,7 @@ const mockCars = [
     type: "SUV",
     seats: 5,
     price: 75,
-    image: "🚙",
+    image: "https://images.unsplash.com/photo-1568844293986-8d0400bd4745?w=800&q=80",
     tag: null,
   },
   {
@@ -39,7 +39,7 @@ const mockCars = [
     type: "Electric",
     seats: 5,
     price: 120,
-    image: "⚡",
+    image: "https://images.unsplash.com/photo-1560958089-b8a192988883?w=800&q=80",
     tag: "Top Rated",
   },
   {
@@ -48,6 +48,10 @@ const mockCars = [
     type: "4x4",
     seats: 7,
     price: 95,
+    image: "https://images.unsplash.com/photo-1594502184392-28b3d22a6d43?w=800&q=80",
+    tag: null,
+  },
+];
     image: "🚙",
     tag: "Best Seller",
   },
@@ -139,8 +143,21 @@ export default function CarsSearchPage() {
             >
               <CardContent className="p-0">
                 <div className="grid md:grid-cols-4 gap-4">
-                  <div className="md:col-span-1 h-40 md:h-auto bg-gradient-to-br from-purple-100 to-indigo-50 flex items-center justify-center">
-                    <span className="text-7xl">{car.image}</span>
+                  <div className="md:col-span-1 relative h-40 md:h-auto overflow-hidden group">
+                    <img
+                      src={car.image}
+                      alt={car.name}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=400&q=80";
+                      }}
+                    />
+                    {car.tag && (
+                      <Badge className="absolute top-2 left-2 bg-purple-500 text-white">
+                        {car.tag}
+                      </Badge>
+                    )}
                   </div>
                   <div className="md:col-span-3 p-6">
                     <div className="flex justify-between items-start">

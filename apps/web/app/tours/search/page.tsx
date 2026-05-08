@@ -151,8 +151,21 @@ export default function ToursSearchPage() {
             >
               <CardContent className="p-0">
                 <div className="grid md:grid-cols-4 gap-4">
-                  <div className="md:col-span-1 h-40 md:h-auto bg-gradient-to-br from-amber-100 to-yellow-50 flex items-center justify-center">
-                    <span className="text-7xl">{tour.image}</span>
+                  <div className="md:col-span-1 relative h-40 md:h-auto overflow-hidden group">
+                    <img
+                      src={tour.image}
+                      alt={tour.name}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = "https://images.unsplash.com/photo-1501594907352-04cda38ebc29?w=400&q=80";
+                      }}
+                    />
+                    {tour.tag && (
+                      <Badge className="absolute top-2 left-2 bg-amber-500 text-white">
+                        {tour.tag}
+                      </Badge>
+                    )}
                   </div>
                   <div className="md:col-span-3 p-6">
                     <div className="flex justify-between items-start">

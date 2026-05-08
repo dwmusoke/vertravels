@@ -40,8 +40,13 @@ export default function HotelsSearchPage() {
       <div className="relative bg-gradient-to-br from-emerald-700 via-teal-600 to-sky-700 py-12 overflow-hidden">
         <div className="absolute inset-0 opacity-20">
           <img
-            src="https://images.unsplash.com/photo-1566073771259-6a8506099945a?w=1200&q=80"
+            src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1200&q=80"
+            alt="Hotel background"
             className="w-full h-full object-cover"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.src = "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=1200&q=80";
+            }}
           />
         </div>
         <div className="max-w-7xl mx-auto px-4 relative z-10">
