@@ -30,6 +30,7 @@ import {
   Upload,
   Clock,
   Ticket,
+  Zap,
 } from "lucide-react";
 
 interface NavItem {
@@ -51,6 +52,8 @@ const navigation: NavItem[] = [
       { name: "Manual Postings", href: "/admin/manual-postings", icon: FileText },
       { name: "Queue Management", href: "/admin/queue", icon: Clock },
       { name: "Ticketing", href: "/admin/ticketing", icon: Ticket },
+      { name: "Automation", href: "/admin/automation", icon: Zap },
+      { name: "Vouchers & Manifests", href: "/admin/vouchers-manifests", icon: FileText },
     ],
   },
   {
