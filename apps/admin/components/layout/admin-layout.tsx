@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
 import { useSupabase } from '@/components/providers/supabase-provider';
 import { redirect } from 'next/navigation';
 import { AdminHeader } from './admin-header';
@@ -12,15 +13,28 @@ interface AdminLayoutProps {
 }
 
 export function AdminLayout({ children }: AdminLayoutProps) {
+  const pathname = usePathname();
   const { supabase } = useSupabase();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Skip auth check on auth pages
+  const isAuthPage = pathname?.startsWith('/login') || pathname?.startsWith('/signup');
+
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      setUser(data.user);
-      setLoading(false);
-    });
+    const initAuth = async () => {
+      try {
+        const { data } = await supabase.auth.getUser();
+        setUser(data.user);
+      } catch (error) {
+        console.error('Auth error:', error);
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    initAuth();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
@@ -30,7 +44,8 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     return () => subscription.unsubscribe();
   }, [supabase]);
 
-  if (loading) {
+  // Show loading only on non-auth pages
+  if (loading && !isAuthPage) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -41,8 +56,14 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     );
   }
 
-  if (!user) {
-    redirect('/admin/login');
+  // Redirect to login if not authenticated and not on auth page
+  if (!user && !isAuthPage) {
+    redirect('/login');
+  }
+
+  // Skip admin layout for auth pages
+  if (isAuthPage) {
+    return <>{children}</>;
   }
 
   return (

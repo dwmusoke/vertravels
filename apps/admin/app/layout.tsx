@@ -17,7 +17,9 @@ export default function RootLayout({
     <html lang="en">
       <body className="bg-gray-50 text-gray-900">
         <SupabaseProvider>
-          <AdminLayout>{children}</AdminLayout>
+          <AdminLayout>
+            {children}
+          </AdminLayout>
         </SupabaseProvider>
       </body>
     </html>
