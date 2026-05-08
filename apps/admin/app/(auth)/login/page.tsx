@@ -30,8 +30,8 @@ export default function AdminLoginPage() {
 
       if (authError) throw authError;
 
-      router.push("/");
-      router.refresh();
+      // Redirect to admin dashboard
+      window.location.href = "/";
     } catch (err: any) {
       setError(err.message || "Failed to login");
     } finally {
