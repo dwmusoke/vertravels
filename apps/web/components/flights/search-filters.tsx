@@ -11,6 +11,7 @@ import {
   AccordionTrigger,
   AccordionContent,
 } from "@/components/ui";
+import { AirlineLogo } from "./airline-logo";
 import {
   Plane,
   Clock,
@@ -204,15 +205,7 @@ export function SearchFilters() {
                       className="data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
                     />
                     <div className="w-5 h-5 rounded-md bg-slate-50 border border-slate-200 flex items-center justify-center overflow-hidden flex-shrink-0">
-                      <img
-                        src={`https://img.airlinesdata.com/airline/${airline.code}.png`}
-                        alt={airline.name}
-                        className="w-4 h-4 object-contain"
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement;
-                          target.style.display = 'none';
-                        }}
-                      />
+                      <AirlineLogo code={airline.code} name={airline.name} size="sm" />
                     </div>
                     <span className="text-sm text-slate-700 group-hover:text-slate-900">{airline.name}</span>
                   </div>

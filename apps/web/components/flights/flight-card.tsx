@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui";
 import { Badge } from "@/components/ui";
 import { FlightTimeline } from "./flight-timeline";
+import { AirlineLogo } from "./airline-logo";
 import {
   Luggage,
   Armchair,
@@ -57,20 +58,7 @@ export function FlightCard({ flight, onSelect, onDetails, index = 0 }: FlightCar
           <div className="flex items-center gap-3">
             <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center overflow-hidden border border-blue-100 shadow-sm flex-shrink-0">
               {flight.airlineCode ? (
-                <img
-                  src={`https://img.airlinesdata.com/airline/${flight.airlineCode}.png`}
-                  alt={flight.airline}
-                  className="h-9 w-9 object-contain p-1"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    if (!target.dataset.fallback) {
-                      target.dataset.fallback = '1';
-                      target.src = `https://content.airhex.com/airline-logos/${flight.airlineCode}_square.png`;
-                    } else {
-                      target.style.display = 'none';
-                    }
-                  }}
-                />
+                <AirlineLogo code={flight.airlineCode} name={flight.airline} />
               ) : null}
             </div>
             <div>
