@@ -67,6 +67,7 @@ const navigation: NavItem[] = [
       { name: "Statements", href: "/admin/documents/statements", icon: FileText },
     ],
   },
+  { name: "Suppliers", href: "/admin/suppliers", icon: Building2 },
   { name: "Reconciliation", href: "/admin/reconciliation", icon: RefreshCcw },
   { name: "IATA Tracking", href: "/admin/iata-tracking", icon: Building2 },
   { name: "Daily Sales", href: "/admin/daily-sales", icon: TrendingUp },

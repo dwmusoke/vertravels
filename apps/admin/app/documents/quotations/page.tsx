@@ -3,86 +3,92 @@
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import {
-  FileText,
+  FileCheck,
   Plus,
   Search,
   Edit2,
   Trash2,
   Download,
   Mail,
-  Eye,
-  CheckCircle,
-  Clock,
   RefreshCw,
-  Share2,
   Square,
   CheckSquare,
   Upload,
+  Calendar,
+  User,
+  DollarSign,
+  CheckCircle,
+  XCircle,
+  Clock,
+  ArrowRight,
 } from "lucide-react";
 import { exportToExcel, getTemplateColumns, getValidationRules } from "@/lib/excel-utils";
 import { ExcelImporter } from "@/components/ui/excel-importer";
 import { BulkToolbar } from "@/components/ui/bulk-toolbar";
 import { EditableCell } from "@/components/ui/editable-cell";
-import { AuditTrailInline } from "@/components/ui/audit-trail";
 
-interface Invoice {
+interface Quotation {
   id: string;
-  invoice_number: string;
+  quote_number: string;
   customer_name: string;
   customer_email: string;
   customer_phone?: string;
-  booking_id?: string;
+  destination?: string;
+  travel_date?: string;
+  duration_days?: number;
+  passengers?: number;
   total: number;
   subtotal?: number;
   tax_amount?: number;
-  status: "draft" | "sent" | "paid" | "overdue" | "cancelled";
-  issue_date: string;
-  due_date: string;
-  paid_date?: string;
-  payment_method?: string;
-  email_sent: boolean;
+  status: "draft" | "sent" | "accepted" | "rejected" | "expired";
+  valid_until: string;
   notes?: string;
+  email_sent: boolean;
+  converted_to_booking_id?: string;
+  created_at: string;
 }
 
-export default function AdminInvoicesPage() {
-  const [invoices, setInvoices] = useState<Invoice[]>([]);
+export default function QuotationsPage() {
+  const [quotations, setQuotations] = useState<Quotation[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedRowId, setExpandedRowId] = useState<string | null>(null);
-  const [editingInvoice, setEditingInvoice] = useState<Invoice | null>(null);
+  const [editingQuotation, setEditingQuotation] = useState<Quotation | null>(null);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [showImporter, setShowImporter] = useState(false);
-  const [showAuditTrail, setShowAuditTrail] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
     customer_name: "",
     customer_email: "",
     customer_phone: "",
+    destination: "",
+    travel_date: "",
+    duration_days: "",
+    passengers: "1",
     total: "",
-    issue_date: "",
-    due_date: "",
+    valid_until: "",
     notes: "",
   });
 
   const supabase = createClient();
 
   useEffect(() => {
-    fetchInvoices();
+    fetchQuotations();
   }, []);
 
-  async function fetchInvoices() {
+  async function fetchQuotations() {
     try {
       setLoading(true);
       const { data, error } = await supabase
-        .from("invoices")
+        .from("quotations")
         .select("*")
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      setInvoices(data || []);
+      setQuotations(data || []);
     } catch (error: any) {
-      console.error("Error fetching invoices:", error);
+      console.error("Error fetching quotations:", error);
     } finally {
       setLoading(false);
     }
@@ -93,35 +99,43 @@ export default function AdminInvoicesPage() {
 
     try {
       const total = parseFloat(formData.total) || 0;
+      const duration = parseInt(formData.duration_days) || 0;
+      const passengers = parseInt(formData.passengers) || 1;
 
-      if (editingInvoice) {
+      if (editingQuotation) {
         const { error } = await supabase
-          .from("invoices")
+          .from("quotations")
           .update({
             customer_name: formData.customer_name,
             customer_email: formData.customer_email,
             customer_phone: formData.customer_phone,
+            destination: formData.destination,
+            travel_date: formData.travel_date,
+            duration_days: duration,
+            passengers,
             total,
-            issue_date: formData.issue_date,
-            due_date: formData.due_date,
+            valid_until: formData.valid_until,
             notes: formData.notes,
             updated_at: new Date().toISOString(),
           })
-          .eq("id", editingInvoice.id);
+          .eq("id", editingQuotation.id);
 
         if (error) throw error;
       } else {
-        const invoiceNumber = `INV-${Date.now()}`;
+        const quoteNumber = `QT-${Date.now()}`;
 
-        const { error } = await supabase.from("invoices").insert([
+        const { error } = await supabase.from("quotations").insert([
           {
-            invoice_number: invoiceNumber,
+            quote_number: quoteNumber,
             customer_name: formData.customer_name,
             customer_email: formData.customer_email,
             customer_phone: formData.customer_phone,
+            destination: formData.destination,
+            travel_date: formData.travel_date,
+            duration_days: duration,
+            passengers,
             total,
-            issue_date: formData.issue_date,
-            due_date: formData.due_date,
+            valid_until: formData.valid_until,
             notes: formData.notes,
             status: "draft",
             email_sent: false,
@@ -132,67 +146,67 @@ export default function AdminInvoicesPage() {
       }
 
       setExpandedRowId(null);
-      setEditingInvoice(null);
+      setEditingQuotation(null);
       resetForm();
-      fetchInvoices();
+      fetchQuotations();
     } catch (error: any) {
-      console.error("Error saving invoice:", error);
+      console.error("Error saving quotation:", error);
       alert("Failed to save: " + error.message);
     }
   }
 
   async function handleDelete(id: string) {
-    if (!confirm("Are you sure you want to delete this invoice?")) return;
+    if (!confirm("Are you sure you want to delete this quotation?")) return;
 
     try {
-      const { error } = await supabase.from("invoices").delete().eq("id", id);
+      const { error } = await supabase.from("quotations").delete().eq("id", id);
       if (error) throw error;
-      fetchInvoices();
+      fetchQuotations();
     } catch (error: any) {
-      console.error("Error deleting invoice:", error);
+      console.error("Error deleting quotation:", error);
     }
   }
 
   async function handleBulkDelete() {
-    if (!confirm(`Delete ${selectedIds.size} invoices? This cannot be undone.`)) return;
+    if (!confirm(`Delete ${selectedIds.size} quotations? This cannot be undone.`)) return;
 
     try {
       const { error } = await supabase
-        .from("invoices")
+        .from("quotations")
         .delete()
         .in("id", Array.from(selectedIds));
 
       if (error) throw error;
       setSelectedIds(new Set());
-      fetchInvoices();
+      fetchQuotations();
     } catch (error: any) {
       console.error("Error bulk deleting:", error);
     }
   }
 
   async function handleBulkExport() {
-    const selectedInvoices = invoices.filter((i) => selectedIds.has(i.id));
-    const columns = getTemplateColumns("invoices");
+    const selectedQuotations = quotations.filter((q) => selectedIds.has(q.id));
+    const columns = getTemplateColumns("quotations");
 
-    await exportToExcel(selectedInvoices, "invoices-export", {
+    await exportToExcel(selectedQuotations, "quotations-export", {
       columns,
       branded: true,
     });
   }
 
   async function handleBulkEmail() {
-    const selectedInvoices = invoices.filter((i) => selectedIds.has(i.id));
-    if (!confirm(`Send ${selectedInvoices.length} invoices via email?`)) return;
+    const selectedQuotations = quotations.filter((q) => selectedIds.has(q.id));
+    if (!confirm(`Send ${selectedQuotations.length} quotations via email?`)) return;
 
     try {
-      for (const invoice of selectedInvoices) {
+      for (const quotation of selectedQuotations) {
         await supabase
-          .from("invoices")
+          .from("quotations")
           .update({ email_sent: true, email_sent_at: new Date().toISOString() })
-          .eq("id", invoice.id);
+          .eq("id", quotation.id);
       }
-      alert(`Sent ${selectedInvoices.length} invoices via email`);
-      fetchInvoices();
+      alert(`Sent ${selectedQuotations.length} quotations via email`);
+      fetchQuotations();
     } catch (error: any) {
       console.error("Error sending emails:", error);
     }
@@ -200,65 +214,111 @@ export default function AdminInvoicesPage() {
 
   async function handleStatusChange(id: string, newStatus: string) {
     try {
-      const updates: Record<string, any> = { status: newStatus };
-      if (newStatus === "paid") {
-        updates.paid_date = new Date().toISOString();
-      }
-
       const { error } = await supabase
-        .from("invoices")
-        .update(updates)
+        .from("quotations")
+        .update({ status: newStatus })
         .eq("id", id);
 
       if (error) throw error;
-      fetchInvoices();
+      fetchQuotations();
     } catch (error: any) {
       console.error("Error updating status:", error);
     }
   }
 
-  async function handleSendEmail(invoice: Invoice) {
+  async function handleAccept(id: string) {
+    try {
+      const { error } = await supabase
+        .from("quotations")
+        .update({ status: "accepted" })
+        .eq("id", id);
+
+      if (error) throw error;
+      alert("Quotation accepted! You can now convert it to a booking.");
+      fetchQuotations();
+    } catch (error: any) {
+      console.error("Error accepting quotation:", error);
+    }
+  }
+
+  async function handleReject(id: string) {
+    try {
+      const { error } = await supabase
+        .from("quotations")
+        .update({ status: "rejected" })
+        .eq("id", id);
+
+      if (error) throw error;
+      fetchQuotations();
+    } catch (error: any) {
+      console.error("Error rejecting quotation:", error);
+    }
+  }
+
+  async function handleConvertToBooking(quotation: Quotation) {
+    if (!confirm("Convert this quotation to a booking?")) return;
+
+    try {
+      const { data: bookingData, error: bookingError } = await supabase
+        .from("bookings")
+        .insert([
+          {
+            customer_name: quotation.customer_name,
+            customer_email: quotation.customer_email,
+            customer_phone: quotation.customer_phone,
+            destination: quotation.destination,
+            travel_date: quotation.travel_date,
+            duration_days: quotation.duration_days,
+            passengers: quotation.passengers,
+            total_amount: quotation.total,
+            status: "inquiry",
+            source: "quotation",
+            quotation_id: quotation.id,
+          },
+        ])
+        .select("id")
+        .single();
+
+      if (bookingError) throw bookingError;
+
+      const { error: updateError } = await supabase
+        .from("quotations")
+        .update({
+          status: "accepted",
+          converted_to_booking_id: bookingData.id,
+        })
+        .eq("id", quotation.id);
+
+      if (updateError) throw updateError;
+
+      alert("Quotation converted to booking successfully!");
+      fetchQuotations();
+    } catch (error: any) {
+      console.error("Error converting to booking:", error);
+      alert("Failed to convert: " + error.message);
+    }
+  }
+
+  async function handleSendEmail(quotation: Quotation) {
     try {
       await supabase
-        .from("invoices")
+        .from("quotations")
         .update({ email_sent: true, email_sent_at: new Date().toISOString() })
-        .eq("id", invoice.id);
+        .eq("id", quotation.id);
 
-      alert(`Invoice ${invoice.invoice_number} sent to ${invoice.customer_email}`);
-      fetchInvoices();
+      alert(`Quotation ${quotation.quote_number} sent to ${quotation.customer_email}`);
+      fetchQuotations();
     } catch (error: any) {
       console.error("Error sending email:", error);
       alert("Failed to send email");
     }
   }
 
-  async function handleShareDocument(invoice: Invoice) {
-    try {
-      const shareToken = `share_${Date.now()}_${Math.random().toString(36).substring(7)}`;
-
-      const { error } = await supabase.from("document_shares").insert([{
-        document_type: "invoice",
-        document_id: invoice.id,
-        share_token: shareToken,
-        expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-      }]);
-
-      if (error) throw error;
-
-      const shareUrl = `${window.location.origin}/documents/share/${shareToken}`;
-      navigator.clipboard.writeText(shareUrl);
-      alert(`Share link copied to clipboard!\n\n${shareUrl}`);
-    } catch (error: any) {
-      console.error("Error creating share link:", error);
-      alert("Failed to create share link");
-    }
-  }
-
   async function handleImport(data: any[]) {
     try {
-      const { error } = await supabase.from("invoices").insert(data);
+      const { error } = await supabase.from("quotations").insert(data);
       if (error) throw error;
-      fetchInvoices();
+      fetchQuotations();
     } catch (error: any) {
       throw error;
     }
@@ -269,25 +329,31 @@ export default function AdminInvoicesPage() {
       customer_name: "",
       customer_email: "",
       customer_phone: "",
+      destination: "",
+      travel_date: "",
+      duration_days: "",
+      passengers: "1",
       total: "",
-      issue_date: "",
-      due_date: "",
+      valid_until: "",
       notes: "",
     });
   }
 
-  function handleEdit(invoice: Invoice) {
-    setEditingInvoice(invoice);
+  function handleEdit(quotation: Quotation) {
+    setEditingQuotation(quotation);
     setFormData({
-      customer_name: invoice.customer_name,
-      customer_email: invoice.customer_email,
-      customer_phone: invoice.customer_phone || "",
-      total: invoice.total.toString(),
-      issue_date: invoice.issue_date,
-      due_date: invoice.due_date,
-      notes: invoice.notes || "",
+      customer_name: quotation.customer_name,
+      customer_email: quotation.customer_email,
+      customer_phone: quotation.customer_phone || "",
+      destination: quotation.destination || "",
+      travel_date: quotation.travel_date || "",
+      duration_days: quotation.duration_days?.toString() || "",
+      passengers: quotation.passengers?.toString() || "1",
+      total: quotation.total.toString(),
+      valid_until: quotation.valid_until,
+      notes: quotation.notes || "",
     });
-    setExpandedRowId(invoice.id);
+    setExpandedRowId(quotation.id);
   }
 
   function toggleSelect(id: string) {
@@ -303,37 +369,39 @@ export default function AdminInvoicesPage() {
   }
 
   function toggleSelectAll() {
-    if (selectedIds.size === invoices.length) {
+    if (selectedIds.size === quotations.length) {
       setSelectedIds(new Set());
     } else {
-      setSelectedIds(new Set(invoices.map((i) => i.id)));
+      setSelectedIds(new Set(quotations.map((q) => q.id)));
     }
   }
 
   const stats = {
-    total: invoices.length,
-    paid: invoices.filter((i) => i.status === "paid").length,
-    pending: invoices.filter((i) => i.status === "sent" || i.status === "draft").length,
-    overdue: invoices.filter((i) => i.status === "overdue").length,
-    revenue: invoices
-      .filter((i) => i.status === "paid")
-      .reduce((sum, i) => sum + (i.total || 0), 0),
+    total: quotations.length,
+    draft: quotations.filter((q) => q.status === "draft").length,
+    sent: quotations.filter((q) => q.status === "sent").length,
+    accepted: quotations.filter((q) => q.status === "accepted").length,
+    rejected: quotations.filter((q) => q.status === "rejected").length,
+    totalValue: quotations
+      .filter((q) => q.status === "accepted")
+      .reduce((sum, q) => sum + (q.total || 0), 0),
   };
 
-  const filtered = invoices.filter((invoice) => {
+  const filtered = quotations.filter((quotation) => {
     const matchesSearch =
-      invoice.customer_name.toLowerCase().includes(search.toLowerCase()) ||
-      invoice.invoice_number.toLowerCase().includes(search.toLowerCase());
-    const matchesFilter = filter === "all" || invoice.status === filter;
+      quotation.customer_name.toLowerCase().includes(search.toLowerCase()) ||
+      quotation.quote_number.toLowerCase().includes(search.toLowerCase()) ||
+      quotation.destination?.toLowerCase().includes(search.toLowerCase());
+    const matchesFilter = filter === "all" || quotation.status === filter;
     return matchesSearch && matchesFilter;
   });
 
   const statusMap = {
     draft: { label: "Draft", color: "bg-gray-100 text-gray-700" },
     sent: { label: "Sent", color: "bg-blue-100 text-blue-700" },
-    paid: { label: "Paid", color: "bg-green-100 text-green-700" },
-    overdue: { label: "Overdue", color: "bg-red-100 text-red-700" },
-    cancelled: { label: "Cancelled", color: "bg-gray-100 text-gray-700" },
+    accepted: { label: "Accepted", color: "bg-green-100 text-green-700" },
+    rejected: { label: "Rejected", color: "bg-red-100 text-red-700" },
+    expired: { label: "Expired", color: "bg-gray-100 text-gray-700" },
   };
 
   return (
@@ -341,10 +409,10 @@ export default function AdminInvoicesPage() {
       <div className="flex justify-between items-center mb-8">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            Invoices Management
+            Quotations
           </h1>
           <p className="text-gray-600">
-            Create, manage, and send professional invoices
+            Create and manage travel quotations for customers
           </p>
         </div>
         <div className="flex gap-2">
@@ -357,8 +425,8 @@ export default function AdminInvoicesPage() {
           </button>
           <button
             onClick={async () => {
-              const columns = getTemplateColumns("invoices");
-              await exportToExcel(filtered, "invoices", { columns, branded: true });
+              const columns = getTemplateColumns("quotations");
+              await exportToExcel(filtered, "quotations", { columns, branded: true });
             }}
             className="flex items-center gap-2 px-4 py-2 border rounded-lg hover:bg-gray-50"
           >
@@ -368,39 +436,43 @@ export default function AdminInvoicesPage() {
           <button
             onClick={() => {
               resetForm();
-              setEditingInvoice(null);
+              setEditingQuotation(null);
               setExpandedRowId("new");
             }}
             className="flex items-center gap-2 px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700"
           >
             <Plus className="w-4 h-4" />
-            New Invoice
+            New Quotation
           </button>
         </div>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-8">
         <div className="bg-white p-4 rounded-xl shadow-sm border">
-          <p className="text-sm text-gray-600">Total Invoices</p>
+          <p className="text-sm text-gray-600">Total Quotations</p>
           <p className="text-2xl font-bold">{stats.total}</p>
         </div>
         <div className="bg-white p-4 rounded-xl shadow-sm border">
-          <p className="text-sm text-gray-600">Paid</p>
-          <p className="text-2xl font-bold text-green-600">{stats.paid}</p>
+          <p className="text-sm text-gray-600">Draft</p>
+          <p className="text-2xl font-bold text-gray-600">{stats.draft}</p>
         </div>
         <div className="bg-white p-4 rounded-xl shadow-sm border">
-          <p className="text-sm text-gray-600">Pending</p>
-          <p className="text-2xl font-bold text-blue-600">{stats.pending}</p>
+          <p className="text-sm text-gray-600">Sent</p>
+          <p className="text-2xl font-bold text-blue-600">{stats.sent}</p>
         </div>
         <div className="bg-white p-4 rounded-xl shadow-sm border">
-          <p className="text-sm text-gray-600">Overdue</p>
-          <p className="text-2xl font-bold text-red-600">{stats.overdue}</p>
+          <p className="text-sm text-gray-600">Accepted</p>
+          <p className="text-2xl font-bold text-green-600">{stats.accepted}</p>
         </div>
         <div className="bg-white p-4 rounded-xl shadow-sm border">
-          <p className="text-sm text-gray-600">Total Revenue</p>
+          <p className="text-sm text-gray-600">Rejected</p>
+          <p className="text-2xl font-bold text-red-600">{stats.rejected}</p>
+        </div>
+        <div className="bg-white p-4 rounded-xl shadow-sm border">
+          <p className="text-sm text-gray-600">Total Value</p>
           <p className="text-2xl font-bold text-sky-600">
-            ${stats.revenue.toLocaleString()}
+            ${stats.totalValue.toLocaleString()}
           </p>
         </div>
       </div>
@@ -409,8 +481,8 @@ export default function AdminInvoicesPage() {
       <BulkToolbar
         selectedCount={selectedIds.size}
         onSelectAll={toggleSelectAll}
-        allSelected={selectedIds.size === invoices.length && invoices.length > 0}
-        entityType="invoices"
+        allSelected={selectedIds.size === quotations.length && quotations.length > 0}
+        entityType="quotations"
         onDelete={handleBulkDelete}
         onExport={handleBulkExport}
         onEmail={handleBulkEmail}
@@ -424,7 +496,7 @@ export default function AdminInvoicesPage() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
               type="text"
-              placeholder="Search by customer or invoice number..."
+              placeholder="Search by customer, quote #, or destination..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="pl-10 pr-4 py-2 w-full border rounded-lg"
@@ -438,12 +510,12 @@ export default function AdminInvoicesPage() {
             <option value="all">All Status</option>
             <option value="draft">Draft</option>
             <option value="sent">Sent</option>
-            <option value="paid">Paid</option>
-            <option value="overdue">Overdue</option>
-            <option value="cancelled">Cancelled</option>
+            <option value="accepted">Accepted</option>
+            <option value="rejected">Rejected</option>
+            <option value="expired">Expired</option>
           </select>
           <button
-            onClick={fetchInvoices}
+            onClick={fetchQuotations}
             className="flex items-center gap-2 px-4 py-2 border rounded-lg hover:bg-gray-50"
           >
             <RefreshCw className="w-4 h-4" />
@@ -456,7 +528,7 @@ export default function AdminInvoicesPage() {
       {loading ? (
         <div className="text-center py-12">
           <RefreshCw className="w-8 h-8 animate-spin mx-auto mb-4 text-sky-500" />
-          <p className="text-gray-600">Loading invoices...</p>
+          <p className="text-gray-600">Loading quotations...</p>
         </div>
       ) : (
         <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
@@ -465,7 +537,7 @@ export default function AdminInvoicesPage() {
               <tr>
                 <th className="px-4 py-3">
                   <button onClick={toggleSelectAll} className="p-1 hover:bg-gray-200 rounded">
-                    {selectedIds.size === invoices.length && invoices.length > 0 ? (
+                    {selectedIds.size === quotations.length && quotations.length > 0 ? (
                       <CheckSquare className="w-4 h-4 text-sky-600" />
                     ) : (
                       <Square className="w-4 h-4 text-gray-400" />
@@ -473,19 +545,22 @@ export default function AdminInvoicesPage() {
                   </button>
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                  Invoice #
+                  Quote #
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                   Customer
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                  Issue Date
+                  Destination
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                  Due Date
+                  Travel Date
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                  Amount
+                  Total
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  Valid Until
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                   Status
@@ -496,15 +571,15 @@ export default function AdminInvoicesPage() {
               </tr>
             </thead>
             <tbody className="divide-y">
-              {filtered.map((invoice) => (
+              {filtered.map((quotation) => (
                 <>
-                  <tr key={invoice.id} className="hover:bg-gray-50">
+                  <tr key={quotation.id} className="hover:bg-gray-50">
                     <td className="px-4 py-4">
                       <button
-                        onClick={() => toggleSelect(invoice.id)}
+                        onClick={() => toggleSelect(quotation.id)}
                         className="p-1 hover:bg-gray-200 rounded"
                       >
-                        {selectedIds.has(invoice.id) ? (
+                        {selectedIds.has(quotation.id) ? (
                           <CheckSquare className="w-4 h-4 text-sky-600" />
                         ) : (
                           <Square className="w-4 h-4 text-gray-400" />
@@ -512,59 +587,84 @@ export default function AdminInvoicesPage() {
                       </button>
                     </td>
                     <td className="px-6 py-4 font-mono text-sm">
-                      {invoice.invoice_number}
+                      {quotation.quote_number}
                     </td>
                     <td className="px-6 py-4">
                       <div>
-                        <p className="font-medium">{invoice.customer_name}</p>
-                        <p className="text-xs text-gray-500">{invoice.customer_email}</p>
+                        <p className="font-medium">{quotation.customer_name}</p>
+                        <p className="text-xs text-gray-500">{quotation.customer_email}</p>
                       </div>
                     </td>
                     <td className="px-6 py-4 text-sm">
-                      {new Date(invoice.issue_date).toLocaleDateString()}
+                      {quotation.destination || "—"}
                     </td>
                     <td className="px-6 py-4 text-sm">
-                      {new Date(invoice.due_date).toLocaleDateString()}
+                      {quotation.travel_date
+                        ? new Date(quotation.travel_date).toLocaleDateString()
+                        : "—"}
                     </td>
                     <td className="px-6 py-4 font-medium">
-                      ${invoice.total.toLocaleString()}
+                      ${quotation.total.toLocaleString()}
+                    </td>
+                    <td className="px-6 py-4 text-sm">
+                      {new Date(quotation.valid_until).toLocaleDateString()}
                     </td>
                     <td className="px-6 py-4">
                       <EditableCell
-                        value={invoice.status}
+                        value={quotation.status}
                         type="select"
                         options={Object.entries(statusMap).map(([key, config]) => ({
                           label: config.label,
                           value: key,
                         }))}
-                        onSave={(value) => handleStatusChange(invoice.id, value)}
+                        onSave={(value) => handleStatusChange(quotation.id, value)}
                       />
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex gap-2">
                         <button
-                          onClick={() => handleEdit(invoice)}
+                          onClick={() => handleEdit(quotation)}
                           className="p-1.5 text-sky-600 hover:bg-sky-50 rounded"
                           title="Edit"
                         >
                           <Edit2 className="w-4 h-4" />
                         </button>
                         <button
-                          onClick={() => handleSendEmail(invoice)}
+                          onClick={() => handleSendEmail(quotation)}
                           className="p-1.5 text-green-600 hover:bg-green-50 rounded"
                           title="Send Email"
                         >
                           <Mail className="w-4 h-4" />
                         </button>
+                        {quotation.status === "sent" && (
+                          <>
+                            <button
+                              onClick={() => handleAccept(quotation.id)}
+                              className="p-1.5 text-green-600 hover:bg-green-50 rounded"
+                              title="Accept"
+                            >
+                              <CheckCircle className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => handleReject(quotation.id)}
+                              className="p-1.5 text-red-600 hover:bg-red-50 rounded"
+                              title="Reject"
+                            >
+                              <XCircle className="w-4 h-4" />
+                            </button>
+                          </>
+                        )}
+                        {quotation.status === "accepted" && !quotation.converted_to_booking_id && (
+                          <button
+                            onClick={() => handleConvertToBooking(quotation)}
+                            className="p-1.5 text-purple-600 hover:bg-purple-50 rounded"
+                            title="Convert to Booking"
+                          >
+                            <ArrowRight className="w-4 h-4" />
+                          </button>
+                        )}
                         <button
-                          onClick={() => handleShareDocument(invoice)}
-                          className="p-1.5 text-purple-600 hover:bg-purple-50 rounded"
-                          title="Share"
-                        >
-                          <Share2 className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(invoice.id)}
+                          onClick={() => handleDelete(quotation.id)}
                           className="p-1.5 text-red-600 hover:bg-red-50 rounded"
                           title="Delete"
                         >
@@ -573,15 +673,15 @@ export default function AdminInvoicesPage() {
                       </div>
                     </td>
                   </tr>
-                  {expandedRowId === invoice.id && (
+                  {expandedRowId === quotation.id && (
                     <tr>
-                      <td colSpan={8} className="p-0">
+                      <td colSpan={9} className="p-0">
                         <div className="bg-sky-50 border-t">
                           <form onSubmit={handleSubmit} className="p-6">
                             <div className="grid grid-cols-2 gap-4 mb-4">
                               <div className="col-span-2">
                                 <h3 className="font-semibold mb-3">
-                                  {editingInvoice ? "Edit Invoice" : "New Invoice"}
+                                  {editingQuotation ? "Edit Quotation" : "New Quotation"}
                                 </h3>
                               </div>
 
@@ -634,7 +734,66 @@ export default function AdminInvoicesPage() {
 
                               <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                                  Total Amount *
+                                  Destination
+                                </label>
+                                <input
+                                  type="text"
+                                  value={formData.destination}
+                                  onChange={(e) =>
+                                    setFormData({ ...formData, destination: e.target.value })
+                                  }
+                                  className="w-full px-3 py-2 border rounded-lg"
+                                  placeholder="e.g., Dubai, Paris"
+                                />
+                              </div>
+
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  Travel Date
+                                </label>
+                                <input
+                                  type="date"
+                                  value={formData.travel_date}
+                                  onChange={(e) =>
+                                    setFormData({ ...formData, travel_date: e.target.value })
+                                  }
+                                  className="w-full px-3 py-2 border rounded-lg"
+                                />
+                              </div>
+
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  Duration (Days)
+                                </label>
+                                <input
+                                  type="number"
+                                  value={formData.duration_days}
+                                  onChange={(e) =>
+                                    setFormData({ ...formData, duration_days: e.target.value })
+                                  }
+                                  className="w-full px-3 py-2 border rounded-lg"
+                                  placeholder="7"
+                                />
+                              </div>
+
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  Passengers
+                                </label>
+                                <input
+                                  type="number"
+                                  value={formData.passengers}
+                                  onChange={(e) =>
+                                    setFormData({ ...formData, passengers: e.target.value })
+                                  }
+                                  className="w-full px-3 py-2 border rounded-lg"
+                                  placeholder="1"
+                                />
+                              </div>
+
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  Total Price *
                                 </label>
                                 <input
                                   type="number"
@@ -651,28 +810,13 @@ export default function AdminInvoicesPage() {
 
                               <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                                  Issue Date *
+                                  Valid Until *
                                 </label>
                                 <input
                                   type="date"
-                                  value={formData.issue_date}
+                                  value={formData.valid_until}
                                   onChange={(e) =>
-                                    setFormData({ ...formData, issue_date: e.target.value })
-                                  }
-                                  className="w-full px-3 py-2 border rounded-lg"
-                                  required
-                                />
-                              </div>
-
-                              <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                  Due Date *
-                                </label>
-                                <input
-                                  type="date"
-                                  value={formData.due_date}
-                                  onChange={(e) =>
-                                    setFormData({ ...formData, due_date: e.target.value })
+                                    setFormData({ ...formData, valid_until: e.target.value })
                                   }
                                   className="w-full px-3 py-2 border rounded-lg"
                                   required
@@ -690,7 +834,7 @@ export default function AdminInvoicesPage() {
                                   }
                                   className="w-full px-3 py-2 border rounded-lg"
                                   rows={3}
-                                  placeholder="Additional notes..."
+                                  placeholder="Additional notes, inclusions, exclusions..."
                                 />
                               </div>
                             </div>
@@ -700,14 +844,14 @@ export default function AdminInvoicesPage() {
                                 type="submit"
                                 className="flex-1 px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 flex items-center justify-center gap-2"
                               >
-                                <FileText className="w-4 h-4" />
-                                {editingInvoice ? "Update" : "Create"} Invoice
+                                <FileCheck className="w-4 h-4" />
+                                {editingQuotation ? "Update" : "Create"} Quotation
                               </button>
                               <button
                                 type="button"
                                 onClick={() => {
                                   setExpandedRowId(null);
-                                  setEditingInvoice(null);
+                                  setEditingQuotation(null);
                                 }}
                                 className="flex-1 px-4 py-2 border rounded-lg hover:bg-gray-50"
                               >
@@ -726,17 +870,11 @@ export default function AdminInvoicesPage() {
         </div>
       )}
 
-      {showAuditTrail && (
-        <div className="mt-6">
-          <AuditTrailInline recordId={showAuditTrail} tableName="invoices" />
-        </div>
-      )}
-
       {showImporter && (
         <ExcelImporter
-          entityType="invoices"
+          entityType="quotations"
           onImport={handleImport}
-          validationRules={getValidationRules("invoices")}
+          validationRules={getValidationRules("quotations")}
           onClose={() => setShowImporter(false)}
         />
       )}
