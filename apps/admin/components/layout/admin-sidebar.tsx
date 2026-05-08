@@ -27,6 +27,9 @@ import {
   ChevronDown,
   ChevronRight,
   FileCheck,
+  Upload,
+  Clock,
+  Ticket,
 } from "lucide-react";
 
 interface NavItem {
@@ -39,6 +42,17 @@ interface NavItem {
 const navigation: NavItem[] = [
   { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
   { name: "Bookings", href: "/admin/bookings", icon: FileText },
+  {
+    name: "Operations",
+    href: "/admin/operations",
+    icon: RefreshCcw,
+    children: [
+      { name: "PNR Ingestion", href: "/admin/pnr-ingestion", icon: Upload },
+      { name: "Manual Postings", href: "/admin/manual-postings", icon: FileText },
+      { name: "Queue Management", href: "/admin/queue", icon: Clock },
+      { name: "Ticketing", href: "/admin/ticketing", icon: Ticket },
+    ],
+  },
   {
     name: "Documents",
     href: "/admin/documents",
