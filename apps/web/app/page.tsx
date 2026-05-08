@@ -710,10 +710,18 @@ export default function HomePage() {
                 href="/tours/search"
                 className="bg-white rounded-xl border hover:border-amber-300 hover:shadow-xl transition overflow-hidden group"
               >
-                <div className="h-40 bg-gradient-to-br from-amber-100 to-orange-50 flex items-center justify-center relative">
-                  <span className="text-6xl">{tour.image}</span>
+                <div className="relative h-40 overflow-hidden group">
+                  <img
+                    src={tour.image}
+                    alt={tour.name}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.src = "https://images.unsplash.com/photo-1501594907352-04cda38ebc29?w=400&q=80";
+                    }}
+                  />
                   {tour.tag && (
-                    <span className="absolute top-2 right-2 bg-amber-500 text-white text-xs px-2 py-1 rounded-full">
+                    <span className="absolute top-2 left-2 bg-amber-500 text-white text-xs px-2 py-1 rounded-full">
                       {tour.tag}
                     </span>
                   )}
