@@ -4,6 +4,7 @@ import { useState, useMemo, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui";
 import { FlightCard } from "./flight-card";
+import { FlightDetailsModal } from "./flight-details-modal";
 import { Skeleton } from "@/components/ui";
 import {
   ArrowUpDown,
@@ -73,24 +74,22 @@ export function SearchResults({ onOpenFilters }: SearchResultsProps) {
   const [sortBy, setSortBy] = useState<SortOption>("recommended");
   const [showSortDropdown, setShowSortDropdown] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [detailFlight, setDetailFlight] = useState<any>(null);
 
   const from = searchParams.get("from") || searchParams.get("origin") || "JFK";
   const to = searchParams.get("to") || searchParams.get("destination") || "LHR";
-  const depart = searchParams.get("depart") || searchParams.get("departure");
-  const returnDate = searchParams.get("return");
-  const adults = searchParams.get("adults") || "1";
-  const children = searchParams.get("children") || "0";
-  const infants = searchParams.get("infants") || "0";
+  const depart = searchParams.get("depart") || searchParams.get("departure") || "2024-02-15T00:00:00";
+  const returnDate = searchParams.get("return") || searchParams.get("returnDate") || "2024-02-20T00:00:00";
+  const adults = searchParams.get("adults") || "2";
+  const children = searchParams.get("children") || "1";
+  const infants = searchParams.get("infants") || "1";
   const cabin = searchParams.get("cabin") || "economy";
 
-  const totalPax = parseInt(adults) + parseInt(children) + parseInt(infants);
   const paxText = [
     `${adults} Adult${parseInt(adults) > 1 ? "s" : ""}`,
-    parseInt(children) > 0 && `${children} Child${parseInt(children) > 1 ? "ren" : ""}`,
-    parseInt(infants) > 0 && `${infants} Infant${parseInt(infants) > 1 ? "s" : ""}`,
-  ]
-    .filter(Boolean)
-    .join(", ");
+    ...(parseInt(children) > 0 ? [`${children} Child${parseInt(children) > 1 ? "ren" : ""}`] : []),
+    ...(parseInt(infants) > 0 ? [`${infants} Infant${parseInt(infants) > 1 ? "s" : ""}`] : []),
+  ].join(", ");
 
   const sortedFlights = useMemo(() => {
     const flights = [...mockFlights];
@@ -135,23 +134,9 @@ export function SearchResults({ onOpenFilters }: SearchResultsProps) {
     [from, to, depart, returnDate, adults, children, infants, cabin, router]
   );
 
-  const handleDetails = useCallback(
-    (flight: any) => {
-      sessionStorage.setItem("selectedFlight", JSON.stringify(flight));
-      const params = new URLSearchParams({
-        from: from || "",
-        to: to || "",
-        depart: depart || "",
-        return: returnDate || "",
-        adults,
-        children,
-        infants,
-        cabin,
-      });
-      router.push(`/flights/checkout?${params.toString()}`);
-    },
-    [from, to, depart, returnDate, adults, children, infants, cabin, router]
-  );
+  const handleDetails = useCallback((flight: any) => {
+    setDetailFlight(flight);
+  }, []);
 
   const sortOptions: { value: SortOption; label: string; icon: any }[] = [
     { value: "recommended", label: "Recommended", icon: Star },
@@ -161,9 +146,10 @@ export function SearchResults({ onOpenFilters }: SearchResultsProps) {
     { value: "departure", label: "Departure Time", icon: ArrowUpDown },
   ];
 
-  const getDateDisplay = (dateStr: string | null) => {
+  const getDateDisplay = (dateStr: string) => {
     if (!dateStr) return "";
     const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return "";
     return d.toLocaleDateString("en-US", {
       weekday: "short",
       month: "short",
@@ -190,7 +176,9 @@ export function SearchResults({ onOpenFilters }: SearchResultsProps) {
             </div>
             <p className="text-sm text-slate-500 mt-1">
               {getDateDisplay(depart)}
-              {returnDate && ` — ${getDateDisplay(returnDate)}`}
+              {returnDate && getDateDisplay(returnDate) && (
+                <> — {getDateDisplay(returnDate)}</>
+              )}
               <span className="mx-1.5">•</span>
               {paxText}
               <span className="mx-1.5">•</span>
@@ -325,6 +313,12 @@ export function SearchResults({ onOpenFilters }: SearchResultsProps) {
           Load More Flights
         </Button>
       </motion.div>
+
+      <FlightDetailsModal
+        flight={detailFlight}
+        onClose={() => setDetailFlight(null)}
+        onSelect={handleSelect}
+      />
     </div>
   );
 }

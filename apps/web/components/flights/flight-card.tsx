@@ -40,18 +40,30 @@ interface FlightCardProps {
   index?: number;
 }
 
+const cardGradients = [
+  "from-blue-50/40 via-white to-indigo-50/30",
+  "from-sky-50/40 via-white to-cyan-50/30",
+  "from-indigo-50/40 via-white to-violet-50/30",
+  "from-cyan-50/40 via-white to-teal-50/30",
+  "from-violet-50/40 via-white to-purple-50/30",
+  "from-rose-50/30 via-white to-pink-50/30",
+  "from-amber-50/30 via-white to-orange-50/30",
+  "from-emerald-50/30 via-white to-green-50/30",
+];
+
 export function FlightCard({ flight, onSelect, onDetails, index = 0 }: FlightCardProps) {
   const departureTime = new Date(flight.departure);
   const arrivalTime = new Date(flight.arrival);
   const isRefundable = flight.cabinClass !== "economy";
   const isBusinessOrFirst = flight.cabinClass === "business" || flight.cabinClass === "first";
+  const gradient = cardGradients[index % cardGradients.length];
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.08, duration: 0.35, ease: "easeOut" }}
-      className="group bg-white rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-lg hover:border-blue-300 transition-all duration-300 cursor-pointer"
+      className={`group bg-gradient-to-br ${gradient} rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-lg hover:border-blue-300 transition-all duration-300`}
     >
       <div className="p-5 md:p-6">
         <div className="flex items-center justify-between mb-5">
@@ -94,7 +106,7 @@ export function FlightCard({ flight, onSelect, onDetails, index = 0 }: FlightCar
           stopover={flight.stopover}
         />
 
-        <div className="flex flex-wrap items-center gap-3 mt-5 pt-4 border-t border-slate-100">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 mt-5 pt-4 border-t border-slate-200/60">
           <div className="flex items-center gap-1.5 text-xs text-slate-500">
             <Luggage className="w-3.5 h-3.5 text-slate-400" />
             <span>Baggage incl.</span>
@@ -118,7 +130,7 @@ export function FlightCard({ flight, onSelect, onDetails, index = 0 }: FlightCar
         </div>
       </div>
 
-      <div className="flex items-center justify-between px-6 py-3.5 bg-slate-50/80 border-t border-slate-100 rounded-b-2xl">
+      <div className="flex items-center justify-between px-6 py-3.5 bg-white/70 backdrop-blur-sm border-t border-slate-200/60 rounded-b-2xl">
         <div>
           <p className="text-xs text-slate-400 font-medium">from</p>
           <div className="flex items-baseline gap-1">
