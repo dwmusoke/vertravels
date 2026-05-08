@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@vertravels/ui";
@@ -21,9 +22,20 @@ import {
   RefreshCcw,
   TrendingUp,
   Building2,
+  MapPin,
+  Compass,
+  ChevronDown,
+  ChevronRight,
 } from "lucide-react";
 
-const navigation = [
+interface NavItem {
+  name: string;
+  href: string;
+  icon: any;
+  children?: { name: string; href: string; icon: any }[];
+}
+
+const navigation: NavItem[] = [
   { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
   { name: "Bookings", href: "/admin/bookings", icon: FileText },
   { name: "Reconciliation", href: "/admin/reconciliation", icon: RefreshCcw },
@@ -31,6 +43,19 @@ const navigation = [
   { name: "Daily Sales", href: "/admin/daily-sales", icon: TrendingUp },
   { name: "Agency Insights", href: "/admin/agency-insights", icon: TrendingUp },
   { name: "Partnerships", href: "/admin/partnerships", icon: Users },
+  {
+    name: "Content",
+    href: "/admin/content",
+    icon: BookOpen,
+    children: [
+      { name: "Destinations", href: "/admin/destinations", icon: MapPin },
+      {
+        name: "Tour Categories",
+        href: "/admin/tour-categories",
+        icon: Compass,
+      },
+    ],
+  },
   { name: "Flights", href: "/admin/modules/flights", icon: Plane },
   { name: "Hotels", href: "/admin/modules/hotels", icon: Hotel },
   { name: "Tours", href: "/admin/modules/tours", icon: Map },
@@ -47,6 +72,13 @@ const navigation = [
 
 export function AdminSidebar() {
   const pathname = usePathname();
+  const [expandedItems, setExpandedItems] = useState<string[]>([]);
+
+  const toggleExpand = (name: string) => {
+    setExpandedItems((prev) =>
+      prev.includes(name) ? prev.filter((n) => n !== name) : [...prev, name]
+    );
+  };
 
   return (
     <aside className="w-64 border-r bg-card min-h-screen">
@@ -68,6 +100,57 @@ export function AdminSidebar() {
         {navigation.map((item) => {
           const isActive =
             pathname === item.href || pathname.startsWith(item.href + "/");
+          const isExpanded = expandedItems.includes(item.name);
+          const hasChildren = item.children && item.children.length > 0;
+
+          if (hasChildren) {
+            return (
+              <div key={item.name}>
+                <button
+                  onClick={() => toggleExpand(item.name)}
+                  className={cn(
+                    "flex items-center w-full px-3 py-2 text-sm font-medium rounded-md transition-colors",
+                    isActive
+                      ? "bg-primary text-primary-foreground"
+                      : "text-foreground hover:bg-accent"
+                  )}
+                >
+                  <item.icon className="mr-3 h-4 w-4" />
+                  <span className="flex-1 text-left">{item.name}</span>
+                  {isExpanded ? (
+                    <ChevronDown className="h-4 w-4" />
+                  ) : (
+                    <ChevronRight className="h-4 w-4" />
+                  )}
+                </button>
+                {isExpanded && (
+                  <div className="ml-6 mt-1 space-y-1">
+                    {item.children!.map((child) => {
+                      const isChildActive =
+                        pathname === child.href ||
+                        pathname.startsWith(child.href + "/");
+                      return (
+                        <Link
+                          key={child.name}
+                          href={child.href}
+                          className={cn(
+                            "flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors",
+                            isChildActive
+                              ? "bg-primary/20 text-primary"
+                              : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                          )}
+                        >
+                          <child.icon className="mr-3 h-3 w-3" />
+                          {child.name}
+                        </Link>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            );
+          }
+
           return (
             <Link
               key={item.name}
@@ -76,7 +159,7 @@ export function AdminSidebar() {
                 "flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors",
                 isActive
                   ? "bg-primary text-primary-foreground"
-                  : "text-foreground hover:bg-accent",
+                  : "text-foreground hover:bg-accent"
               )}
             >
               <item.icon className="mr-3 h-4 w-4" />
