@@ -22,6 +22,7 @@ import {
   Ticket,
   Zap,
   CreditCard,
+  Sliders,
 } from "lucide-react";
 
 interface NavItem {
@@ -63,7 +64,8 @@ const navigation: NavItem[] = [
   { name: "Expenses", href: "/expenses", icon: CreditCard },
   { name: "Reconciliation", href: "/reconciliation", icon: RefreshCcw },
   { name: "Users", href: "/users", icon: Users },
-  { name: "Modules", href: "/modules", icon: Settings },
+  { name: "Modules", href: "/modules", icon: Sliders },
+  { name: "Settings", href: "/settings", icon: Settings },
 ];
 
 export function AdminSidebar() {
