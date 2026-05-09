@@ -1,0 +1,7 @@
+name,slug,type,active,status,module_color,icon,order
+Flights,flights,flights,true,true,#3B82F6,plane,1
+Hotels,hotels,hotels,true,true,#10B981,hotel,2
+Tours,tours,tours,true,true,#F59E0B,map,3
+Cars,cars,cars,true,true,#8B5CF6,car,4
+Visa,visa,visa,true,true,#EC4899,passport,5
+Blogs,blogs,extra,true,true,#06B6D4,book,6

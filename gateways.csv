@@ -1,0 +1,7 @@
+name,slug,c1,c2,c3,c4,c5,dev_mode,status,default,order
+Stripe,stripe,pk_test_stripe_public_key,sk_test_stripe_secret_key,test_card_4242424242424242,12/34 - 123,Any future date,true,true,false,1
+PayPal,paypal,paypal_client_id,paypal_secret,sb-test-facilitator@email.com,test_password,,true,true,false,2
+Flutterwave,flutterwave,FLWPUBK_TEST-flutterwave_public_key,FLWSECK_TEST-flutterwave_secret_key,FLW_ENCRYPTION_KEY,,,true,true,false,3
+Bank Transfer,bank-transfer,"Account Holder: VerTravels Ltd","Bank: First Bank","Account: 1234567890","IBAN: NG123456789","Sort Code: 123456",false,true,false,4
+Pay Later,pay-later,,,,,,false,true,false,5
+Wallet Balance,wallet-balance,,,,,,false,true,false,6
