@@ -1,7 +1,7 @@
-apps/admin
-apps/api
+# apps/admin - needed for admin deployment
+# apps/api
 node_modules
-packages
+# packages - needed for @vertravels/ui workspace dep
 .git
 .env*
 *.md

@@ -29,23 +29,19 @@ import { EditableCell } from "@/components/ui/editable-cell";
 
 interface Booking {
   id: string;
-  booking_reference: string;
+  booking_ref: string;
   customer_name: string;
   customer_email: string;
   customer_phone?: string;
   destination?: string;
   travel_date?: string;
-  return_date?: string;
-  duration_days?: number;
-  passengers?: number;
-  service_type: string;
+  module_type: string;
   status: string;
   total_amount: number;
-  paid_amount?: number;
-  balance?: number;
-  assigned_agent?: string;
-  priority: "low" | "normal" | "high" | "urgent";
-  source?: string;
+  adults?: number;
+  children?: number;
+  infants?: number;
+  duration?: number;
   notes?: string;
   created_at: string;
 }
@@ -66,14 +62,12 @@ export default function BookingsPage() {
     customer_phone: "",
     destination: "",
     travel_date: "",
-    return_date: "",
-    duration_days: "",
-    passengers: "1",
-    service_type: "flight",
+    adults: "1",
+    children: "0",
+    infants: "0",
+    duration: "",
+    module_type: "flights",
     total_amount: "",
-    paid_amount: "0",
-    priority: "normal",
-    source: "website",
     notes: "",
   });
 
@@ -105,9 +99,10 @@ export default function BookingsPage() {
 
     try {
       const totalAmount = parseFloat(formData.total_amount) || 0;
-      const paidAmount = parseFloat(formData.paid_amount) || 0;
-      const duration = parseInt(formData.duration_days) || 0;
-      const passengers = parseInt(formData.passengers) || 1;
+      const duration = parseInt(formData.duration) || 0;
+      const adults = parseInt(formData.adults) || 1;
+      const children = parseInt(formData.children) || 0;
+      const infants = parseInt(formData.infants) || 0;
 
       if (editingBooking) {
         const { error } = await supabase
@@ -118,15 +113,12 @@ export default function BookingsPage() {
             customer_phone: formData.customer_phone,
             destination: formData.destination,
             travel_date: formData.travel_date,
-            return_date: formData.return_date,
-            duration_days: duration,
-            passengers,
-            service_type: formData.service_type,
+            adults,
+            children,
+            infants,
+            duration,
+            module_type: formData.module_type,
             total_amount: totalAmount,
-            paid_amount: paidAmount,
-            balance: totalAmount - paidAmount,
-            priority: formData.priority,
-            source: formData.source,
             notes: formData.notes,
             updated_at: new Date().toISOString(),
           })
@@ -138,21 +130,18 @@ export default function BookingsPage() {
 
         const { error } = await supabase.from("bookings").insert([
           {
-            booking_reference: bookingRef,
+            booking_ref: bookingRef,
             customer_name: formData.customer_name,
             customer_email: formData.customer_email,
             customer_phone: formData.customer_phone,
             destination: formData.destination,
             travel_date: formData.travel_date,
-            return_date: formData.return_date,
-            duration_days: duration,
-            passengers,
-            service_type: formData.service_type,
+            adults,
+            children,
+            infants,
+            duration,
+            module_type: formData.module_type,
             total_amount: totalAmount,
-            paid_amount: paidAmount,
-            balance: totalAmount - paidAmount,
-            priority: formData.priority,
-            source: formData.source,
             notes: formData.notes,
             status: "inquiry",
           },
@@ -277,14 +266,12 @@ export default function BookingsPage() {
       customer_phone: "",
       destination: "",
       travel_date: "",
-      return_date: "",
-      duration_days: "",
-      passengers: "1",
-      service_type: "flight",
+      adults: "1",
+      children: "0",
+      infants: "0",
+      duration: "",
+      module_type: "flights",
       total_amount: "",
-      paid_amount: "0",
-      priority: "normal",
-      source: "website",
       notes: "",
     });
   }
@@ -297,14 +284,12 @@ export default function BookingsPage() {
       customer_phone: booking.customer_phone || "",
       destination: booking.destination || "",
       travel_date: booking.travel_date || "",
-      return_date: booking.return_date || "",
-      duration_days: booking.duration_days?.toString() || "",
-      passengers: booking.passengers?.toString() || "1",
-      service_type: booking.service_type,
+      adults: booking.adults?.toString() || "1",
+      children: booking.children?.toString() || "0",
+      infants: booking.infants?.toString() || "0",
+      duration: booking.duration?.toString() || "",
+      module_type: booking.module_type,
       total_amount: booking.total_amount.toString(),
-      paid_amount: booking.paid_amount?.toString() || "0",
-      priority: booking.priority,
-      source: booking.source || "website",
       notes: booking.notes || "",
     });
     setExpandedRowId(booking.id);
@@ -344,7 +329,7 @@ export default function BookingsPage() {
   const filtered = bookings.filter((booking) => {
     const matchesSearch =
       booking.customer_name.toLowerCase().includes(search.toLowerCase()) ||
-      booking.booking_reference.toLowerCase().includes(search.toLowerCase()) ||
+      booking.booking_ref.toLowerCase().includes(search.toLowerCase()) ||
       booking.destination?.toLowerCase().includes(search.toLowerCase());
     const matchesFilter = filter === "all" || booking.status === filter;
     return matchesSearch && matchesFilter;
@@ -364,10 +349,10 @@ export default function BookingsPage() {
   };
 
   const serviceTypes = [
-    { label: "Flight", value: "flight" },
-    { label: "Hotel", value: "hotel" },
-    { label: "Tour", value: "tour" },
-    { label: "Car", value: "car" },
+    { label: "Flight", value: "flights" },
+    { label: "Hotel", value: "hotels" },
+    { label: "Tour", value: "tours" },
+    { label: "Car", value: "cars" },
     { label: "Visa", value: "visa" },
     { label: "Package", value: "package" },
   ];
@@ -558,9 +543,6 @@ export default function BookingsPage() {
                   Amount
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                  Priority
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                   Status
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
@@ -585,7 +567,7 @@ export default function BookingsPage() {
                       </button>
                     </td>
                     <td className="px-6 py-4 font-mono text-sm">
-                      {booking.booking_reference}
+                      {booking.booking_ref}
                     </td>
                     <td className="px-6 py-4">
                       <div>
@@ -603,15 +585,6 @@ export default function BookingsPage() {
                     </td>
                     <td className="px-6 py-4 font-medium">
                       ${booking.total_amount.toLocaleString()}
-                    </td>
-                    <td className="px-6 py-4">
-                      <span
-                        className={`px-2 py-1 text-xs rounded-full ${
-                          priorityMap[booking.priority]?.color || "bg-gray-100 text-gray-700"
-                        }`}
-                      >
-                        {priorityMap[booking.priority]?.label || booking.priority}
-                      </span>
                     </td>
                     <td className="px-6 py-4">
                       <EditableCell
@@ -655,7 +628,7 @@ export default function BookingsPage() {
                   </tr>
                   {expandedRowId === booking.id && (
                     <tr>
-                      <td colSpan={9} className="p-0">
+                      <td colSpan={8} className="p-0">
                         <div className="bg-sky-50 border-t">
                           <form onSubmit={handleSubmit} className="p-6">
                             <div className="grid grid-cols-2 gap-4 mb-4">
@@ -714,26 +687,6 @@ export default function BookingsPage() {
 
                               <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                                  Service Type *
-                                </label>
-                                <select
-                                  value={formData.service_type}
-                                  onChange={(e) =>
-                                    setFormData({ ...formData, service_type: e.target.value })
-                                  }
-                                  className="w-full px-3 py-2 border rounded-lg"
-                                  required
-                                >
-                                  {serviceTypes.map((type) => (
-                                    <option key={type.value} value={type.value}>
-                                      {type.label}
-                                    </option>
-                                  ))}
-                                </select>
-                              </div>
-
-                              <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
                                   Destination
                                 </label>
                                 <input
@@ -749,19 +702,21 @@ export default function BookingsPage() {
 
                               <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                                  Priority
+                                  Module Type *
                                 </label>
                                 <select
-                                  value={formData.priority}
+                                  value={formData.module_type}
                                   onChange={(e) =>
-                                    setFormData({ ...formData, priority: e.target.value })
+                                    setFormData({ ...formData, module_type: e.target.value })
                                   }
                                   className="w-full px-3 py-2 border rounded-lg"
+                                  required
                                 >
-                                  <option value="low">Low</option>
-                                  <option value="normal">Normal</option>
-                                  <option value="high">High</option>
-                                  <option value="urgent">Urgent</option>
+                                  {serviceTypes.map((type) => (
+                                    <option key={type.value} value={type.value}>
+                                      {type.label}
+                                    </option>
+                                  ))}
                                 </select>
                               </div>
 
@@ -781,27 +736,13 @@ export default function BookingsPage() {
 
                               <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                                  Return Date
-                                </label>
-                                <input
-                                  type="date"
-                                  value={formData.return_date}
-                                  onChange={(e) =>
-                                    setFormData({ ...formData, return_date: e.target.value })
-                                  }
-                                  className="w-full px-3 py-2 border rounded-lg"
-                                />
-                              </div>
-
-                              <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
                                   Duration (Days)
                                 </label>
                                 <input
                                   type="number"
-                                  value={formData.duration_days}
+                                  value={formData.duration}
                                   onChange={(e) =>
-                                    setFormData({ ...formData, duration_days: e.target.value })
+                                    setFormData({ ...formData, duration: e.target.value })
                                   }
                                   className="w-full px-3 py-2 border rounded-lg"
                                   placeholder="7"
@@ -810,16 +751,46 @@ export default function BookingsPage() {
 
                               <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                                  Passengers
+                                  Adults
                                 </label>
                                 <input
                                   type="number"
-                                  value={formData.passengers}
+                                  value={formData.adults}
                                   onChange={(e) =>
-                                    setFormData({ ...formData, passengers: e.target.value })
+                                    setFormData({ ...formData, adults: e.target.value })
                                   }
                                   className="w-full px-3 py-2 border rounded-lg"
                                   placeholder="1"
+                                />
+                              </div>
+
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  Children
+                                </label>
+                                <input
+                                  type="number"
+                                  value={formData.children}
+                                  onChange={(e) =>
+                                    setFormData({ ...formData, children: e.target.value })
+                                  }
+                                  className="w-full px-3 py-2 border rounded-lg"
+                                  placeholder="0"
+                                />
+                              </div>
+
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  Infants
+                                </label>
+                                <input
+                                  type="number"
+                                  value={formData.infants}
+                                  onChange={(e) =>
+                                    setFormData({ ...formData, infants: e.target.value })
+                                  }
+                                  className="w-full px-3 py-2 border rounded-lg"
+                                  placeholder="0"
                                 />
                               </div>
 
@@ -838,42 +809,6 @@ export default function BookingsPage() {
                                   placeholder="0.00"
                                   required
                                 />
-                              </div>
-
-                              <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                  Paid Amount
-                                </label>
-                                <input
-                                  type="number"
-                                  step="0.01"
-                                  value={formData.paid_amount}
-                                  onChange={(e) =>
-                                    setFormData({ ...formData, paid_amount: e.target.value })
-                                  }
-                                  className="w-full px-3 py-2 border rounded-lg"
-                                  placeholder="0.00"
-                                />
-                              </div>
-
-                              <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                  Source
-                                </label>
-                                <select
-                                  value={formData.source}
-                                  onChange={(e) =>
-                                    setFormData({ ...formData, source: e.target.value })
-                                  }
-                                  className="w-full px-3 py-2 border rounded-lg"
-                                >
-                                  <option value="website">Website</option>
-                                  <option value="email">Email</option>
-                                  <option value="phone">Phone</option>
-                                  <option value="walk-in">Walk-in</option>
-                                  <option value="referral">Referral</option>
-                                  <option value="quotation">Quotation</option>
-                                </select>
                               </div>
 
                               <div className="col-span-2">

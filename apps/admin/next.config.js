@@ -8,7 +8,7 @@ const nextConfig = {
     // Ignore specific modules that cause build errors
     if (!isServer) {
       config.module.rules.push({
-        test: /(agency-insights|daily-sales|expenses|fare-optimization|iata-tracking|unused-tickets)/,
+        test: /(agency-insights|daily-sales|fare-optimization|iata-tracking|unused-tickets)/,
         use: 'null-loader',
       });
     }

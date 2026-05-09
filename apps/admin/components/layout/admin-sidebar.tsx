@@ -6,21 +6,11 @@ import { usePathname } from "next/navigation";
 import { cn } from '@vertravels/ui';
 import {
   LayoutDashboard,
-  Plane,
-  Hotel,
-  Map,
-  Car,
   Users,
-  CreditCard,
   Settings,
-  Key,
   FileText,
-  Globe,
-  Mail,
   BookOpen,
-  Shield,
   RefreshCcw,
-  TrendingUp,
   Building2,
   MapPin,
   Compass,
@@ -31,6 +21,7 @@ import {
   Clock,
   Ticket,
   Zap,
+  CreditCard,
 } from "lucide-react";
 
 interface NavItem {
@@ -41,63 +32,38 @@ interface NavItem {
 }
 
 const navigation: NavItem[] = [
-  { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
-  { name: "Bookings", href: "/admin/bookings", icon: FileText },
+  { name: "Dashboard", href: "/", icon: LayoutDashboard },
+  { name: "Bookings", href: "/bookings", icon: FileText },
   {
     name: "Operations",
-    href: "/admin/operations",
+    href: "#",
     icon: RefreshCcw,
     children: [
-      { name: "PNR Ingestion", href: "/admin/pnr-ingestion", icon: Upload },
-      { name: "Manual Postings", href: "/admin/manual-postings", icon: FileText },
-      { name: "Queue Management", href: "/admin/queue", icon: Clock },
-      { name: "Ticketing", href: "/admin/ticketing", icon: Ticket },
-      { name: "Automation", href: "/admin/automation", icon: Zap },
-      { name: "Vouchers & Manifests", href: "/admin/vouchers-manifests", icon: FileText },
+      { name: "PNR Ingestion", href: "/pnr-ingestion", icon: Upload },
+      { name: "Manual Postings", href: "/manual-postings", icon: FileText },
+      { name: "Queue Management", href: "/queue", icon: Clock },
+      { name: "Ticketing", href: "/ticketing", icon: Ticket },
+      { name: "Automation", href: "/automation", icon: Zap },
+      { name: "Vouchers & Manifests", href: "/vouchers-manifests", icon: FileText },
     ],
   },
   {
     name: "Documents",
-    href: "/admin/documents",
+    href: "#",
     icon: FileCheck,
     children: [
-      { name: "Invoices", href: "/admin/documents/invoices", icon: FileText },
-      { name: "Quotations", href: "/admin/documents/quotations", icon: FileCheck },
-      { name: "Receipts", href: "/admin/documents/receipts", icon: CreditCard },
-      { name: "Statements", href: "/admin/documents/statements", icon: FileText },
+      { name: "Invoices", href: "/documents/invoices", icon: FileText },
+      { name: "Quotations", href: "/documents/quotations", icon: FileCheck },
+      { name: "Receipts", href: "/documents/receipts", icon: CreditCard },
+      { name: "Statements", href: "/documents/statements", icon: FileText },
     ],
   },
-  { name: "Suppliers", href: "/admin/suppliers", icon: Building2 },
-  { name: "Reconciliation", href: "/admin/reconciliation", icon: RefreshCcw },
-  { name: "IATA Tracking", href: "/admin/iata-tracking", icon: Building2 },
-  { name: "Daily Sales", href: "/admin/daily-sales", icon: TrendingUp },
-  { name: "Agency Insights", href: "/admin/agency-insights", icon: TrendingUp },
-  { name: "Partnerships", href: "/admin/partnerships", icon: Users },
-  {
-    name: "Content",
-    href: "/admin/content",
-    icon: BookOpen,
-    children: [
-      { name: "Destinations", href: "/admin/destinations", icon: MapPin },
-      {
-        name: "Tour Categories",
-        href: "/admin/tour-categories",
-        icon: Compass,
-      },
-    ],
-  },
-  { name: "Flights", href: "/admin/modules/flights", icon: Plane },
-  { name: "Hotels", href: "/admin/modules/hotels", icon: Hotel },
-  { name: "Tours", href: "/admin/modules/tours", icon: Map },
-  { name: "Cars", href: "/admin/modules/cars", icon: Car },
-  { name: "Visa", href: "/admin/modules/visa", icon: Shield },
-  { name: "Users", href: "/admin/users", icon: Users },
-  { name: "Payments", href: "/admin/payments", icon: CreditCard },
-  { name: "API Management", href: "/admin/api-management", icon: Key },
-  { name: "Settings", href: "/admin/settings", icon: Settings },
-  { name: "Languages", href: "/admin/languages", icon: Globe },
-  { name: "Email Templates", href: "/admin/email", icon: Mail },
-  { name: "CMS Pages", href: "/admin/cms", icon: BookOpen },
+  { name: "Suppliers", href: "/suppliers", icon: Building2 },
+  { name: "Partnerships", href: "/partnerships", icon: Users },
+  { name: "Expenses", href: "/expenses", icon: CreditCard },
+  { name: "Reconciliation", href: "/reconciliation", icon: RefreshCcw },
+  { name: "Users", href: "/users", icon: Users },
+  { name: "Modules", href: "/modules", icon: Settings },
 ];
 
 export function AdminSidebar() {
@@ -114,7 +80,7 @@ export function AdminSidebar() {
     <aside className="w-64 border-r bg-card min-h-screen">
       {/* Logo */}
       <div className="p-6 border-b">
-        <Link href="/admin" className="flex items-center space-x-2">
+        <Link href="/" className="flex items-center space-x-2">
           <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
             <span className="text-lg font-bold text-primary-foreground">V</span>
           </div>
