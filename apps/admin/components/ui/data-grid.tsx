@@ -311,7 +311,7 @@ export function DataGrid<T extends { id?: string }>({
               key={index}
               className="flex items-center gap-2 px-3 py-1 bg-sky-100 text-sky-700 rounded-full text-sm"
             >
-              <span>{filter.column}: "{filter.value}"</span>
+              <span>{filter.column}: &ldquo;{filter.value}&rdquo;</span>
               <button
                 onClick={() => handleRemoveFilter(filter.column)}
                 className="hover:bg-sky-200 rounded-full p-0.5"

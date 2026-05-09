@@ -471,7 +471,7 @@ export default function AutomationPage() {
               <div className="text-center py-12 text-gray-500">
                 <Zap className="w-12 h-12 mx-auto mb-4 text-gray-400" />
                 <p>No automation rules configured</p>
-                <p className="text-sm">Click "Create Rule" to get started</p>
+                <p className="text-sm">Click &ldquo;Create Rule&rdquo; to get started</p>
               </div>
             )}
           </div>

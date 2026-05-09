@@ -311,7 +311,7 @@ export default function VouchersManifestsPage() {
                     <td colSpan={7} className="text-center py-12 text-gray-500">
                       <FileText className="w-12 h-12 mx-auto mb-4 text-gray-400" />
                       <p>No vouchers generated yet</p>
-                      <p className="text-sm">Click "Generate Voucher" to create one</p>
+                      <p className="text-sm">Click &ldquo;Generate Voucher&rdquo; to create one</p>
                     </td>
                   </tr>
                 )}
