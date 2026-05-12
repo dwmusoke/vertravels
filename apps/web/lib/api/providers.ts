@@ -268,7 +268,7 @@ async function searchTravelportFlights(
 }
 
 function getInternalFlights(params: FlightSearchParams): Flight[] {
-  return [
+  const outbound: Flight[] = [
     {
       id: "FL001",
       airline: "Uganda Airlines",
@@ -321,6 +321,64 @@ function getInternalFlights(params: FlightSearchParams): Flight[] {
       source: "internal",
     },
   ];
+
+  if (!params.returnDate) return outbound;
+
+  const returnFlights: Flight[] = [
+    {
+      id: "RF001",
+      airline: "Kenya Airways",
+      airlineCode: "KQ",
+      flightNumber: "KQ513",
+      origin: params.destination,
+      destination: params.origin,
+      departure: `${params.returnDate}T09:00:00`,
+      arrival: `${params.returnDate}T17:30:00`,
+      duration: "7h 30m",
+      stops: 0,
+      price: 400,
+      currency: "USD",
+      cabinClass: "economy",
+      available: true,
+      source: "internal",
+    },
+    {
+      id: "RF002",
+      airline: "Uganda Airlines",
+      airlineCode: "UR",
+      flightNumber: "UR202",
+      origin: params.destination,
+      destination: params.origin,
+      departure: `${params.returnDate}T12:00:00`,
+      arrival: `${params.returnDate}T20:15:00`,
+      duration: "7h 15m",
+      stops: 0,
+      price: 420,
+      currency: "USD",
+      cabinClass: "economy",
+      available: true,
+      source: "internal",
+    },
+    {
+      id: "RF003",
+      airline: "Emirates",
+      airlineCode: "EK",
+      flightNumber: "EK715",
+      origin: params.destination,
+      destination: params.origin,
+      departure: `${params.returnDate}T16:00:00`,
+      arrival: `${params.returnDate}T23:45:00`,
+      duration: "6h 45m",
+      stops: 0,
+      price: 700,
+      currency: "USD",
+      cabinClass: "business",
+      available: true,
+      source: "internal",
+    },
+  ];
+
+  return [...outbound, ...returnFlights];
 }
 
 export async function searchHotels(

@@ -62,6 +62,49 @@ const mockFlights = [
   },
 ];
 
+const returnMockFlights = [
+  {
+    id: "RF001", airline: "British Airways", airlineCode: "BA", flightNumber: "BA457",
+    origin: "LHR", destination: "JFK", departure: "2024-02-20T09:00:00", arrival: "2024-02-20T17:00:00",
+    duration: "7h 00m", stops: 0, price: 700, currency: "USD", cabinClass: "economy", available: true,
+  },
+  {
+    id: "RF002", airline: "American Airlines", airlineCode: "AA", flightNumber: "AA124",
+    origin: "LHR", destination: "JFK", departure: "2024-02-20T11:00:00", arrival: "2024-02-20T19:30:00",
+    duration: "7h 30m", stops: 0, price: 680, currency: "USD", cabinClass: "economy", available: true,
+  },
+  {
+    id: "RF003", airline: "Virgin Atlantic", airlineCode: "VS", flightNumber: "VS139",
+    origin: "LHR", destination: "JFK", departure: "2024-02-20T15:00:00", arrival: "2024-02-20T23:15:00",
+    duration: "7h 15m", stops: 0, price: 640, currency: "USD", cabinClass: "economy", available: true,
+  },
+  {
+    id: "RF004", airline: "Delta Air Lines", airlineCode: "DL", flightNumber: "DL790",
+    origin: "LHR", destination: "JFK", departure: "2024-02-20T17:00:00", arrival: "2024-02-21T03:00:00",
+    duration: "9h 00m", stops: 1, stopover: "ATL", price: 590, currency: "USD", cabinClass: "economy", available: true,
+  },
+  {
+    id: "RF005", airline: "Emirates", airlineCode: "EK", flightNumber: "EK202",
+    origin: "LHR", destination: "JFK", departure: "2024-02-20T20:00:00", arrival: "2024-02-21T12:00:00",
+    duration: "11h 00m", stops: 1, stopover: "DXB", price: 920, currency: "USD", cabinClass: "business", available: true,
+  },
+  {
+    id: "RF006", airline: "United Airlines", airlineCode: "UA", flightNumber: "UA842",
+    origin: "LHR", destination: "JFK", departure: "2024-02-20T06:00:00", arrival: "2024-02-20T14:15:00",
+    duration: "7h 15m", stops: 0, price: 720, currency: "USD", cabinClass: "economy", available: true,
+  },
+  {
+    id: "RF007", airline: "Qatar Airways", airlineCode: "QR", flightNumber: "QR703",
+    origin: "LHR", destination: "JFK", departure: "2024-02-20T13:00:00", arrival: "2024-02-21T04:00:00",
+    duration: "10h 00m", stops: 1, stopover: "DOH", price: 810, currency: "USD", cabinClass: "premium", available: true,
+  },
+  {
+    id: "RF008", airline: "Lufthansa", airlineCode: "LH", flightNumber: "LH402",
+    origin: "LHR", destination: "JFK", departure: "2024-02-20T19:00:00", arrival: "2024-02-21T08:30:00",
+    duration: "8h 30m", stops: 1, stopover: "FRA", price: 560, currency: "USD", cabinClass: "economy", available: true,
+  },
+];
+
 type SortOption = "recommended" | "price-low" | "price-high" | "duration" | "departure";
 
 interface SearchResultsProps {
@@ -75,6 +118,7 @@ export function SearchResults({ onOpenFilters }: SearchResultsProps) {
   const [showSortDropdown, setShowSortDropdown] = useState(false);
   const [loading, setLoading] = useState(false);
   const [detailFlight, setDetailFlight] = useState<any>(null);
+  const [activeLeg, setActiveLeg] = useState<"outbound" | "return">("outbound");
 
   const from = searchParams.get("from") || searchParams.get("origin") || "JFK";
   const to = searchParams.get("to") || searchParams.get("destination") || "LHR";
@@ -92,7 +136,7 @@ export function SearchResults({ onOpenFilters }: SearchResultsProps) {
   ].join(", ");
 
   const sortedFlights = useMemo(() => {
-    const flights = [...mockFlights];
+    const flights = [...(activeLeg === "outbound" ? mockFlights : returnMockFlights)];
     switch (sortBy) {
       case "price-low":
         return flights.sort((a, b) => a.price - b.price);
@@ -114,11 +158,12 @@ export function SearchResults({ onOpenFilters }: SearchResultsProps) {
       default:
         return flights;
     }
-  }, [sortBy]);
+  }, [sortBy, activeLeg]);
 
   const handleSelect = useCallback(
     (flight: any) => {
-      sessionStorage.setItem("selectedFlight", JSON.stringify(flight));
+      const legKey = activeLeg === "outbound" ? "selectedFlight" : "selectedReturnFlight";
+      sessionStorage.setItem(legKey, JSON.stringify({ ...flight, leg: activeLeg }));
       const params = new URLSearchParams({
         from: from || "",
         to: to || "",
@@ -128,10 +173,11 @@ export function SearchResults({ onOpenFilters }: SearchResultsProps) {
         children,
         infants,
         cabin,
+        leg: activeLeg,
       });
       router.push(`/flights/checkout?${params.toString()}`);
     },
-    [from, to, depart, returnDate, adults, children, infants, cabin, router]
+    [from, to, depart, returnDate, adults, children, infants, cabin, activeLeg, router]
   );
 
   const handleDetails = useCallback((flight: any) => {
@@ -167,17 +213,46 @@ export function SearchResults({ onOpenFilters }: SearchResultsProps) {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
           <div>
             <div className="flex items-center gap-2.5">
-              <h2 className="text-xl font-bold text-slate-900">
-                {from?.toUpperCase()} <span className="text-slate-300 mx-1">→</span> {to?.toUpperCase()}
-              </h2>
+              {returnDate && returnDate !== "2024-02-20T00:00:00" ? (
+                <div className="flex items-center gap-2 bg-slate-50 rounded-lg p-0.5">
+                  <button
+                    onClick={() => setActiveLeg("outbound")}
+                    className={`px-3 py-1.5 rounded-md text-sm font-semibold transition-colors ${
+                      activeLeg === "outbound"
+                        ? "bg-white text-slate-900 shadow-sm"
+                        : "text-slate-500 hover:text-slate-700"
+                    }`}
+                  >
+                    {from?.toUpperCase()} → {to?.toUpperCase()}
+                  </button>
+                  <button
+                    onClick={() => setActiveLeg("return")}
+                    className={`px-3 py-1.5 rounded-md text-sm font-semibold transition-colors ${
+                      activeLeg === "return"
+                        ? "bg-white text-slate-900 shadow-sm"
+                        : "text-slate-500 hover:text-slate-700"
+                    }`}
+                  >
+                    {to?.toUpperCase()} → {from?.toUpperCase()}
+                  </button>
+                </div>
+              ) : (
+                <h2 className="text-xl font-bold text-slate-900">
+                  {from?.toUpperCase()} <span className="text-slate-300 mx-1">→</span> {to?.toUpperCase()}
+                </h2>
+              )}
               <span className="bg-blue-50 text-blue-700 text-xs font-semibold px-2.5 py-0.5 rounded-full">
                 {sortedFlights.length} flights
               </span>
             </div>
             <p className="text-sm text-slate-500 mt-1">
-              {getDateDisplay(depart)}
-              {returnDate && getDateDisplay(returnDate) && (
-                <> — {getDateDisplay(returnDate)}</>
+              {activeLeg === "outbound"
+                ? getDateDisplay(depart)
+                : getDateDisplay(returnDate)}
+              {(returnDate && returnDate !== "2024-02-20T00:00:00") && (
+                <span className="text-xs text-slate-400 ml-1.5">
+                  ({activeLeg === "outbound" ? "Departure" : "Return"})
+                </span>
               )}
               <span className="mx-1.5">•</span>
               {paxText}

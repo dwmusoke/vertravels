@@ -2,6 +2,7 @@
 
 import { useState, Suspense } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { SearchResults } from "@/components/flights/search-results";
 import { SearchFilters } from "@/components/flights/search-filters";
 import { MobileFiltersDrawer } from "@/components/flights/mobile-filters-drawer";
@@ -21,6 +22,20 @@ import { Button } from "@/components/ui";
 
 function SearchPageContent() {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const searchParams = useSearchParams();
+  const from = searchParams.get("from") || searchParams.get("origin") || "JFK";
+  const to = searchParams.get("to") || searchParams.get("destination") || "LHR";
+  const depart = searchParams.get("depart") || searchParams.get("departure") || "";
+  const returnDate = searchParams.get("return") || searchParams.get("returnDate") || "";
+  const adults = searchParams.get("adults") || "1";
+  const cabin = searchParams.get("cabin") || "economy";
+
+  const getDateDisplay = (dateStr: string) => {
+    if (!dateStr) return "";
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return "";
+    return d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
+  };
 
   return (
     <div className="min-h-screen bg-[#F5F7FB]">
@@ -83,31 +98,31 @@ function SearchPageContent() {
             <div className="flex items-center gap-2 flex-1 flex-wrap">
               <div className="flex items-center gap-2 bg-slate-50 rounded-xl px-3.5 py-2 flex-1 min-w-[140px]">
                 <Plane className="w-4 h-4 text-blue-500" />
-                <span className="text-sm font-semibold text-slate-900">JFK</span>
+                <span className="text-sm font-semibold text-slate-900">{from?.toUpperCase()}</span>
               </div>
               <button className="w-8 h-8 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center flex-shrink-0 hover:bg-blue-100 transition-colors">
                 <ArrowRightLeft className="w-3.5 h-3.5 text-blue-600" />
               </button>
               <div className="flex items-center gap-2 bg-slate-50 rounded-xl px-3.5 py-2 flex-1 min-w-[140px]">
                 <MapPin className="w-4 h-4 text-blue-500" />
-                <span className="text-sm font-semibold text-slate-900">LHR</span>
+                <span className="text-sm font-semibold text-slate-900">{to?.toUpperCase()}</span>
               </div>
               <div className="flex items-center gap-2 bg-slate-50 rounded-xl px-3.5 py-2 min-w-[120px]">
                 <Calendar className="w-4 h-4 text-blue-500" />
-                <span className="text-sm font-medium text-slate-700">May 8</span>
+                <span className="text-sm font-medium text-slate-700">{getDateDisplay(depart) || "Select date"}</span>
               </div>
-              {true && (
+              {returnDate && (
                 <div className="flex items-center gap-2 bg-slate-50 rounded-xl px-3.5 py-2 min-w-[120px]">
                   <Calendar className="w-4 h-4 text-blue-500" />
-                  <span className="text-sm font-medium text-slate-700">May 26</span>
+                  <span className="text-sm font-medium text-slate-700">{getDateDisplay(returnDate)}</span>
                 </div>
               )}
               <div className="flex items-center gap-2 bg-slate-50 rounded-xl px-3.5 py-2 min-w-[100px]">
                 <Users className="w-4 h-4 text-blue-500" />
-                <span className="text-sm font-medium text-slate-700">1 Adult</span>
+                <span className="text-sm font-medium text-slate-700">{adults} Adult{parseInt(adults) > 1 ? "s" : ""}</span>
               </div>
               <div className="flex items-center gap-1 bg-slate-50 rounded-xl px-3 py-2">
-                <span className="text-sm font-medium text-slate-700 capitalize">Economy</span>
+                <span className="text-sm font-medium text-slate-700 capitalize">{cabin}</span>
               </div>
             </div>
             <Button className="rounded-xl bg-blue-600 hover:bg-blue-700 h-10 px-6 shadow-sm flex-shrink-0">

@@ -31,12 +31,14 @@ export function formatDate(
   locale: string = 'en-US',
   options?: Intl.DateTimeFormatOptions
 ) {
+  const d = new Date(date);
+  if (isNaN(d.getTime())) return date === '' ? '' : 'Invalid Date';
   return new Intl.DateTimeFormat(locale, {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
     ...options,
-  }).format(new Date(date));
+  }).format(d);
 }
 
 /**
