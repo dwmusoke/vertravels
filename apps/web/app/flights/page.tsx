@@ -6,7 +6,6 @@ import Link from "next/link";
 import {
   Plane,
   Calendar,
-  Users,
   Search,
   ArrowRight,
   MapPin,
@@ -26,9 +25,9 @@ export default function FlightsPage() {
     to: "",
     departDate: "",
     returnDate: "",
-    travelers: "1",
     class: "economy",
   });
+  const [passengers, setPassengers] = useState({ adults: 1, children: 0, infants: 0 });
   const [multiCity, setMultiCity] = useState([
     { from: "", to: "", date: "" },
     { from: "", to: "", date: "" },
@@ -41,7 +40,10 @@ export default function FlightsPage() {
     params.set("to", searchData.to);
     params.set("depart", searchData.departDate);
     params.set("return", searchData.returnDate || "");
-    params.set("pax", searchData.travelers);
+    params.set("adults", passengers.adults.toString());
+    params.set("children", passengers.children.toString());
+    params.set("infants", passengers.infants.toString());
+    params.set("cabin", searchData.class);
     router.push(`/flights/search?${params.toString()}`);
   };
 
@@ -265,26 +267,42 @@ export default function FlightsPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-600 mb-1">
-                  Travelers
+                  Passengers
                 </label>
-                <div className="relative">
-                  <Users className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <select
-                    value={searchData.travelers}
-                    onChange={(e) =>
-                      setSearchData({
-                        ...searchData,
-                        travelers: e.target.value,
-                      })
-                    }
-                    className="w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-sky-500"
-                  >
-                    {[1, 2, 3, 4, 5, 6].map((n) => (
-                      <option key={n} value={n}>
-                        {n} {n === 1 ? "Adult" : "Adults"}
-                      </option>
-                    ))}
-                  </select>
+                <div className="border rounded-lg p-3 space-y-2 bg-white">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <span className="text-sm font-medium">Adults</span>
+                      <p className="text-xs text-gray-400">12+ years</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button type="button" onClick={() => setPassengers(p => ({ ...p, adults: Math.max(1, p.adults - 1) }))} className="w-7 h-7 rounded-full border flex items-center justify-center hover:bg-gray-100 text-sm">-</button>
+                      <span className="w-6 text-center text-sm font-medium">{passengers.adults}</span>
+                      <button type="button" onClick={() => setPassengers(p => ({ ...p, adults: p.adults + 1 }))} className="w-7 h-7 rounded-full border flex items-center justify-center hover:bg-gray-100 text-sm">+</button>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <span className="text-sm font-medium">Children</span>
+                      <p className="text-xs text-gray-400">2-11 years</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button type="button" onClick={() => setPassengers(p => ({ ...p, children: Math.max(0, p.children - 1) }))} className="w-7 h-7 rounded-full border flex items-center justify-center hover:bg-gray-100 text-sm">-</button>
+                      <span className="w-6 text-center text-sm font-medium">{passengers.children}</span>
+                      <button type="button" onClick={() => setPassengers(p => ({ ...p, children: p.children + 1 }))} className="w-7 h-7 rounded-full border flex items-center justify-center hover:bg-gray-100 text-sm">+</button>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between pt-1 border-t">
+                    <div>
+                      <span className="text-sm font-medium">Infants</span>
+                      <p className="text-xs text-gray-400">Under 2</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button type="button" onClick={() => setPassengers(p => ({ ...p, infants: Math.max(0, p.infants - 1) }))} className="w-7 h-7 rounded-full border flex items-center justify-center hover:bg-gray-100 text-sm">-</button>
+                      <span className="w-6 text-center text-sm font-medium">{passengers.infants}</span>
+                      <button type="button" onClick={() => setPassengers(p => ({ ...p, infants: p.infants + 1 }))} className="w-7 h-7 rounded-full border flex items-center justify-center hover:bg-gray-100 text-sm">+</button>
+                    </div>
+                  </div>
                 </div>
               </div>
               <div>
@@ -407,24 +425,34 @@ export default function FlightsPage() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-600 mb-1">
-                    Travelers
+                    Passengers
                   </label>
-                  <select
-                    value={searchData.travelers}
-                    onChange={(e) =>
-                      setSearchData({
-                        ...searchData,
-                        travelers: e.target.value,
-                      })
-                    }
-                    className="w-full px-4 py-3 border rounded-lg"
-                  >
-                    {[1, 2, 3, 4, 5, 6].map((n) => (
-                      <option key={n} value={n}>
-                        {n} Adult{n > 1 ? "s" : ""}
-                      </option>
-                    ))}
-                  </select>
+                  <div className="border rounded-lg p-3 space-y-2 bg-white">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm">Adults</span>
+                      <div className="flex items-center gap-2">
+                        <button type="button" onClick={() => setPassengers(p => ({ ...p, adults: Math.max(1, p.adults - 1) }))} className="w-7 h-7 rounded-full border flex items-center justify-center hover:bg-gray-100 text-sm">-</button>
+                        <span className="w-6 text-center text-sm font-medium">{passengers.adults}</span>
+                        <button type="button" onClick={() => setPassengers(p => ({ ...p, adults: p.adults + 1 }))} className="w-7 h-7 rounded-full border flex items-center justify-center hover:bg-gray-100 text-sm">+</button>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm">Children</span>
+                      <div className="flex items-center gap-2">
+                        <button type="button" onClick={() => setPassengers(p => ({ ...p, children: Math.max(0, p.children - 1) }))} className="w-7 h-7 rounded-full border flex items-center justify-center hover:bg-gray-100 text-sm">-</button>
+                        <span className="w-6 text-center text-sm font-medium">{passengers.children}</span>
+                        <button type="button" onClick={() => setPassengers(p => ({ ...p, children: p.children + 1 }))} className="w-7 h-7 rounded-full border flex items-center justify-center hover:bg-gray-100 text-sm">+</button>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between pt-1 border-t">
+                      <span className="text-sm">Infants</span>
+                      <div className="flex items-center gap-2">
+                        <button type="button" onClick={() => setPassengers(p => ({ ...p, infants: Math.max(0, p.infants - 1) }))} className="w-7 h-7 rounded-full border flex items-center justify-center hover:bg-gray-100 text-sm">-</button>
+                        <span className="w-6 text-center text-sm font-medium">{passengers.infants}</span>
+                        <button type="button" onClick={() => setPassengers(p => ({ ...p, infants: p.infants + 1 }))} className="w-7 h-7 rounded-full border flex items-center justify-center hover:bg-gray-100 text-sm">+</button>
+                      </div>
+                    </div>
+                  </div>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-600 mb-1">
@@ -449,7 +477,10 @@ export default function FlightsPage() {
                       const params = new URLSearchParams();
                       params.set("type", "multicity");
                       params.set("flights", JSON.stringify(multiCity));
-                      params.set("pax", searchData.travelers);
+                      params.set("adults", passengers.adults.toString());
+                      params.set("children", passengers.children.toString());
+                      params.set("infants", passengers.infants.toString());
+                      params.set("cabin", searchData.class);
                       router.push(`/flights/search?${params.toString()}`);
                     }}
                     className="w-full bg-gradient-to-r from-sky-600 to-blue-500 hover:from-sky-700 text-white py-3 rounded-lg font-bold"

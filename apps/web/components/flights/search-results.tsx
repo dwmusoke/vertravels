@@ -19,91 +19,57 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-const mockFlights = [
-  {
-    id: "FL001", airline: "American Airlines", airlineCode: "AA", flightNumber: "AA123",
-    origin: "JFK", destination: "LHR", departure: "2024-02-15T08:00:00", arrival: "2024-02-15T20:00:00",
-    duration: "7h 00m", stops: 0, price: 650, currency: "USD", cabinClass: "economy", available: true,
-  },
-  {
-    id: "FL002", airline: "British Airways", airlineCode: "BA", flightNumber: "BA456",
-    origin: "JFK", destination: "LHR", departure: "2024-02-15T14:00:00", arrival: "2024-02-16T02:00:00",
-    duration: "7h 00m", stops: 0, price: 720, currency: "USD", cabinClass: "economy", available: true,
-  },
-  {
-    id: "FL003", airline: "Delta Air Lines", airlineCode: "DL", flightNumber: "DL789",
-    origin: "JFK", destination: "LHR", departure: "2024-02-15T18:00:00", arrival: "2024-02-16T10:00:00",
-    duration: "11h 00m", stops: 1, stopover: "ATL", price: 580, currency: "USD", cabinClass: "economy", available: true,
-  },
-  {
-    id: "FL004", airline: "Emirates", airlineCode: "EK", flightNumber: "EK201",
-    origin: "JFK", destination: "LHR", departure: "2024-02-15T22:00:00", arrival: "2024-02-16T14:00:00",
-    duration: "11h 00m", stops: 1, stopover: "DXB", price: 890, currency: "USD", cabinClass: "business", available: true,
-  },
-  {
-    id: "FL005", airline: "United Airlines", airlineCode: "UA", flightNumber: "UA841",
-    origin: "JFK", destination: "LHR", departure: "2024-02-15T07:30:00", arrival: "2024-02-15T19:45:00",
-    duration: "7h 15m", stops: 0, price: 695, currency: "USD", cabinClass: "economy", available: true,
-  },
-  {
-    id: "FL006", airline: "Qatar Airways", airlineCode: "QR", flightNumber: "QR702",
-    origin: "JFK", destination: "LHR", departure: "2024-02-15T11:00:00", arrival: "2024-02-16T04:00:00",
-    duration: "12h 00m", stops: 1, stopover: "DOH", price: 780, currency: "USD", cabinClass: "premium", available: true,
-  },
-  {
-    id: "FL007", airline: "Virgin Atlantic", airlineCode: "VS", flightNumber: "VS138",
-    origin: "JFK", destination: "LHR", departure: "2024-02-15T21:00:00", arrival: "2024-02-16T09:00:00",
-    duration: "7h 00m", stops: 0, price: 610, currency: "USD", cabinClass: "economy", available: true,
-  },
-  {
-    id: "FL008", airline: "Lufthansa", airlineCode: "LH", flightNumber: "LH401",
-    origin: "JFK", destination: "LHR", departure: "2024-02-15T16:00:00", arrival: "2024-02-16T09:30:00",
-    duration: "10h 30m", stops: 1, stopover: "FRA", price: 540, currency: "USD", cabinClass: "economy", available: true,
-  },
+const airlines = [
+  { airline: "American Airlines", code: "AA" },
+  { airline: "British Airways", code: "BA" },
+  { airline: "Delta Air Lines", code: "DL" },
+  { airline: "Emirates", code: "EK" },
+  { airline: "United Airlines", code: "UA" },
+  { airline: "Qatar Airways", code: "QR" },
+  { airline: "Virgin Atlantic", code: "VS" },
+  { airline: "Lufthansa", code: "LH" },
 ];
 
-const returnMockFlights = [
-  {
-    id: "RF001", airline: "British Airways", airlineCode: "BA", flightNumber: "BA457",
-    origin: "LHR", destination: "JFK", departure: "2024-02-20T09:00:00", arrival: "2024-02-20T17:00:00",
-    duration: "7h 00m", stops: 0, price: 700, currency: "USD", cabinClass: "economy", available: true,
-  },
-  {
-    id: "RF002", airline: "American Airlines", airlineCode: "AA", flightNumber: "AA124",
-    origin: "LHR", destination: "JFK", departure: "2024-02-20T11:00:00", arrival: "2024-02-20T19:30:00",
-    duration: "7h 30m", stops: 0, price: 680, currency: "USD", cabinClass: "economy", available: true,
-  },
-  {
-    id: "RF003", airline: "Virgin Atlantic", airlineCode: "VS", flightNumber: "VS139",
-    origin: "LHR", destination: "JFK", departure: "2024-02-20T15:00:00", arrival: "2024-02-20T23:15:00",
-    duration: "7h 15m", stops: 0, price: 640, currency: "USD", cabinClass: "economy", available: true,
-  },
-  {
-    id: "RF004", airline: "Delta Air Lines", airlineCode: "DL", flightNumber: "DL790",
-    origin: "LHR", destination: "JFK", departure: "2024-02-20T17:00:00", arrival: "2024-02-21T03:00:00",
-    duration: "9h 00m", stops: 1, stopover: "ATL", price: 590, currency: "USD", cabinClass: "economy", available: true,
-  },
-  {
-    id: "RF005", airline: "Emirates", airlineCode: "EK", flightNumber: "EK202",
-    origin: "LHR", destination: "JFK", departure: "2024-02-20T20:00:00", arrival: "2024-02-21T12:00:00",
-    duration: "11h 00m", stops: 1, stopover: "DXB", price: 920, currency: "USD", cabinClass: "business", available: true,
-  },
-  {
-    id: "RF006", airline: "United Airlines", airlineCode: "UA", flightNumber: "UA842",
-    origin: "LHR", destination: "JFK", departure: "2024-02-20T06:00:00", arrival: "2024-02-20T14:15:00",
-    duration: "7h 15m", stops: 0, price: 720, currency: "USD", cabinClass: "economy", available: true,
-  },
-  {
-    id: "RF007", airline: "Qatar Airways", airlineCode: "QR", flightNumber: "QR703",
-    origin: "LHR", destination: "JFK", departure: "2024-02-20T13:00:00", arrival: "2024-02-21T04:00:00",
-    duration: "10h 00m", stops: 1, stopover: "DOH", price: 810, currency: "USD", cabinClass: "premium", available: true,
-  },
-  {
-    id: "RF008", airline: "Lufthansa", airlineCode: "LH", flightNumber: "LH402",
-    origin: "LHR", destination: "JFK", departure: "2024-02-20T19:00:00", arrival: "2024-02-21T08:30:00",
-    duration: "8h 30m", stops: 1, stopover: "FRA", price: 560, currency: "USD", cabinClass: "economy", available: true,
-  },
-];
+const stopoverCities: Record<string, string[]> = {
+  "ATL": ["ATL"], "DXB": ["DXB"], "DOH": ["DOH"], "FRA": ["FRA"],
+  "IST": ["IST"], "AMS": ["AMS"], "CDG": ["CDG"], "ADD": ["ADD"],
+};
+
+function generateMockFlights(origin: string, destination: string, date: string, isReturn: boolean) {
+  const prefix = isReturn ? "RF" : "FL";
+  const times = [
+    { dep: "08:00", arr: "20:00", dur: "7h 00m", stops: 0, price: 650 },
+    { dep: "14:00", arr: "02:00", dur: "7h 00m", stops: 0, price: 720 },
+    { dep: "18:00", arr: "10:00", dur: "11h 00m", stops: 1, price: 580 },
+    { dep: "22:00", arr: "14:00", dur: "11h 00m", stops: 1, price: 890 },
+    { dep: "07:30", arr: "19:45", dur: "7h 15m", stops: 0, price: 695 },
+    { dep: "11:00", arr: "04:00", dur: "12h 00m", stops: 1, price: 780 },
+    { dep: "21:00", arr: "09:00", dur: "7h 00m", stops: 0, price: 610 },
+    { dep: "16:00", arr: "09:30", dur: "10h 30m", stops: 1, price: 540 },
+  ];
+  const startDate = date.split("T")[0] || date;
+  return times.map((t, i) => {
+    const al = airlines[i % airlines.length];
+    const stopoverKeys = Object.keys(stopoverCities);
+    return {
+      id: `${prefix}${String(i + 1).padStart(3, "0")}`,
+      airline: al.airline,
+      airlineCode: al.code,
+      flightNumber: `${al.code}${100 + i * 10}`,
+      origin,
+      destination,
+      departure: `${startDate}T${t.dep}:00`,
+      arrival: t.stops ? `${startDate}T${t.arr}:00` : `${startDate}T${t.arr}:00`,
+      duration: t.dur,
+      stops: t.stops,
+      ...(t.stops > 0 ? { stopover: stopoverKeys[i % stopoverKeys.length] } : {}),
+      price: t.price,
+      currency: "USD",
+      cabinClass: i === 3 ? "business" : i === 5 ? "premium" : "economy",
+      available: true,
+    };
+  });
+}
 
 type SortOption = "recommended" | "price-low" | "price-high" | "duration" | "departure";
 
@@ -124,9 +90,9 @@ export function SearchResults({ onOpenFilters }: SearchResultsProps) {
   const to = searchParams.get("to") || searchParams.get("destination") || "LHR";
   const depart = searchParams.get("depart") || searchParams.get("departure") || "2024-02-15T00:00:00";
   const returnDate = searchParams.get("return") || searchParams.get("returnDate") || "2024-02-20T00:00:00";
-  const adults = searchParams.get("adults") || "2";
-  const children = searchParams.get("children") || "1";
-  const infants = searchParams.get("infants") || "1";
+  const adults = searchParams.get("adults") || "1";
+  const children = searchParams.get("children") || "0";
+  const infants = searchParams.get("infants") || "0";
   const cabin = searchParams.get("cabin") || "economy";
 
   const paxText = [
@@ -135,8 +101,16 @@ export function SearchResults({ onOpenFilters }: SearchResultsProps) {
     ...(parseInt(infants) > 0 ? [`${infants} Infant${parseInt(infants) > 1 ? "s" : ""}`] : []),
   ].join(", ");
 
+  const activeFlights = useMemo(() => {
+    const origin = activeLeg === "outbound" ? from : to;
+    const dest = activeLeg === "outbound" ? to : from;
+    const date = activeLeg === "outbound" ? depart : returnDate;
+    if (!origin || !dest || !date) return [];
+    return generateMockFlights(origin.toUpperCase(), dest.toUpperCase(), date, activeLeg === "return");
+  }, [from, to, depart, returnDate, activeLeg]);
+
   const sortedFlights = useMemo(() => {
-    const flights = [...(activeLeg === "outbound" ? mockFlights : returnMockFlights)];
+    const flights = [...activeFlights];
     switch (sortBy) {
       case "price-low":
         return flights.sort((a, b) => a.price - b.price);
@@ -158,7 +132,7 @@ export function SearchResults({ onOpenFilters }: SearchResultsProps) {
       default:
         return flights;
     }
-  }, [sortBy, activeLeg]);
+  }, [activeFlights, sortBy]);
 
   const handleSelect = useCallback(
     (flight: any) => {
