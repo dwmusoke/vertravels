@@ -238,18 +238,69 @@ export default function AdminModulesPage() {
                           </div>
                         </div>
                         <div className="grid grid-cols-3 gap-4">
-                          {['Amadeus', 'Travelport', 'Kiwi'].map((provider) => (
-                            <div key={provider}>
-                              <Label>
-                                <input
-                                  type="checkbox"
-                                  defaultChecked={module.settings?.providers?.[provider.toLowerCase()] !== false}
-                                  className="mr-2"
-                                />
-                                {provider}
-                              </Label>
+                          <div>
+                            <Label>Amadeus</Label>
+                            <div className="flex items-center gap-2 mt-1">
+                              <input
+                                type="checkbox"
+                                defaultChecked={module.settings?.providers?.amadeus !== false}
+                                className="mr-1"
+                              />
+                              <span className="text-xs text-gray-500">Enabled</span>
                             </div>
-                          ))}
+                            <Input
+                              type="password"
+                              defaultValue={module.settings?.amadeus_api_key || ''}
+                              placeholder="Amadeus API Key"
+                              className="mt-1"
+                            />
+                            <Input
+                              type="password"
+                              defaultValue={module.settings?.amadeus_api_secret || ''}
+                              placeholder="Amadeus API Secret"
+                              className="mt-1"
+                            />
+                          </div>
+                          <div>
+                            <Label>Travelport</Label>
+                            <div className="flex items-center gap-2 mt-1">
+                              <input
+                                type="checkbox"
+                                defaultChecked={module.settings?.providers?.travelport !== false}
+                                className="mr-1"
+                              />
+                              <span className="text-xs text-gray-500">Enabled</span>
+                            </div>
+                            <Input
+                              type="password"
+                              defaultValue={module.settings?.travelport_api_key || ''}
+                              placeholder="Travelport API Key"
+                              className="mt-1"
+                            />
+                            <Input
+                              type="password"
+                              defaultValue={module.settings?.travelport_api_secret || ''}
+                              placeholder="Travelport Secret"
+                              className="mt-1"
+                            />
+                          </div>
+                          <div>
+                            <Label>Kiwi</Label>
+                            <div className="flex items-center gap-2 mt-1">
+                              <input
+                                type="checkbox"
+                                defaultChecked={module.settings?.providers?.kiwi !== false}
+                                className="mr-1"
+                              />
+                              <span className="text-xs text-gray-500">Enabled</span>
+                            </div>
+                            <Input
+                              type="password"
+                              defaultValue={module.settings?.kiwi_api_key || ''}
+                              placeholder="Kiwi API Key"
+                              className="mt-1"
+                            />
+                          </div>
                         </div>
                       </div>
                     )}
