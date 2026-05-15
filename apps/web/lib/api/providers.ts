@@ -1,5 +1,3 @@
-"use client";
-
 export interface FlightSearchParams {
   origin: string;
   destination: string;

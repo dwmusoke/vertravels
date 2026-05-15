@@ -66,13 +66,13 @@ export function FlightsSearch() {
       origin: formData.origin,
       destination: formData.destination,
       departure: formData.departureDate?.toISOString() || "",
-      return: formData.returnDate?.toISOString() || "",
       adults: formData.passengers.adults.toString(),
       children: formData.passengers.children.toString(),
       infants: formData.passengers.infants.toString(),
       cabin: formData.cabinClass,
       trip: tripType,
     });
+    if (formData.returnDate) params.set("return", formData.returnDate.toISOString());
 
     setLoading(false);
     router.push(`/flights/search?${params.toString()}`);

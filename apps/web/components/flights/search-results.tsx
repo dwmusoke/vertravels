@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useState, useMemo, useCallback, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui";
 import { FlightCard } from "./flight-card";
 import { FlightDetailsModal } from "./flight-details-modal";
@@ -16,84 +16,51 @@ import {
   Filter,
   SearchX,
   ChevronDown,
+  AlertCircle,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-
-const airlines = [
-  { airline: "American Airlines", code: "AA" },
-  { airline: "British Airways", code: "BA" },
-  { airline: "Delta Air Lines", code: "DL" },
-  { airline: "Emirates", code: "EK" },
-  { airline: "United Airlines", code: "UA" },
-  { airline: "Qatar Airways", code: "QR" },
-  { airline: "Virgin Atlantic", code: "VS" },
-  { airline: "Lufthansa", code: "LH" },
-];
-
-const stopoverCities: Record<string, string[]> = {
-  "ATL": ["ATL"], "DXB": ["DXB"], "DOH": ["DOH"], "FRA": ["FRA"],
-  "IST": ["IST"], "AMS": ["AMS"], "CDG": ["CDG"], "ADD": ["ADD"],
-};
-
-function generateMockFlights(origin: string, destination: string, date: string, isReturn: boolean) {
-  const prefix = isReturn ? "RF" : "FL";
-  const times = [
-    { dep: "08:00", arr: "20:00", dur: "7h 00m", stops: 0, price: 650 },
-    { dep: "14:00", arr: "02:00", dur: "7h 00m", stops: 0, price: 720 },
-    { dep: "18:00", arr: "10:00", dur: "11h 00m", stops: 1, price: 580 },
-    { dep: "22:00", arr: "14:00", dur: "11h 00m", stops: 1, price: 890 },
-    { dep: "07:30", arr: "19:45", dur: "7h 15m", stops: 0, price: 695 },
-    { dep: "11:00", arr: "04:00", dur: "12h 00m", stops: 1, price: 780 },
-    { dep: "21:00", arr: "09:00", dur: "7h 00m", stops: 0, price: 610 },
-    { dep: "16:00", arr: "09:30", dur: "10h 30m", stops: 1, price: 540 },
-  ];
-  const startDate = date.split("T")[0] || date;
-  return times.map((t, i) => {
-    const al = airlines[i % airlines.length];
-    const stopoverKeys = Object.keys(stopoverCities);
-    return {
-      id: `${prefix}${String(i + 1).padStart(3, "0")}`,
-      airline: al.airline,
-      airlineCode: al.code,
-      flightNumber: `${al.code}${100 + i * 10}`,
-      origin,
-      destination,
-      departure: `${startDate}T${t.dep}:00`,
-      arrival: t.stops ? `${startDate}T${t.arr}:00` : `${startDate}T${t.arr}:00`,
-      duration: t.dur,
-      stops: t.stops,
-      ...(t.stops > 0 ? { stopover: stopoverKeys[i % stopoverKeys.length] } : {}),
-      price: t.price,
-      currency: "USD",
-      cabinClass: i === 3 ? "business" : i === 5 ? "premium" : "economy",
-      available: true,
-    };
-  });
-}
 
 type SortOption = "recommended" | "price-low" | "price-high" | "duration" | "departure";
 
 interface SearchResultsProps {
   onOpenFilters?: () => void;
+  from: string;
+  to: string;
+  depart: string;
+  returnDate: string;
+  adults: string;
+  children: string;
+  infants: string;
+  cabin: string;
 }
 
-export function SearchResults({ onOpenFilters }: SearchResultsProps) {
-  const searchParams = useSearchParams();
+export function SearchResults({
+  onOpenFilters,
+  from: propFrom,
+  to: propTo,
+  depart: propDepart,
+  returnDate: propReturnDate,
+  adults: propAdults,
+  children: propChildren,
+  infants: propInfants,
+  cabin: propCabin,
+}: SearchResultsProps) {
   const router = useRouter();
   const [sortBy, setSortBy] = useState<SortOption>("recommended");
   const [showSortDropdown, setShowSortDropdown] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [flights, setFlights] = useState<any[]>([]);
   const [detailFlight, setDetailFlight] = useState<any>(null);
-  const [activeLeg, setActiveLeg] = useState<"outbound" | "return">("outbound");
 
-  const from = searchParams.get("from") || searchParams.get("origin") || "JFK";
-  const to = searchParams.get("to") || searchParams.get("destination") || "LHR";
-  const depart = searchParams.get("depart") || searchParams.get("departure") || "2024-02-15T00:00:00";
-  const returnDate = searchParams.get("return") || searchParams.get("returnDate") || "2024-02-20T00:00:00";
-  const adults = searchParams.get("adults") || "1";
-  const children = searchParams.get("children") || "0";
-  const infants = searchParams.get("infants") || "0";
-  const cabin = searchParams.get("cabin") || "economy";
+  const from = propFrom || "JFK";
+  const to = propTo || "LHR";
+  const depart = propDepart || "";
+  const returnDate = propReturnDate || "";
+  const adults = propAdults || "1";
+  const children = propChildren || "0";
+  const infants = propInfants || "0";
+  const cabin = propCabin || "economy";
 
   const paxText = [
     `${adults} Adult${parseInt(adults) > 1 ? "s" : ""}`,
@@ -101,23 +68,56 @@ export function SearchResults({ onOpenFilters }: SearchResultsProps) {
     ...(parseInt(infants) > 0 ? [`${infants} Infant${parseInt(infants) > 1 ? "s" : ""}`] : []),
   ].join(", ");
 
-  const activeFlights = useMemo(() => {
-    const origin = activeLeg === "outbound" ? from : to;
-    const dest = activeLeg === "outbound" ? to : from;
-    const date = activeLeg === "outbound" ? depart : returnDate;
-    if (!origin || !dest || !date) return [];
-    return generateMockFlights(origin.toUpperCase(), dest.toUpperCase(), date, activeLeg === "return");
-  }, [from, to, depart, returnDate, activeLeg]);
+  useEffect(() => {
+    async function fetchFlights() {
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await fetch("/api/providers/flights", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            origin: from.toUpperCase(),
+            destination: to.toUpperCase(),
+            departDate: depart.split("T")[0],
+            returnDate: returnDate ? returnDate.split("T")[0] : undefined,
+            passengers: parseInt(adults) + parseInt(children) + parseInt(infants),
+            cabinClass: cabin,
+          }),
+        });
+        if (!res.ok) throw new Error("Failed to fetch flights");
+        const json = await res.json();
+        setFlights(json.data || []);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Something went wrong");
+      } finally {
+        setLoading(false);
+      }
+    }
+    if (from && to && depart) fetchFlights();
+    else setLoading(false);
+  }, [from, to, depart, returnDate, adults, children, infants, cabin]);
 
-  const sortedFlights = useMemo(() => {
-    const flights = [...activeFlights];
+  const isRoundTrip = !!(returnDate && returnDate !== "2024-02-20T00:00:00");
+
+  const outboundFlights = useMemo(() => {
+    return flights.filter((f) => f.destination === to.toUpperCase());
+  }, [flights, to]);
+
+  const returnFlights = useMemo(() => {
+    if (!isRoundTrip) return [];
+    return flights.filter((f) => f.origin === to.toUpperCase() && f.destination === from.toUpperCase());
+  }, [flights, from, to, isRoundTrip]);
+
+  const sortFlights = (list: any[]) => {
+    const f = [...list];
     switch (sortBy) {
       case "price-low":
-        return flights.sort((a, b) => a.price - b.price);
+        return f.sort((a, b) => a.price - b.price);
       case "price-high":
-        return flights.sort((a, b) => b.price - a.price);
+        return f.sort((a, b) => b.price - a.price);
       case "duration":
-        return flights.sort((a, b) => {
+        return f.sort((a, b) => {
           const getMinutes = (d: string) => {
             const parts = d.match(/(\d+)h\s*(\d+)?m?/);
             if (!parts) return 0;
@@ -126,18 +126,22 @@ export function SearchResults({ onOpenFilters }: SearchResultsProps) {
           return getMinutes(a.duration) - getMinutes(b.duration);
         });
       case "departure":
-        return flights.sort(
+        return f.sort(
           (a, b) => new Date(a.departure).getTime() - new Date(b.departure).getTime()
         );
       default:
-        return flights;
+        return f;
     }
-  }, [activeFlights, sortBy]);
+  };
+
+  const sortedOutbound = useMemo(() => sortFlights(outboundFlights), [outboundFlights, sortBy]);
+  const sortedReturn = useMemo(() => sortFlights(returnFlights), [returnFlights, sortBy]);
 
   const handleSelect = useCallback(
-    (flight: any) => {
-      const legKey = activeLeg === "outbound" ? "selectedFlight" : "selectedReturnFlight";
-      sessionStorage.setItem(legKey, JSON.stringify({ ...flight, leg: activeLeg }));
+    (flight: any, leg: "outbound" | "return") => {
+      const legKey = leg === "outbound" ? "selectedFlight" : "selectedReturnFlight";
+      sessionStorage.setItem(legKey, JSON.stringify({ ...flight, leg }));
+
       const params = new URLSearchParams({
         from: from || "",
         to: to || "",
@@ -147,11 +151,11 @@ export function SearchResults({ onOpenFilters }: SearchResultsProps) {
         children,
         infants,
         cabin,
-        leg: activeLeg,
+        leg,
       });
       router.push(`/flights/checkout?${params.toString()}`);
     },
-    [from, to, depart, returnDate, adults, children, infants, cabin, activeLeg, router]
+    [from, to, depart, returnDate, adults, children, infants, cabin, router]
   );
 
   const handleDetails = useCallback((flight: any) => {
@@ -177,6 +181,17 @@ export function SearchResults({ onOpenFilters }: SearchResultsProps) {
     });
   };
 
+  const flightCards = (flightsList: any[], leg: "outbound" | "return") =>
+    flightsList.map((flight, i) => (
+      <FlightCard
+        key={flight.id}
+        flight={flight}
+        onSelect={(f: any) => handleSelect(f, leg)}
+        onDetails={handleDetails}
+        index={i}
+      />
+    ));
+
   return (
     <div className="space-y-4">
       <motion.div
@@ -187,46 +202,17 @@ export function SearchResults({ onOpenFilters }: SearchResultsProps) {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
           <div>
             <div className="flex items-center gap-2.5">
-              {returnDate && returnDate !== "2024-02-20T00:00:00" ? (
-                <div className="flex items-center gap-2 bg-slate-50 rounded-lg p-0.5">
-                  <button
-                    onClick={() => setActiveLeg("outbound")}
-                    className={`px-3 py-1.5 rounded-md text-sm font-semibold transition-colors ${
-                      activeLeg === "outbound"
-                        ? "bg-white text-slate-900 shadow-sm"
-                        : "text-slate-500 hover:text-slate-700"
-                    }`}
-                  >
-                    {from?.toUpperCase()} → {to?.toUpperCase()}
-                  </button>
-                  <button
-                    onClick={() => setActiveLeg("return")}
-                    className={`px-3 py-1.5 rounded-md text-sm font-semibold transition-colors ${
-                      activeLeg === "return"
-                        ? "bg-white text-slate-900 shadow-sm"
-                        : "text-slate-500 hover:text-slate-700"
-                    }`}
-                  >
-                    {to?.toUpperCase()} → {from?.toUpperCase()}
-                  </button>
-                </div>
-              ) : (
-                <h2 className="text-xl font-bold text-slate-900">
-                  {from?.toUpperCase()} <span className="text-slate-300 mx-1">→</span> {to?.toUpperCase()}
-                </h2>
-              )}
+              <h2 className="text-xl font-bold text-slate-900">
+                {from?.toUpperCase()} <span className="text-slate-300 mx-1">→</span> {to?.toUpperCase()}
+              </h2>
               <span className="bg-blue-50 text-blue-700 text-xs font-semibold px-2.5 py-0.5 rounded-full">
-                {sortedFlights.length} flights
+                {flights.length} flights
               </span>
             </div>
             <p className="text-sm text-slate-500 mt-1">
-              {activeLeg === "outbound"
-                ? getDateDisplay(depart)
-                : getDateDisplay(returnDate)}
-              {(returnDate && returnDate !== "2024-02-20T00:00:00") && (
-                <span className="text-xs text-slate-400 ml-1.5">
-                  ({activeLeg === "outbound" ? "Departure" : "Return"})
-                </span>
+              {getDateDisplay(depart)}
+              {isRoundTrip && returnDate && (
+                <> <span className="text-slate-300 mx-1">–</span> {getDateDisplay(returnDate)}</>
               )}
               <span className="mx-1.5">•</span>
               {paxText}
@@ -313,7 +299,19 @@ export function SearchResults({ onOpenFilters }: SearchResultsProps) {
               </div>
             ))}
           </div>
-        ) : sortedFlights.length === 0 ? (
+        ) : error ? (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white rounded-2xl border border-red-200 p-12 text-center"
+          >
+            <div className="w-20 h-20 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-4">
+              <AlertCircle className="w-10 h-10 text-red-400" />
+            </div>
+            <h3 className="text-lg font-semibold text-slate-900 mb-1">Search failed</h3>
+            <p className="text-sm text-red-500 max-w-sm mx-auto">{error}</p>
+          </motion.div>
+        ) : flights.length === 0 ? (
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -334,39 +332,58 @@ export function SearchResults({ onOpenFilters }: SearchResultsProps) {
               Reset Filters
             </Button>
           </motion.div>
+        ) : isRoundTrip ? (
+          <div className="space-y-6">
+            <div>
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+                  <Plane className="w-4 h-4 text-blue-600" />
+                </div>
+                <h3 className="text-lg font-bold text-slate-900">
+                  {from?.toUpperCase()} → {to?.toUpperCase()}
+                </h3>
+                <span className="text-xs text-slate-400">{getDateDisplay(depart)}</span>
+                <span className="bg-blue-50 text-blue-700 text-xs font-semibold px-2 py-0.5 rounded-full">
+                  {sortedOutbound.length} flights
+                </span>
+              </div>
+              <div className="space-y-3">
+                {sortedOutbound.length > 0 ? flightCards(sortedOutbound, "outbound") : (
+                  <p className="text-sm text-slate-400 py-4 text-center">No outbound flights available</p>
+                )}
+              </div>
+            </div>
+            <div className="border-t border-slate-200 pt-6">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center">
+                  <Plane className="w-4 h-4 text-emerald-600 transform rotate-180" />
+                </div>
+                <h3 className="text-lg font-bold text-slate-900">
+                  {to?.toUpperCase()} → {from?.toUpperCase()}
+                </h3>
+                <span className="text-xs text-slate-400">{getDateDisplay(returnDate)}</span>
+                <span className="bg-emerald-50 text-emerald-700 text-xs font-semibold px-2 py-0.5 rounded-full">
+                  {sortedReturn.length} flights
+                </span>
+              </div>
+              <div className="space-y-3">
+                {sortedReturn.length > 0 ? flightCards(sortedReturn, "return") : (
+                  <p className="text-sm text-slate-400 py-4 text-center">No return flights available</p>
+                )}
+              </div>
+            </div>
+          </div>
         ) : (
-          <div className="space-y-4">
-            {sortedFlights.map((flight, i) => (
-              <FlightCard
-                key={flight.id}
-                flight={flight}
-                onSelect={handleSelect}
-                onDetails={handleDetails}
-                index={i}
-              />
-            ))}
+          <div className="space-y-3">
+            {flightCards(sortedOutbound, "outbound")}
           </div>
         )}
       </AnimatePresence>
 
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.5 }}
-        className="text-center pt-6 pb-4"
-      >
-        <Button
-          variant="outline"
-          className="min-w-[240px] rounded-xl border-slate-200 hover:border-blue-300 text-slate-600 h-11"
-        >
-          Load More Flights
-        </Button>
-      </motion.div>
-
       <FlightDetailsModal
         flight={detailFlight}
         onClose={() => setDetailFlight(null)}
-        onSelect={handleSelect}
+        onSelect={(f: any) => handleSelect(f, "outbound")}
       />
     </div>
   );

@@ -3,6 +3,7 @@
 import { useState, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { SearchResults } from "@/components/flights/search-results";
 import { SearchFilters } from "@/components/flights/search-filters";
 import { MobileFiltersDrawer } from "@/components/flights/mobile-filters-drawer";
@@ -22,19 +23,38 @@ import { Button } from "@/components/ui";
 
 function SearchPageContent() {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const router = useRouter();
   const searchParams = useSearchParams();
-  const from = searchParams.get("from") || searchParams.get("origin") || "JFK";
-  const to = searchParams.get("to") || searchParams.get("destination") || "LHR";
-  const depart = searchParams.get("depart") || searchParams.get("departure") || "";
-  const returnDate = searchParams.get("return") || searchParams.get("returnDate") || "";
-  const adults = searchParams.get("adults") || "1";
-  const cabin = searchParams.get("cabin") || "economy";
+  const [editing, setEditing] = useState(false);
+  const [form, setForm] = useState({
+    from: searchParams.get("from") || searchParams.get("origin") || "",
+    to: searchParams.get("to") || searchParams.get("destination") || "",
+    depart: searchParams.get("depart") || searchParams.get("departure") || "",
+    returnDate: searchParams.get("return") || searchParams.get("returnDate") || "",
+    adults: searchParams.get("adults") || "1",
+    cabin: searchParams.get("cabin") || "economy",
+  });
+
+  const from = form.from || "JFK";
+  const to = form.to || "LHR";
 
   const getDateDisplay = (dateStr: string) => {
     if (!dateStr) return "";
     const d = new Date(dateStr);
     if (isNaN(d.getTime())) return "";
     return d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
+  };
+
+  const handleSearch = () => {
+    const params = new URLSearchParams();
+    if (form.from) params.set("from", form.from);
+    if (form.to) params.set("to", form.to);
+    if (form.depart) params.set("depart", form.depart);
+    if (form.returnDate) params.set("return", form.returnDate);
+    params.set("adults", form.adults);
+    params.set("cabin", form.cabin);
+    setEditing(false);
+    router.push(`/flights/search?${params.toString()}`);
   };
 
   return (
@@ -95,40 +115,91 @@ function SearchPageContent() {
       <div className="sticky top-[72px] z-40 bg-[#F5F7FB] py-3">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="bg-white rounded-2xl border border-slate-200 shadow-md shadow-slate-200/50 p-3 flex items-center gap-2">
-            <div className="flex items-center gap-2 flex-1 flex-wrap">
-              <div className="flex items-center gap-2 bg-slate-50 rounded-xl px-3.5 py-2 flex-1 min-w-[140px]">
-                <Plane className="w-4 h-4 text-blue-500" />
-                <span className="text-sm font-semibold text-slate-900">{from?.toUpperCase()}</span>
-              </div>
-              <button className="w-8 h-8 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center flex-shrink-0 hover:bg-blue-100 transition-colors">
-                <ArrowRightLeft className="w-3.5 h-3.5 text-blue-600" />
-              </button>
-              <div className="flex items-center gap-2 bg-slate-50 rounded-xl px-3.5 py-2 flex-1 min-w-[140px]">
-                <MapPin className="w-4 h-4 text-blue-500" />
-                <span className="text-sm font-semibold text-slate-900">{to?.toUpperCase()}</span>
-              </div>
-              <div className="flex items-center gap-2 bg-slate-50 rounded-xl px-3.5 py-2 min-w-[120px]">
-                <Calendar className="w-4 h-4 text-blue-500" />
-                <span className="text-sm font-medium text-slate-700">{getDateDisplay(depart) || "Select date"}</span>
-              </div>
-              {returnDate && (
-                <div className="flex items-center gap-2 bg-slate-50 rounded-xl px-3.5 py-2 min-w-[120px]">
-                  <Calendar className="w-4 h-4 text-blue-500" />
-                  <span className="text-sm font-medium text-slate-700">{getDateDisplay(returnDate)}</span>
+            {editing ? (
+              <form
+                onSubmit={(e) => { e.preventDefault(); handleSearch(); }}
+                className="flex items-center gap-2 flex-1 flex-wrap"
+              >
+                <input
+                  value={form.from}
+                  onChange={(e) => setForm({ ...form, from: e.target.value })}
+                  placeholder="From"
+                  className="bg-slate-50 rounded-xl px-3.5 py-2 flex-1 min-w-[120px] text-sm font-semibold outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                />
+                <input
+                  value={form.to}
+                  onChange={(e) => setForm({ ...form, to: e.target.value })}
+                  placeholder="To"
+                  className="bg-slate-50 rounded-xl px-3.5 py-2 flex-1 min-w-[120px] text-sm font-semibold outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                />
+                <input
+                  type="date"
+                  value={form.depart}
+                  onChange={(e) => setForm({ ...form, depart: e.target.value })}
+                  className="bg-slate-50 rounded-xl px-3.5 py-2 min-w-[140px] text-sm outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                />
+                <input
+                  type="date"
+                  value={form.returnDate}
+                  onChange={(e) => setForm({ ...form, returnDate: e.target.value })}
+                  placeholder="Return"
+                  className="bg-slate-50 rounded-xl px-3.5 py-2 min-w-[140px] text-sm outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <div className="flex items-center gap-1">
+                  <Button type="submit" className="rounded-xl bg-blue-600 hover:bg-blue-700 h-10 px-4 shadow-sm text-sm">
+                    <Search className="w-4 h-4 mr-1" />
+                    Search
+                  </Button>
+                  <button
+                    type="button"
+                    onClick={() => setEditing(false)}
+                    className="h-10 px-3 text-sm text-slate-500 hover:text-slate-700"
+                  >
+                    Cancel
+                  </button>
                 </div>
-              )}
-              <div className="flex items-center gap-2 bg-slate-50 rounded-xl px-3.5 py-2 min-w-[100px]">
-                <Users className="w-4 h-4 text-blue-500" />
-                <span className="text-sm font-medium text-slate-700">{adults} Adult{parseInt(adults) > 1 ? "s" : ""}</span>
-              </div>
-              <div className="flex items-center gap-1 bg-slate-50 rounded-xl px-3 py-2">
-                <span className="text-sm font-medium text-slate-700 capitalize">{cabin}</span>
-              </div>
-            </div>
-            <Button className="rounded-xl bg-blue-600 hover:bg-blue-700 h-10 px-6 shadow-sm flex-shrink-0">
-              <Search className="w-4 h-4 mr-1.5" />
-              Search
-            </Button>
+              </form>
+            ) : (
+              <>
+                <div className="flex items-center gap-2 flex-1 flex-wrap">
+                  <button onClick={() => setEditing(true)} className="flex items-center gap-2 bg-slate-50 rounded-xl px-3.5 py-2 flex-1 min-w-[140px] hover:bg-slate-100 transition-colors text-left">
+                    <Plane className="w-4 h-4 text-blue-500" />
+                    <span className="text-sm font-semibold text-slate-900">{from?.toUpperCase()}</span>
+                  </button>
+                  <button className="w-8 h-8 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center flex-shrink-0 hover:bg-blue-100 transition-colors">
+                    <ArrowRightLeft className="w-3.5 h-3.5 text-blue-600" />
+                  </button>
+                  <button onClick={() => setEditing(true)} className="flex items-center gap-2 bg-slate-50 rounded-xl px-3.5 py-2 flex-1 min-w-[140px] hover:bg-slate-100 transition-colors text-left">
+                    <MapPin className="w-4 h-4 text-blue-500" />
+                    <span className="text-sm font-semibold text-slate-900">{to?.toUpperCase()}</span>
+                  </button>
+                  <button onClick={() => setEditing(true)} className="flex items-center gap-2 bg-slate-50 rounded-xl px-3.5 py-2 min-w-[120px] hover:bg-slate-100 transition-colors text-left">
+                    <Calendar className="w-4 h-4 text-blue-500" />
+                    <span className="text-sm font-medium text-slate-700">{getDateDisplay(form.depart) || "Select date"}</span>
+                  </button>
+                  {form.returnDate && (
+                    <button onClick={() => setEditing(true)} className="flex items-center gap-2 bg-slate-50 rounded-xl px-3.5 py-2 min-w-[120px] hover:bg-slate-100 transition-colors text-left">
+                      <Calendar className="w-4 h-4 text-blue-500" />
+                      <span className="text-sm font-medium text-slate-700">{getDateDisplay(form.returnDate)}</span>
+                    </button>
+                  )}
+                  <button onClick={() => setEditing(true)} className="flex items-center gap-2 bg-slate-50 rounded-xl px-3.5 py-2 min-w-[100px] hover:bg-slate-100 transition-colors text-left">
+                    <Users className="w-4 h-4 text-blue-500" />
+                    <span className="text-sm font-medium text-slate-700">{form.adults} Adult{parseInt(form.adults) > 1 ? "s" : ""}</span>
+                  </button>
+                  <button onClick={() => setEditing(true)} className="flex items-center gap-1 bg-slate-50 rounded-xl px-3 py-2 hover:bg-slate-100 transition-colors">
+                    <span className="text-sm font-medium text-slate-700 capitalize">{form.cabin}</span>
+                  </button>
+                </div>
+                <Button onClick={() => setEditing(true)} className="rounded-xl bg-blue-600 hover:bg-blue-700 h-10 px-6 shadow-sm flex-shrink-0">
+                  <Search className="w-4 h-4 mr-1.5" />
+                  Search
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -157,7 +228,17 @@ function SearchPageContent() {
                 </div>
               }
             >
-              <SearchResults onOpenFilters={() => setMobileFiltersOpen(true)} />
+              <SearchResults
+                onOpenFilters={() => setMobileFiltersOpen(true)}
+                from={searchParams.get("from") || searchParams.get("origin") || ""}
+                to={searchParams.get("to") || searchParams.get("destination") || ""}
+                depart={searchParams.get("depart") || searchParams.get("departure") || ""}
+                returnDate={searchParams.get("return") || searchParams.get("returnDate") || ""}
+                adults={searchParams.get("adults") || "1"}
+                children={searchParams.get("children") || "0"}
+                infants={searchParams.get("infants") || "0"}
+                cabin={searchParams.get("cabin") || "economy"}
+              />
             </Suspense>
           </main>
         </div>

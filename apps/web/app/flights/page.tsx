@@ -39,7 +39,7 @@ export default function FlightsPage() {
     params.set("from", searchData.from);
     params.set("to", searchData.to);
     params.set("depart", searchData.departDate);
-    params.set("return", searchData.returnDate || "");
+    if (searchData.returnDate) params.set("return", searchData.returnDate);
     params.set("adults", passengers.adults.toString());
     params.set("children", passengers.children.toString());
     params.set("infants", passengers.infants.toString());
