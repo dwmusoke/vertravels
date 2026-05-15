@@ -54,6 +54,7 @@ export default function AdminInvoicesPage() {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [showImporter, setShowImporter] = useState(false);
   const [showAuditTrail, setShowAuditTrail] = useState<string | null>(null);
+  const [viewingInvoice, setViewingInvoice] = useState<Invoice | null>(null);
 
   const [formData, setFormData] = useState({
     customer_name: "",
@@ -543,6 +544,13 @@ export default function AdminInvoicesPage() {
                     <td className="px-6 py-4">
                       <div className="flex gap-2">
                         <button
+                          onClick={() => setViewingInvoice(invoice)}
+                          className="p-1.5 text-gray-600 hover:bg-gray-50 rounded"
+                          title="View"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </button>
+                        <button
                           onClick={() => handleEdit(invoice)}
                           className="p-1.5 text-sky-600 hover:bg-sky-50 rounded"
                           title="Edit"
@@ -880,6 +888,68 @@ export default function AdminInvoicesPage() {
           validationRules={getValidationRules("invoices")}
           onClose={() => setShowImporter(false)}
         />
+      )}
+
+      {viewingInvoice && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => setViewingInvoice(null)}>
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="p-6 border-b flex justify-between items-center">
+              <h2 className="text-lg font-bold">{viewingInvoice.invoice_number}</h2>
+              <button onClick={() => setViewingInvoice(null)} className="p-1 hover:bg-gray-100 rounded">&times;</button>
+            </div>
+            <div className="p-6 space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-xs text-gray-500 uppercase tracking-wide">Customer</p>
+                  <p className="font-semibold">{viewingInvoice.customer_name}</p>
+                  <p className="text-sm text-gray-600">{viewingInvoice.customer_email}</p>
+                  {viewingInvoice.customer_phone && <p className="text-sm text-gray-600">{viewingInvoice.customer_phone}</p>}
+                </div>
+                <div className="text-right">
+                  <p className="text-xs text-gray-500 uppercase tracking-wide">Status</p>
+                  <span className={`inline-block px-3 py-1 text-xs rounded-full mt-1 ${
+                    viewingInvoice.status === "paid" ? "bg-green-100 text-green-700" :
+                    viewingInvoice.status === "sent" ? "bg-blue-100 text-blue-700" :
+                    viewingInvoice.status === "overdue" ? "bg-red-100 text-red-700" :
+                    viewingInvoice.status === "draft" ? "bg-gray-100 text-gray-700" :
+                    "bg-yellow-100 text-yellow-700"
+                  }`}>
+                    {viewingInvoice.status}
+                  </span>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4 pt-4 border-t">
+                <div>
+                  <p className="text-xs text-gray-500 uppercase tracking-wide">Issue Date</p>
+                  <p className="font-medium">{viewingInvoice.issue_date ? new Date(viewingInvoice.issue_date).toLocaleDateString() : "—"}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500 uppercase tracking-wide">Due Date</p>
+                  <p className="font-medium">{viewingInvoice.due_date ? new Date(viewingInvoice.due_date).toLocaleDateString() : "—"}</p>
+                </div>
+              </div>
+              <div className="pt-4 border-t">
+                <p className="text-xs text-gray-500 uppercase tracking-wide mb-2">Amount</p>
+                <p className="text-3xl font-bold text-sky-600">${viewingInvoice.total?.toLocaleString() || "0"}</p>
+              </div>
+              {viewingInvoice.notes && (
+                <div className="pt-4 border-t">
+                  <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Notes</p>
+                  <p className="text-sm text-gray-700">{viewingInvoice.notes}</p>
+                </div>
+              )}
+            </div>
+            <div className="p-6 border-t flex gap-3">
+              <button onClick={() => handleSendEmail(viewingInvoice)} className="flex-1 px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 flex items-center justify-center gap-2">
+                <Mail className="w-4 h-4" /> Send Email
+              </button>
+              <button onClick={() => handleEdit(viewingInvoice)} className="flex-1 px-4 py-2 border rounded-lg hover:bg-gray-50 flex items-center justify-center gap-2">
+                <Edit2 className="w-4 h-4" /> Edit
+              </button>
+              <button onClick={() => setViewingInvoice(null)} className="px-4 py-2 border rounded-lg hover:bg-gray-50">Close</button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
