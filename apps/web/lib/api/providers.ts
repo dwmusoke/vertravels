@@ -98,7 +98,8 @@ export const apiProviders: Record<string, ApiConfig> = {
   duffel: {
     provider: "duffel",
     baseUrl: "https://api.duffel.com/v1",
-    enabled: false,
+    enabled: true,
+    apiKey: typeof process !== "undefined" ? process.env.DUFFEL_API_KEY : undefined,
   },
   amadeus: {
     provider: "amadeus",
@@ -266,6 +267,7 @@ async function searchTravelportFlights(
 }
 
 function getInternalFlights(params: FlightSearchParams): Flight[] {
+  const returnDate = params.returnDate || params.departDate;
   const outbound: Flight[] = [
     {
       id: "FL001",
@@ -320,8 +322,6 @@ function getInternalFlights(params: FlightSearchParams): Flight[] {
     },
   ];
 
-  if (!params.returnDate) return outbound;
-
   const returnFlights: Flight[] = [
     {
       id: "RF001",
@@ -330,8 +330,8 @@ function getInternalFlights(params: FlightSearchParams): Flight[] {
       flightNumber: "KQ513",
       origin: params.destination,
       destination: params.origin,
-      departure: `${params.returnDate}T09:00:00`,
-      arrival: `${params.returnDate}T17:30:00`,
+      departure: `${returnDate}T09:00:00`,
+      arrival: `${returnDate}T17:30:00`,
       duration: "7h 30m",
       stops: 0,
       price: 400,
@@ -347,8 +347,8 @@ function getInternalFlights(params: FlightSearchParams): Flight[] {
       flightNumber: "UR202",
       origin: params.destination,
       destination: params.origin,
-      departure: `${params.returnDate}T12:00:00`,
-      arrival: `${params.returnDate}T20:15:00`,
+      departure: `${returnDate}T12:00:00`,
+      arrival: `${returnDate}T20:15:00`,
       duration: "7h 15m",
       stops: 0,
       price: 420,
@@ -364,8 +364,8 @@ function getInternalFlights(params: FlightSearchParams): Flight[] {
       flightNumber: "EK715",
       origin: params.destination,
       destination: params.origin,
-      departure: `${params.returnDate}T16:00:00`,
-      arrival: `${params.returnDate}T23:45:00`,
+      departure: `${returnDate}T16:00:00`,
+      arrival: `${returnDate}T23:45:00`,
       duration: "6h 45m",
       stops: 0,
       price: 700,
