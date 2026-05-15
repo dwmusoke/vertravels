@@ -704,13 +704,20 @@ export default function BookingsPage() {
                   {expandedRowId === booking.id && (
                     <tr>
                       <td colSpan={8} className="p-0">
-                        <div className="bg-sky-50 border-t">
+                        <div className="bg-gradient-to-br from-sky-50 to-white border border-sky-100 rounded-xl shadow-sm">
                           <form onSubmit={handleSubmit} className="p-6">
-                            <div className="grid grid-cols-2 gap-4 mb-4">
-                              <div className="col-span-2">
-                                <h3 className="font-semibold mb-3">
-                                  {editingBooking ? "Edit Booking" : "New Booking"}
+                            <div className="grid grid-cols-3 gap-4 mb-4">
+
+                              <div className="col-span-full border-b border-sky-200 pb-2 mb-2">
+                                <h3 className="font-semibold text-gray-800 flex items-center gap-2">
+                                  <User className="w-4 h-4 text-sky-600" /> {editingBooking ? "Edit" : "New"} Booking
                                 </h3>
+                              </div>
+
+                              <div className="col-span-full border-b border-sky-100 pb-2 mb-2">
+                                <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                                  <User className="w-3.5 h-3.5 text-sky-500" /> Customer Information
+                                </h4>
                               </div>
 
                               <div>
@@ -723,7 +730,7 @@ export default function BookingsPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, customer_name: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                                   placeholder="Customer name"
                                   required
                                 />
@@ -739,7 +746,7 @@ export default function BookingsPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, customer_email: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                                   placeholder="customer@example.com"
                                   required
                                 />
@@ -755,7 +762,7 @@ export default function BookingsPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, customer_phone: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                                   placeholder="+256 700 123456"
                                 />
                               </div>
@@ -770,9 +777,15 @@ export default function BookingsPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, destination: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                                   placeholder="e.g., Dubai, Paris"
                                 />
+                              </div>
+
+                              <div className="col-span-full border-b border-sky-100 pb-2 mb-2 mt-2">
+                                <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                                  <Plane className="w-3.5 h-3.5 text-sky-500" /> Travel Details
+                                </h4>
                               </div>
 
                               <div>
@@ -784,7 +797,7 @@ export default function BookingsPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, module_type: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                                   required
                                 >
                                   {serviceTypes.map((type) => (
@@ -805,7 +818,7 @@ export default function BookingsPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, travel_date: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                                 />
                               </div>
 
@@ -819,7 +832,7 @@ export default function BookingsPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, duration: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                                   placeholder="7"
                                 />
                               </div>
@@ -834,7 +847,7 @@ export default function BookingsPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, adults: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                                   placeholder="1"
                                 />
                               </div>
@@ -849,7 +862,7 @@ export default function BookingsPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, children: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                                   placeholder="0"
                                 />
                               </div>
@@ -864,52 +877,59 @@ export default function BookingsPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, infants: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                                   placeholder="0"
                                 />
                               </div>
 
-                              <div className="col-span-2 border-t pt-4 mt-2">
-                                <h4 className="font-semibold text-sm text-gray-700 mb-3">Passenger Details</h4>
+                              <div className="col-span-full border-b border-sky-100 pb-2 mb-2 mt-2">
+                                <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                                  <User className="w-3.5 h-3.5 text-sky-500" /> Passenger Details
+                                </h4>
                               </div>
+
                               <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Passenger Name</label>
-                                <input type="text" value={formData.passenger_name} onChange={e => setFormData({...formData, passenger_name: e.target.value})} className="w-full px-3 py-2 border rounded-lg" placeholder="Full name" />
+                                <input type="text" value={formData.passenger_name} onChange={e => setFormData({...formData, passenger_name: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow" placeholder="Full name" />
                               </div>
                               <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Passenger Email</label>
-                                <input type="email" value={formData.passenger_email} onChange={e => setFormData({...formData, passenger_email: e.target.value})} className="w-full px-3 py-2 border rounded-lg" placeholder="passenger@example.com" />
+                                <input type="email" value={formData.passenger_email} onChange={e => setFormData({...formData, passenger_email: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow" placeholder="passenger@example.com" />
                               </div>
                               <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Passenger Phone</label>
-                                <input type="tel" value={formData.passenger_phone} onChange={e => setFormData({...formData, passenger_phone: e.target.value})} className="w-full px-3 py-2 border rounded-lg" placeholder="+256 700 123456" />
+                                <input type="tel" value={formData.passenger_phone} onChange={e => setFormData({...formData, passenger_phone: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow" placeholder="+256 700 123456" />
                               </div>
                               <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Passport Number</label>
-                                <input type="text" value={formData.passenger_passport} onChange={e => setFormData({...formData, passenger_passport: e.target.value})} className="w-full px-3 py-2 border rounded-lg" placeholder="UB123456" />
+                                <input type="text" value={formData.passenger_passport} onChange={e => setFormData({...formData, passenger_passport: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow" placeholder="UB123456" />
                               </div>
                               <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
-                                <input type="date" value={formData.passenger_dob} onChange={e => setFormData({...formData, passenger_dob: e.target.value})} className="w-full px-3 py-2 border rounded-lg" />
+                                <input type="date" value={formData.passenger_dob} onChange={e => setFormData({...formData, passenger_dob: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow" />
                               </div>
                               <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Nationality</label>
-                                <input type="text" value={formData.passenger_nationality} onChange={e => setFormData({...formData, passenger_nationality: e.target.value})} className="w-full px-3 py-2 border rounded-lg" placeholder="Ugandan" />
+                                <input type="text" value={formData.passenger_nationality} onChange={e => setFormData({...formData, passenger_nationality: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow" placeholder="Ugandan" />
                               </div>
-                              <div className="col-span-2 border-t pt-4 mt-2">
-                                <h4 className="font-semibold text-sm text-gray-700 mb-3">Pricing</h4>
+
+                              <div className="col-span-full border-b border-sky-100 pb-2 mb-2 mt-2">
+                                <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                                  <DollarSign className="w-3.5 h-3.5 text-sky-500" /> Pricing
+                                </h4>
                               </div>
+
                               <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Tax Amount</label>
-                                <input type="number" step="0.01" value={formData.tax_amount} onChange={e => setFormData({...formData, tax_amount: e.target.value})} className="w-full px-3 py-2 border rounded-lg" placeholder="0.00" />
+                                <input type="number" step="0.01" value={formData.tax_amount} onChange={e => setFormData({...formData, tax_amount: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow" placeholder="0.00" />
                               </div>
                               <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Commission Amount</label>
-                                <input type="number" step="0.01" value={formData.commission_amount} onChange={e => setFormData({...formData, commission_amount: e.target.value})} className="w-full px-3 py-2 border rounded-lg" placeholder="0.00" />
+                                <input type="number" step="0.01" value={formData.commission_amount} onChange={e => setFormData({...formData, commission_amount: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow" placeholder="0.00" />
                               </div>
                               <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Commission Rate (%)</label>
-                                <input type="number" step="0.1" value={formData.commission_rate} onChange={e => setFormData({...formData, commission_rate: e.target.value})} className="w-full px-3 py-2 border rounded-lg" placeholder="5" />
+                                <input type="number" step="0.1" value={formData.commission_rate} onChange={e => setFormData({...formData, commission_rate: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow" placeholder="5" />
                               </div>
                               <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -922,13 +942,19 @@ export default function BookingsPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, total_amount: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                                   placeholder="0.00"
                                   required
                                 />
                               </div>
 
-                              <div className="col-span-2">
+                              <div className="col-span-full border-b border-sky-100 pb-2 mb-2 mt-2">
+                                <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                                  <FileText className="w-3.5 h-3.5 text-sky-500" /> Notes
+                                </h4>
+                              </div>
+
+                              <div className="col-span-full">
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
                                   Notes
                                 </label>
@@ -937,17 +963,17 @@ export default function BookingsPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, notes: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                                   rows={3}
                                   placeholder="Additional notes, special requests, preferences..."
                                 />
                               </div>
                             </div>
 
-                            <div className="flex gap-3 pt-4 border-t">
+                            <div className="col-span-full flex gap-3 pt-4 border-t border-sky-100 mt-4">
                               <button
                                 type="submit"
-                                className="flex-1 px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 flex items-center justify-center gap-2"
+                                className="flex-1 px-4 py-2.5 bg-sky-600 text-white rounded-lg hover:bg-sky-700 font-medium flex items-center justify-center gap-2 transition-colors shadow-sm"
                               >
                                 <FileText className="w-4 h-4" />
                                 {editingBooking ? "Update" : "Create"} Booking
@@ -958,7 +984,7 @@ export default function BookingsPage() {
                                   setExpandedRowId(null);
                                   setEditingBooking(null);
                                 }}
-                                className="flex-1 px-4 py-2 border rounded-lg hover:bg-gray-50"
+                                className="px-6 py-2.5 border border-gray-300 rounded-lg hover:bg-gray-50 font-medium transition-colors"
                               >
                                 Cancel
                               </button>
@@ -976,11 +1002,20 @@ export default function BookingsPage() {
       )}
 
       {expandedRowId === "new" && (
-        <div className="bg-sky-50 border rounded-lg mt-4">
+        <div className="bg-gradient-to-br from-sky-50 to-white border border-sky-100 rounded-xl shadow-sm mt-4">
           <form onSubmit={handleSubmit} className="p-6">
-            <div className="grid grid-cols-2 gap-4 mb-4">
-              <div className="col-span-2">
-                <h3 className="font-semibold mb-3">New Booking</h3>
+            <div className="grid grid-cols-3 gap-4 mb-4">
+
+              <div className="col-span-full border-b border-sky-200 pb-2 mb-2">
+                <h3 className="font-semibold text-gray-800 flex items-center gap-2">
+                  <FileText className="w-4 h-4 text-sky-600" /> New Booking
+                </h3>
+              </div>
+
+              <div className="col-span-full border-b border-sky-100 pb-2 mb-2">
+                <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                  <User className="w-3.5 h-3.5 text-sky-500" /> Customer Information
+                </h4>
               </div>
 
               <div>
@@ -993,7 +1028,7 @@ export default function BookingsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, customer_name: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                   placeholder="Customer name"
                   required
                 />
@@ -1009,7 +1044,7 @@ export default function BookingsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, customer_email: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                   placeholder="customer@example.com"
                   required
                 />
@@ -1025,7 +1060,7 @@ export default function BookingsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, customer_phone: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                   placeholder="+256 700 123456"
                 />
               </div>
@@ -1040,9 +1075,15 @@ export default function BookingsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, destination: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                   placeholder="e.g., Dubai, Paris"
                 />
+              </div>
+
+              <div className="col-span-full border-b border-sky-100 pb-2 mb-2 mt-2">
+                <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                  <Plane className="w-3.5 h-3.5 text-sky-500" /> Travel Details
+                </h4>
               </div>
 
               <div>
@@ -1054,7 +1095,7 @@ export default function BookingsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, module_type: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                   required
                 >
                   {serviceTypes.map((type) => (
@@ -1075,7 +1116,7 @@ export default function BookingsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, travel_date: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                 />
               </div>
 
@@ -1089,7 +1130,7 @@ export default function BookingsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, duration: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                   placeholder="7"
                 />
               </div>
@@ -1104,7 +1145,7 @@ export default function BookingsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, adults: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                   placeholder="1"
                 />
               </div>
@@ -1119,7 +1160,7 @@ export default function BookingsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, children: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                   placeholder="0"
                 />
               </div>
@@ -1134,9 +1175,15 @@ export default function BookingsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, infants: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                   placeholder="0"
                 />
+              </div>
+
+              <div className="col-span-full border-b border-sky-100 pb-2 mb-2 mt-2">
+                <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                  <DollarSign className="w-3.5 h-3.5 text-sky-500" /> Pricing
+                </h4>
               </div>
 
               <div>
@@ -1150,13 +1197,19 @@ export default function BookingsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, total_amount: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                   placeholder="0.00"
                   required
                 />
               </div>
 
-              <div className="col-span-2">
+              <div className="col-span-full border-b border-sky-100 pb-2 mb-2 mt-2">
+                <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                  <FileText className="w-3.5 h-3.5 text-sky-500" /> Notes
+                </h4>
+              </div>
+
+              <div className="col-span-full">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Notes
                 </label>
@@ -1165,17 +1218,17 @@ export default function BookingsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, notes: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                   rows={3}
                   placeholder="Additional notes, special requests, preferences..."
                 />
               </div>
             </div>
 
-            <div className="flex gap-3 pt-4 border-t">
+            <div className="col-span-full flex gap-3 pt-4 border-t border-sky-100 mt-4">
               <button
                 type="submit"
-                className="flex-1 px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 flex items-center justify-center gap-2"
+                className="flex-1 px-4 py-2.5 bg-sky-600 text-white rounded-lg hover:bg-sky-700 font-medium flex items-center justify-center gap-2 transition-colors shadow-sm"
               >
                 <FileText className="w-4 h-4" />
                 Create Booking
@@ -1186,7 +1239,7 @@ export default function BookingsPage() {
                   setExpandedRowId(null);
                   setEditingBooking(null);
                 }}
-                className="flex-1 px-4 py-2 border rounded-lg hover:bg-gray-50"
+                className="px-6 py-2.5 border border-gray-300 rounded-lg hover:bg-gray-50 font-medium transition-colors"
               >
                 Cancel
               </button>

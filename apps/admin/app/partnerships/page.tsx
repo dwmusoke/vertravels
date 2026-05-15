@@ -17,6 +17,9 @@ import {
   Globe,
   Star,
   TrendingUp,
+  User,
+  DollarSign,
+  FileText,
 } from "lucide-react";
 import { exportToExcel, getTemplateColumns, getValidationRules } from "@/lib/excel-utils";
 import { ExcelImporter } from "@/components/ui/excel-importer";
@@ -534,13 +537,20 @@ export default function PartnershipsPage() {
                   {expandedRowId === partner.id && (
                     <tr>
                       <td colSpan={8} className="p-0">
-                        <div className="bg-sky-50 border-t">
+                        <div className="bg-gradient-to-br from-sky-50 to-white border border-sky-100 rounded-xl shadow-sm">
                           <form onSubmit={handleSubmit} className="p-6">
-                            <div className="grid grid-cols-2 gap-4 mb-4">
-                              <div className="col-span-2">
-                                <h3 className="font-semibold mb-3">
-                                  {editingPartner ? "Edit Partner" : "New Partner"}
+                            <div className="grid grid-cols-3 gap-4 mb-4">
+
+                              <div className="col-span-full border-b border-sky-200 pb-2 mb-2">
+                                <h3 className="font-semibold text-gray-800 flex items-center gap-2">
+                                  <Users className="w-4 h-4 text-sky-600" /> {editingPartner ? "Edit" : "New"} Partner
                                 </h3>
+                              </div>
+
+                              <div className="col-span-full border-b border-sky-100 pb-2 mb-2">
+                                <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                                  <User className="w-3.5 h-3.5 text-sky-500" /> Company Information
+                                </h4>
                               </div>
 
                               <div>
@@ -553,7 +563,7 @@ export default function PartnershipsPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, company_name: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                                   placeholder="Company name"
                                   required
                                 />
@@ -568,7 +578,7 @@ export default function PartnershipsPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, type: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                                   required
                                 >
                                   <option value="affiliate">Affiliate</option>
@@ -589,7 +599,7 @@ export default function PartnershipsPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, contact_name: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                                   placeholder="Contact name"
                                 />
                               </div>
@@ -604,7 +614,7 @@ export default function PartnershipsPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, email: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                                   placeholder="partner@example.com"
                                   required
                                 />
@@ -620,7 +630,7 @@ export default function PartnershipsPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, phone: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                                   placeholder="+1 234 567 890"
                                 />
                               </div>
@@ -635,9 +645,15 @@ export default function PartnershipsPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, website: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                                   placeholder="https://example.com"
                                 />
+                              </div>
+
+                              <div className="col-span-full border-b border-sky-100 pb-2 mb-2 mt-2">
+                                <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                                  <DollarSign className="w-3.5 h-3.5 text-sky-500" /> Commission & Tier
+                                </h4>
                               </div>
 
                               <div>
@@ -651,7 +667,7 @@ export default function PartnershipsPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, commission_rate: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                                   placeholder="5"
                                 />
                               </div>
@@ -665,7 +681,7 @@ export default function PartnershipsPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, commission_type: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                                 >
                                   <option value="percentage">Percentage</option>
                                   <option value="fixed">Fixed</option>
@@ -682,7 +698,7 @@ export default function PartnershipsPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, tier: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                                 >
                                   <option value="bronze">Bronze</option>
                                   <option value="silver">Silver</option>
@@ -692,10 +708,10 @@ export default function PartnershipsPage() {
                               </div>
                             </div>
 
-                            <div className="flex gap-3 pt-4 border-t">
+                            <div className="col-span-full flex gap-3 pt-4 border-t border-sky-100 mt-4">
                               <button
                                 type="submit"
-                                className="flex-1 px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 flex items-center justify-center gap-2"
+                                className="flex-1 px-4 py-2.5 bg-sky-600 text-white rounded-lg hover:bg-sky-700 font-medium flex items-center justify-center gap-2 transition-colors shadow-sm"
                               >
                                 <Users className="w-4 h-4" />
                                 {editingPartner ? "Update" : "Create"} Partner
@@ -706,7 +722,7 @@ export default function PartnershipsPage() {
                                   setExpandedRowId(null);
                                   setEditingPartner(null);
                                 }}
-                                className="flex-1 px-4 py-2 border rounded-lg hover:bg-gray-50"
+                                className="px-6 py-2.5 border border-gray-300 rounded-lg hover:bg-gray-50 font-medium transition-colors"
                               >
                                 Cancel
                               </button>
@@ -724,11 +740,20 @@ export default function PartnershipsPage() {
       )}
 
       {expandedRowId === "new" && (
-        <div className="bg-sky-50 border rounded-lg mt-4">
+        <div className="bg-gradient-to-br from-sky-50 to-white border border-sky-100 rounded-xl shadow-sm mt-4">
           <form onSubmit={handleSubmit} className="p-6">
-            <div className="grid grid-cols-2 gap-4 mb-4">
-              <div className="col-span-2">
-                <h3 className="font-semibold mb-3">New Partner</h3>
+            <div className="grid grid-cols-3 gap-4 mb-4">
+
+              <div className="col-span-full border-b border-sky-200 pb-2 mb-2">
+                <h3 className="font-semibold text-gray-800 flex items-center gap-2">
+                  <Users className="w-4 h-4 text-sky-600" /> New Partner
+                </h3>
+              </div>
+
+              <div className="col-span-full border-b border-sky-100 pb-2 mb-2">
+                <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                  <User className="w-3.5 h-3.5 text-sky-500" /> Company Information
+                </h4>
               </div>
 
               <div>
@@ -741,7 +766,7 @@ export default function PartnershipsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, company_name: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                   placeholder="Company name"
                   required
                 />
@@ -756,7 +781,7 @@ export default function PartnershipsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, type: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                   required
                 >
                   <option value="affiliate">Affiliate</option>
@@ -777,7 +802,7 @@ export default function PartnershipsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, contact_name: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                   placeholder="Contact name"
                 />
               </div>
@@ -792,7 +817,7 @@ export default function PartnershipsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, email: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                   placeholder="partner@example.com"
                   required
                 />
@@ -808,7 +833,7 @@ export default function PartnershipsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, phone: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                   placeholder="+1 234 567 890"
                 />
               </div>
@@ -823,9 +848,15 @@ export default function PartnershipsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, website: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                   placeholder="https://example.com"
                 />
+              </div>
+
+              <div className="col-span-full border-b border-sky-100 pb-2 mb-2 mt-2">
+                <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                  <DollarSign className="w-3.5 h-3.5 text-sky-500" /> Commission & Tier
+                </h4>
               </div>
 
               <div>
@@ -839,7 +870,7 @@ export default function PartnershipsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, commission_rate: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                   placeholder="5"
                 />
               </div>
@@ -853,7 +884,7 @@ export default function PartnershipsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, commission_type: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                 >
                   <option value="percentage">Percentage</option>
                   <option value="fixed">Fixed</option>
@@ -870,7 +901,7 @@ export default function PartnershipsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, tier: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                 >
                   <option value="bronze">Bronze</option>
                   <option value="silver">Silver</option>
@@ -880,10 +911,10 @@ export default function PartnershipsPage() {
               </div>
             </div>
 
-            <div className="flex gap-3 pt-4 border-t">
+            <div className="col-span-full flex gap-3 pt-4 border-t border-sky-100 mt-4">
               <button
                 type="submit"
-                className="flex-1 px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 flex items-center justify-center gap-2"
+                className="flex-1 px-4 py-2.5 bg-sky-600 text-white rounded-lg hover:bg-sky-700 font-medium flex items-center justify-center gap-2 transition-colors shadow-sm"
               >
                 <Users className="w-4 h-4" />
                 Create Partner
@@ -894,7 +925,7 @@ export default function PartnershipsPage() {
                   setExpandedRowId(null);
                   setEditingPartner(null);
                 }}
-                className="flex-1 px-4 py-2 border rounded-lg hover:bg-gray-50"
+                className="px-6 py-2.5 border border-gray-300 rounded-lg hover:bg-gray-50 font-medium transition-colors"
               >
                 Cancel
               </button>

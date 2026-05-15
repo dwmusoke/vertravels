@@ -21,6 +21,7 @@ import {
   DollarSign,
   Printer,
   Plane,
+  User,
 } from "lucide-react";
 import { exportToExcel, getTemplateColumns, getValidationRules } from "@/lib/excel-utils";
 import { ExcelImporter } from "@/components/ui/excel-importer";
@@ -625,13 +626,20 @@ export default function AdminInvoicesPage() {
                   {expandedRowId === invoice.id && (
                     <tr>
                       <td colSpan={8} className="p-0">
-                        <div className="bg-sky-50 border-t">
+                        <div className="bg-gradient-to-br from-sky-50 to-white border border-sky-100 rounded-xl shadow-sm">
                           <form onSubmit={handleSubmit} className="p-6">
-                            <div className="grid grid-cols-2 gap-4 mb-4">
-                              <div className="col-span-2">
-                                <h3 className="font-semibold mb-3">
-                                  {editingInvoice ? "Edit Invoice" : "New Invoice"}
+                            <div className="grid grid-cols-3 gap-4 mb-4">
+
+                              <div className="col-span-full border-b border-sky-200 pb-2 mb-2">
+                                <h3 className="font-semibold text-gray-800 flex items-center gap-2">
+                                  <FileText className="w-4 h-4 text-sky-600" /> {editingInvoice ? "Edit" : "New"} Invoice
                                 </h3>
+                              </div>
+
+                              <div className="col-span-full border-b border-sky-100 pb-2 mb-2">
+                                <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                                  <User className="w-3.5 h-3.5 text-sky-500" /> Customer Information
+                                </h4>
                               </div>
 
                               <div>
@@ -644,7 +652,7 @@ export default function AdminInvoicesPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, customer_name: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                                   placeholder="Customer name"
                                   required
                                 />
@@ -660,7 +668,7 @@ export default function AdminInvoicesPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, customer_email: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                                   placeholder="customer@example.com"
                                   required
                                 />
@@ -676,9 +684,15 @@ export default function AdminInvoicesPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, customer_phone: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                                   placeholder="+256 700 123456"
                                 />
+                              </div>
+
+                              <div className="col-span-full border-b border-sky-100 pb-2 mb-2 mt-2">
+                                <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                                  <DollarSign className="w-3.5 h-3.5 text-sky-500" /> Invoice Details
+                                </h4>
                               </div>
 
                               <div>
@@ -692,7 +706,7 @@ export default function AdminInvoicesPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, total: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                                   placeholder="0.00"
                                   required
                                 />
@@ -708,7 +722,7 @@ export default function AdminInvoicesPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, issue_date: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                                   required
                                 />
                               </div>
@@ -723,12 +737,18 @@ export default function AdminInvoicesPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, due_date: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                                   required
                                 />
                               </div>
 
-                              <div className="col-span-2">
+                              <div className="col-span-full border-b border-sky-100 pb-2 mb-2 mt-2">
+                                <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                                  <FileText className="w-3.5 h-3.5 text-sky-500" /> Notes
+                                </h4>
+                              </div>
+
+                              <div className="col-span-full">
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
                                   Notes
                                 </label>
@@ -737,17 +757,17 @@ export default function AdminInvoicesPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, notes: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                                   rows={3}
                                   placeholder="Additional notes..."
                                 />
                               </div>
                             </div>
 
-                            <div className="flex gap-3 pt-4 border-t">
+                            <div className="col-span-full flex gap-3 pt-4 border-t border-sky-100 mt-4">
                               <button
                                 type="submit"
-                                className="flex-1 px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 flex items-center justify-center gap-2"
+                                className="flex-1 px-4 py-2.5 bg-sky-600 text-white rounded-lg hover:bg-sky-700 font-medium flex items-center justify-center gap-2 transition-colors shadow-sm"
                               >
                                 <FileText className="w-4 h-4" />
                                 {editingInvoice ? "Update" : "Create"} Invoice
@@ -758,7 +778,7 @@ export default function AdminInvoicesPage() {
                                   setExpandedRowId(null);
                                   setEditingInvoice(null);
                                 }}
-                                className="flex-1 px-4 py-2 border rounded-lg hover:bg-gray-50"
+                                className="px-6 py-2.5 border border-gray-300 rounded-lg hover:bg-gray-50 font-medium transition-colors"
                               >
                                 Cancel
                               </button>
@@ -776,11 +796,20 @@ export default function AdminInvoicesPage() {
       )}
 
       {expandedRowId === "new" && (
-        <div className="bg-sky-50 border rounded-lg mt-4">
+        <div className="bg-gradient-to-br from-sky-50 to-white border border-sky-100 rounded-xl shadow-sm mt-4">
           <form onSubmit={handleSubmit} className="p-6">
-            <div className="grid grid-cols-2 gap-4 mb-4">
-              <div className="col-span-2">
-                <h3 className="font-semibold mb-3">New Invoice</h3>
+            <div className="grid grid-cols-3 gap-4 mb-4">
+
+              <div className="col-span-full border-b border-sky-200 pb-2 mb-2">
+                <h3 className="font-semibold text-gray-800 flex items-center gap-2">
+                  <FileText className="w-4 h-4 text-sky-600" /> New Invoice
+                </h3>
+              </div>
+
+              <div className="col-span-full border-b border-sky-100 pb-2 mb-2">
+                <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                  <User className="w-3.5 h-3.5 text-sky-500" /> Customer Information
+                </h4>
               </div>
 
               <div>
@@ -793,7 +822,7 @@ export default function AdminInvoicesPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, customer_name: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                   placeholder="Customer name"
                   required
                 />
@@ -809,7 +838,7 @@ export default function AdminInvoicesPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, customer_email: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                   placeholder="customer@example.com"
                   required
                 />
@@ -825,9 +854,15 @@ export default function AdminInvoicesPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, customer_phone: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                   placeholder="+256 700 123456"
                 />
+              </div>
+
+              <div className="col-span-full border-b border-sky-100 pb-2 mb-2 mt-2">
+                <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                  <DollarSign className="w-3.5 h-3.5 text-sky-500" /> Invoice Details
+                </h4>
               </div>
 
               <div>
@@ -841,7 +876,7 @@ export default function AdminInvoicesPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, total: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                   placeholder="0.00"
                   required
                 />
@@ -857,7 +892,7 @@ export default function AdminInvoicesPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, issue_date: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                   required
                 />
               </div>
@@ -872,12 +907,18 @@ export default function AdminInvoicesPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, due_date: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                   required
                 />
               </div>
 
-              <div className="col-span-2">
+              <div className="col-span-full border-b border-sky-100 pb-2 mb-2 mt-2">
+                <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                  <FileText className="w-3.5 h-3.5 text-sky-500" /> Notes
+                </h4>
+              </div>
+
+              <div className="col-span-full">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Notes
                 </label>
@@ -886,17 +927,17 @@ export default function AdminInvoicesPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, notes: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                   rows={3}
                   placeholder="Additional notes..."
                 />
               </div>
             </div>
 
-            <div className="flex gap-3 pt-4 border-t">
+            <div className="col-span-full flex gap-3 pt-4 border-t border-sky-100 mt-4">
               <button
                 type="submit"
-                className="flex-1 px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 flex items-center justify-center gap-2"
+                className="flex-1 px-4 py-2.5 bg-sky-600 text-white rounded-lg hover:bg-sky-700 font-medium flex items-center justify-center gap-2 transition-colors shadow-sm"
               >
                 <FileText className="w-4 h-4" />
                 Create Invoice
@@ -907,7 +948,7 @@ export default function AdminInvoicesPage() {
                   setExpandedRowId(null);
                   setEditingInvoice(null);
                 }}
-                className="flex-1 px-4 py-2 border rounded-lg hover:bg-gray-50"
+                className="px-6 py-2.5 border border-gray-300 rounded-lg hover:bg-gray-50 font-medium transition-colors"
               >
                 Cancel
               </button>

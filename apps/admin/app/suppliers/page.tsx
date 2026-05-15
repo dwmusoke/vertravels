@@ -18,6 +18,8 @@ import {
   MapPin,
   DollarSign,
   TrendingUp,
+  User,
+  FileText,
 } from "lucide-react";
 import { exportToExcel, getTemplateColumns, getValidationRules } from "@/lib/excel-utils";
 import { ExcelImporter } from "@/components/ui/excel-importer";
@@ -592,13 +594,20 @@ export default function SuppliersPage() {
                   {expandedRowId === supplier.id && (
                     <tr>
                       <td colSpan={9} className="p-0">
-                        <div className="bg-sky-50 border-t">
+                        <div className="bg-gradient-to-br from-sky-50 to-white border border-sky-100 rounded-xl shadow-sm">
                           <form onSubmit={handleSubmit} className="p-6">
-                            <div className="grid grid-cols-2 gap-4 mb-4">
-                              <div className="col-span-2">
-                                <h3 className="font-semibold mb-3">
-                                  {editingSupplier ? "Edit Supplier" : "New Supplier"}
+                            <div className="grid grid-cols-3 gap-4 mb-4">
+
+                              <div className="col-span-full border-b border-sky-200 pb-2 mb-2">
+                                <h3 className="font-semibold text-gray-800 flex items-center gap-2">
+                                  <Building2 className="w-4 h-4 text-sky-600" /> {editingSupplier ? "Edit" : "New"} Supplier
                                 </h3>
+                              </div>
+
+                              <div className="col-span-full border-b border-sky-100 pb-2 mb-2">
+                                <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                                  <User className="w-3.5 h-3.5 text-sky-500" /> Company Information
+                                </h4>
                               </div>
 
                               <div>
@@ -611,7 +620,7 @@ export default function SuppliersPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, supplier_name: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                                   placeholder="Company name"
                                   required
                                 />
@@ -626,7 +635,7 @@ export default function SuppliersPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, supplier_type: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                                   required
                                 >
                                   {supplierTypes.map((type) => (
@@ -647,7 +656,7 @@ export default function SuppliersPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, contact_person: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                                   placeholder="Contact name"
                                 />
                               </div>
@@ -662,7 +671,7 @@ export default function SuppliersPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, email: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                                   placeholder="email@company.com"
                                   required
                                 />
@@ -678,7 +687,7 @@ export default function SuppliersPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, phone: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                                   placeholder="+256 700 123456"
                                 />
                               </div>
@@ -692,7 +701,7 @@ export default function SuppliersPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, currency: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                                 >
                                   <option value="USD">USD</option>
                                   <option value="EUR">EUR</option>
@@ -710,7 +719,7 @@ export default function SuppliersPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, payment_terms: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                                 >
                                   {paymentTermsOptions.map((term) => (
                                     <option key={term.value} value={term.value}>
@@ -718,6 +727,12 @@ export default function SuppliersPage() {
                                     </option>
                                   ))}
                                 </select>
+                              </div>
+
+                              <div className="col-span-full border-b border-sky-100 pb-2 mb-2 mt-2">
+                                <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                                  <DollarSign className="w-3.5 h-3.5 text-sky-500" /> Financial Details
+                                </h4>
                               </div>
 
                               <div>
@@ -731,7 +746,7 @@ export default function SuppliersPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, commission_rate: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                                   placeholder="10"
                                 />
                               </div>
@@ -747,12 +762,18 @@ export default function SuppliersPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, credit_limit: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                                   placeholder="10000"
                                 />
                               </div>
 
-                              <div className="col-span-2">
+                              <div className="col-span-full border-b border-sky-100 pb-2 mb-2 mt-2">
+                                <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                                  <MapPin className="w-3.5 h-3.5 text-sky-500" /> Address
+                                </h4>
+                              </div>
+
+                              <div className="col-span-full">
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
                                   Address
                                 </label>
@@ -761,17 +782,17 @@ export default function SuppliersPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, address: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                                   rows={3}
                                   placeholder="Full address..."
                                 />
                               </div>
                             </div>
 
-                            <div className="flex gap-3 pt-4 border-t">
+                            <div className="col-span-full flex gap-3 pt-4 border-t border-sky-100 mt-4">
                               <button
                                 type="submit"
-                                className="flex-1 px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 flex items-center justify-center gap-2"
+                                className="flex-1 px-4 py-2.5 bg-sky-600 text-white rounded-lg hover:bg-sky-700 font-medium flex items-center justify-center gap-2 transition-colors shadow-sm"
                               >
                                 <Building2 className="w-4 h-4" />
                                 {editingSupplier ? "Update" : "Create"} Supplier
@@ -782,7 +803,7 @@ export default function SuppliersPage() {
                                   setExpandedRowId(null);
                                   setEditingSupplier(null);
                                 }}
-                                className="flex-1 px-4 py-2 border rounded-lg hover:bg-gray-50"
+                                className="px-6 py-2.5 border border-gray-300 rounded-lg hover:bg-gray-50 font-medium transition-colors"
                               >
                                 Cancel
                               </button>
@@ -800,11 +821,20 @@ export default function SuppliersPage() {
       )}
 
       {expandedRowId === "new" && (
-        <div className="bg-sky-50 border rounded-lg mt-4">
+        <div className="bg-gradient-to-br from-sky-50 to-white border border-sky-100 rounded-xl shadow-sm mt-4">
           <form onSubmit={handleSubmit} className="p-6">
-            <div className="grid grid-cols-2 gap-4 mb-4">
-              <div className="col-span-2">
-                <h3 className="font-semibold mb-3">New Supplier</h3>
+            <div className="grid grid-cols-3 gap-4 mb-4">
+
+              <div className="col-span-full border-b border-sky-200 pb-2 mb-2">
+                <h3 className="font-semibold text-gray-800 flex items-center gap-2">
+                  <Building2 className="w-4 h-4 text-sky-600" /> New Supplier
+                </h3>
+              </div>
+
+              <div className="col-span-full border-b border-sky-100 pb-2 mb-2">
+                <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                  <User className="w-3.5 h-3.5 text-sky-500" /> Company Information
+                </h4>
               </div>
 
               <div>
@@ -817,7 +847,7 @@ export default function SuppliersPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, supplier_name: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                   placeholder="Company name"
                   required
                 />
@@ -832,7 +862,7 @@ export default function SuppliersPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, supplier_type: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                   required
                 >
                   {supplierTypes.map((type) => (
@@ -853,7 +883,7 @@ export default function SuppliersPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, contact_person: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                   placeholder="Contact name"
                 />
               </div>
@@ -868,7 +898,7 @@ export default function SuppliersPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, email: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                   placeholder="email@company.com"
                   required
                 />
@@ -884,7 +914,7 @@ export default function SuppliersPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, phone: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                   placeholder="+256 700 123456"
                 />
               </div>
@@ -898,7 +928,7 @@ export default function SuppliersPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, currency: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                 >
                   <option value="USD">USD</option>
                   <option value="EUR">EUR</option>
@@ -916,7 +946,7 @@ export default function SuppliersPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, payment_terms: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                 >
                   {paymentTermsOptions.map((term) => (
                     <option key={term.value} value={term.value}>
@@ -924,6 +954,12 @@ export default function SuppliersPage() {
                     </option>
                   ))}
                 </select>
+              </div>
+
+              <div className="col-span-full border-b border-sky-100 pb-2 mb-2 mt-2">
+                <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                  <DollarSign className="w-3.5 h-3.5 text-sky-500" /> Financial Details
+                </h4>
               </div>
 
               <div>
@@ -937,7 +973,7 @@ export default function SuppliersPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, commission_rate: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                   placeholder="10"
                 />
               </div>
@@ -953,12 +989,18 @@ export default function SuppliersPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, credit_limit: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                   placeholder="10000"
                 />
               </div>
 
-              <div className="col-span-2">
+              <div className="col-span-full border-b border-sky-100 pb-2 mb-2 mt-2">
+                <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                  <MapPin className="w-3.5 h-3.5 text-sky-500" /> Address
+                </h4>
+              </div>
+
+              <div className="col-span-full">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Address
                 </label>
@@ -967,17 +1009,17 @@ export default function SuppliersPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, address: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                   rows={3}
                   placeholder="Full address..."
                 />
               </div>
             </div>
 
-            <div className="flex gap-3 pt-4 border-t">
+            <div className="col-span-full flex gap-3 pt-4 border-t border-sky-100 mt-4">
               <button
                 type="submit"
-                className="flex-1 px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 flex items-center justify-center gap-2"
+                className="flex-1 px-4 py-2.5 bg-sky-600 text-white rounded-lg hover:bg-sky-700 font-medium flex items-center justify-center gap-2 transition-colors shadow-sm"
               >
                 <Building2 className="w-4 h-4" />
                 Create Supplier
@@ -988,7 +1030,7 @@ export default function SuppliersPage() {
                   setExpandedRowId(null);
                   setEditingSupplier(null);
                 }}
-                className="flex-1 px-4 py-2 border rounded-lg hover:bg-gray-50"
+                className="px-6 py-2.5 border border-gray-300 rounded-lg hover:bg-gray-50 font-medium transition-colors"
               >
                 Cancel
               </button>

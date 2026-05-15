@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import {
   FileCheck,
+  FileText,
   Plus,
   Search,
   Edit2,
@@ -718,13 +719,20 @@ export default function QuotationsPage() {
                   {expandedRowId === quotation.id && (
                     <tr>
                       <td colSpan={9} className="p-0">
-                        <div className="bg-sky-50 border-t">
+                        <div className="bg-gradient-to-br from-sky-50 to-white border border-sky-100 rounded-xl shadow-sm">
                           <form onSubmit={handleSubmit} className="p-6">
-                            <div className="grid grid-cols-2 gap-4 mb-4">
-                              <div className="col-span-2">
-                                <h3 className="font-semibold mb-3">
-                                  {editingQuotation ? "Edit Quotation" : "New Quotation"}
+                            <div className="grid grid-cols-3 gap-4 mb-4">
+
+                              <div className="col-span-full border-b border-sky-200 pb-2 mb-2">
+                                <h3 className="font-semibold text-gray-800 flex items-center gap-2">
+                                  <FileCheck className="w-4 h-4 text-sky-600" /> {editingQuotation ? "Edit" : "New"} Quotation
                                 </h3>
+                              </div>
+
+                              <div className="col-span-full border-b border-sky-100 pb-2 mb-2">
+                                <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                                  <User className="w-3.5 h-3.5 text-sky-500" /> Customer Information
+                                </h4>
                               </div>
 
                               <div>
@@ -737,7 +745,7 @@ export default function QuotationsPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, customer_name: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                                   placeholder="Customer name"
                                   required
                                 />
@@ -753,7 +761,7 @@ export default function QuotationsPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, customer_email: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                                   placeholder="customer@example.com"
                                   required
                                 />
@@ -769,7 +777,7 @@ export default function QuotationsPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, customer_phone: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                                   placeholder="+256 700 123456"
                                 />
                               </div>
@@ -784,9 +792,15 @@ export default function QuotationsPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, destination: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                                   placeholder="e.g., Dubai, Paris"
                                 />
+                              </div>
+
+                              <div className="col-span-full border-b border-sky-100 pb-2 mb-2 mt-2">
+                                <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                                  <Calendar className="w-3.5 h-3.5 text-sky-500" /> Travel Details
+                                </h4>
                               </div>
 
                               <div>
@@ -799,7 +813,7 @@ export default function QuotationsPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, travel_date: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                                 />
                               </div>
 
@@ -813,7 +827,7 @@ export default function QuotationsPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, duration_days: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                                   placeholder="7"
                                 />
                               </div>
@@ -828,9 +842,15 @@ export default function QuotationsPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, passengers: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                                   placeholder="1"
                                 />
+                              </div>
+
+                              <div className="col-span-full border-b border-sky-100 pb-2 mb-2 mt-2">
+                                <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                                  <DollarSign className="w-3.5 h-3.5 text-sky-500" /> Pricing
+                                </h4>
                               </div>
 
                               <div>
@@ -844,7 +864,7 @@ export default function QuotationsPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, total: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                                   placeholder="0.00"
                                   required
                                 />
@@ -860,12 +880,18 @@ export default function QuotationsPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, valid_until: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                                   required
                                 />
                               </div>
 
-                              <div className="col-span-2">
+                              <div className="col-span-full border-b border-sky-100 pb-2 mb-2 mt-2">
+                                <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                                  <FileText className="w-3.5 h-3.5 text-sky-500" /> Notes
+                                </h4>
+                              </div>
+
+                              <div className="col-span-full">
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
                                   Notes
                                 </label>
@@ -874,17 +900,17 @@ export default function QuotationsPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, notes: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                                   rows={3}
                                   placeholder="Additional notes, inclusions, exclusions..."
                                 />
                               </div>
                             </div>
 
-                            <div className="flex gap-3 pt-4 border-t">
+                            <div className="col-span-full flex gap-3 pt-4 border-t border-sky-100 mt-4">
                               <button
                                 type="submit"
-                                className="flex-1 px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 flex items-center justify-center gap-2"
+                                className="flex-1 px-4 py-2.5 bg-sky-600 text-white rounded-lg hover:bg-sky-700 font-medium flex items-center justify-center gap-2 transition-colors shadow-sm"
                               >
                                 <FileCheck className="w-4 h-4" />
                                 {editingQuotation ? "Update" : "Create"} Quotation
@@ -895,7 +921,7 @@ export default function QuotationsPage() {
                                   setExpandedRowId(null);
                                   setEditingQuotation(null);
                                 }}
-                                className="flex-1 px-4 py-2 border rounded-lg hover:bg-gray-50"
+                                className="px-6 py-2.5 border border-gray-300 rounded-lg hover:bg-gray-50 font-medium transition-colors"
                               >
                                 Cancel
                               </button>
@@ -913,11 +939,20 @@ export default function QuotationsPage() {
       )}
 
       {expandedRowId === "new" && (
-        <div className="bg-sky-50 border rounded-lg mt-4">
+        <div className="bg-gradient-to-br from-sky-50 to-white border border-sky-100 rounded-xl shadow-sm mt-4">
           <form onSubmit={handleSubmit} className="p-6">
-            <div className="grid grid-cols-2 gap-4 mb-4">
-              <div className="col-span-2">
-                <h3 className="font-semibold mb-3">New Quotation</h3>
+            <div className="grid grid-cols-3 gap-4 mb-4">
+
+              <div className="col-span-full border-b border-sky-200 pb-2 mb-2">
+                <h3 className="font-semibold text-gray-800 flex items-center gap-2">
+                  <FileCheck className="w-4 h-4 text-sky-600" /> New Quotation
+                </h3>
+              </div>
+
+              <div className="col-span-full border-b border-sky-100 pb-2 mb-2">
+                <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                  <User className="w-3.5 h-3.5 text-sky-500" /> Customer Information
+                </h4>
               </div>
 
               <div>
@@ -930,7 +965,7 @@ export default function QuotationsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, customer_name: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                   placeholder="Customer name"
                   required
                 />
@@ -946,7 +981,7 @@ export default function QuotationsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, customer_email: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                   placeholder="customer@example.com"
                   required
                 />
@@ -962,7 +997,7 @@ export default function QuotationsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, customer_phone: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                   placeholder="+256 700 123456"
                 />
               </div>
@@ -977,9 +1012,15 @@ export default function QuotationsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, destination: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                   placeholder="e.g., Dubai, Paris"
                 />
+              </div>
+
+              <div className="col-span-full border-b border-sky-100 pb-2 mb-2 mt-2">
+                <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                  <Calendar className="w-3.5 h-3.5 text-sky-500" /> Travel Details
+                </h4>
               </div>
 
               <div>
@@ -992,7 +1033,7 @@ export default function QuotationsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, travel_date: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                 />
               </div>
 
@@ -1006,7 +1047,7 @@ export default function QuotationsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, duration_days: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                   placeholder="7"
                 />
               </div>
@@ -1021,9 +1062,15 @@ export default function QuotationsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, passengers: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                   placeholder="1"
                 />
+              </div>
+
+              <div className="col-span-full border-b border-sky-100 pb-2 mb-2 mt-2">
+                <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                  <DollarSign className="w-3.5 h-3.5 text-sky-500" /> Pricing
+                </h4>
               </div>
 
               <div>
@@ -1037,7 +1084,7 @@ export default function QuotationsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, total: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                   placeholder="0.00"
                   required
                 />
@@ -1053,12 +1100,18 @@ export default function QuotationsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, valid_until: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                   required
                 />
               </div>
 
-              <div className="col-span-2">
+              <div className="col-span-full border-b border-sky-100 pb-2 mb-2 mt-2">
+                <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                  <FileText className="w-3.5 h-3.5 text-sky-500" /> Notes
+                </h4>
+              </div>
+
+              <div className="col-span-full">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Notes
                 </label>
@@ -1067,17 +1120,17 @@ export default function QuotationsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, notes: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                   rows={3}
                   placeholder="Additional notes, inclusions, exclusions..."
                 />
               </div>
             </div>
 
-            <div className="flex gap-3 pt-4 border-t">
+            <div className="col-span-full flex gap-3 pt-4 border-t border-sky-100 mt-4">
               <button
                 type="submit"
-                className="flex-1 px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 flex items-center justify-center gap-2"
+                className="flex-1 px-4 py-2.5 bg-sky-600 text-white rounded-lg hover:bg-sky-700 font-medium flex items-center justify-center gap-2 transition-colors shadow-sm"
               >
                 <FileCheck className="w-4 h-4" />
                 Create Quotation
@@ -1088,7 +1141,7 @@ export default function QuotationsPage() {
                   setExpandedRowId(null);
                   setEditingQuotation(null);
                 }}
-                className="flex-1 px-4 py-2 border rounded-lg hover:bg-gray-50"
+                className="px-6 py-2.5 border border-gray-300 rounded-lg hover:bg-gray-50 font-medium transition-colors"
               >
                 Cancel
               </button>

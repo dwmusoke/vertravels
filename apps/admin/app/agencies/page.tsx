@@ -16,6 +16,8 @@ import {
   Globe,
   MapPin,
   Percent,
+  User,
+  FileText,
 } from "lucide-react";
 import { exportToExcel, getTemplateColumns } from "@/lib/excel-utils";
 
@@ -551,216 +553,241 @@ export default function AgenciesPage() {
                         <td colSpan={9} className="p-0">
                           <div className="bg-sky-50 border-t">
                             <form onSubmit={handleSubmit} className="p-6">
-                              <div className="grid grid-cols-2 gap-4 mb-4">
-                                <div className="col-span-2">
-                                  <h3 className="font-semibold mb-3">
-                                    {editingAgency ? "Edit Agency" : "New Agency"}
-                                  </h3>
-                                </div>
+                            <div className="grid grid-cols-3 gap-4 mb-4">
 
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Agency Code *
-                                  </label>
-                                  <input
-                                    type="text"
-                                    value={formData.agency_code}
-                                    onChange={(e) =>
-                                      setFormData({ ...formData, agency_code: e.target.value })
-                                    }
-                                    className="w-full px-3 py-2 border rounded-lg"
-                                    placeholder="e.g., AG-001"
-                                    required
-                                  />
-                                </div>
-
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Agency Name *
-                                  </label>
-                                  <input
-                                    type="text"
-                                    value={formData.agency_name}
-                                    onChange={(e) =>
-                                      setFormData({ ...formData, agency_name: e.target.value })
-                                    }
-                                    className="w-full px-3 py-2 border rounded-lg"
-                                    placeholder="Full agency name"
-                                    required
-                                  />
-                                </div>
-
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Email
-                                  </label>
-                                  <input
-                                    type="email"
-                                    value={formData.email}
-                                    onChange={(e) =>
-                                      setFormData({ ...formData, email: e.target.value })
-                                    }
-                                    className="w-full px-3 py-2 border rounded-lg"
-                                    placeholder="agency@example.com"
-                                  />
-                                </div>
-
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Phone
-                                  </label>
-                                  <input
-                                    type="tel"
-                                    value={formData.phone}
-                                    onChange={(e) =>
-                                      setFormData({ ...formData, phone: e.target.value })
-                                    }
-                                    className="w-full px-3 py-2 border rounded-lg"
-                                    placeholder="+1 234 567 890"
-                                  />
-                                </div>
-
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    City
-                                  </label>
-                                  <input
-                                    type="text"
-                                    value={formData.city}
-                                    onChange={(e) =>
-                                      setFormData({ ...formData, city: e.target.value })
-                                    }
-                                    className="w-full px-3 py-2 border rounded-lg"
-                                    placeholder="City"
-                                  />
-                                </div>
-
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Country
-                                  </label>
-                                  <input
-                                    type="text"
-                                    value={formData.country}
-                                    onChange={(e) =>
-                                      setFormData({ ...formData, country: e.target.value })
-                                    }
-                                    className="w-full px-3 py-2 border rounded-lg"
-                                    placeholder="Country"
-                                  />
-                                </div>
-
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Postal Code
-                                  </label>
-                                  <input
-                                    type="text"
-                                    value={formData.postal_code}
-                                    onChange={(e) =>
-                                      setFormData({ ...formData, postal_code: e.target.value })
-                                    }
-                                    className="w-full px-3 py-2 border rounded-lg"
-                                    placeholder="Postal code"
-                                  />
-                                </div>
-
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Parent Agency
-                                  </label>
-                                  <select
-                                    value={formData.parent_agency_id}
-                                    onChange={(e) =>
-                                      setFormData({ ...formData, parent_agency_id: e.target.value })
-                                    }
-                                    className="w-full px-3 py-2 border rounded-lg"
-                                  >
-                                    <option value="">None (Head Office)</option>
-                                    {agencies
-                                      .filter((a) => a.id !== editingAgency?.id)
-                                      .map((a) => (
-                                        <option key={a.id} value={a.id}>
-                                          {a.agency_name}
-                                        </option>
-                                      ))}
-                                  </select>
-                                </div>
-
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Status
-                                  </label>
-                                  <select
-                                    value={formData.status}
-                                    onChange={(e) =>
-                                      setFormData({
-                                        ...formData,
-                                        status: e.target.value as "active" | "inactive",
-                                      })
-                                    }
-                                    className="w-full px-3 py-2 border rounded-lg"
-                                  >
-                                    <option value="active">Active</option>
-                                    <option value="inactive">Inactive</option>
-                                  </select>
-                                </div>
-
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Commission Rate (%)
-                                  </label>
-                                  <input
-                                    type="number"
-                                    step="0.01"
-                                    value={formData.commission_rate}
-                                    onChange={(e) =>
-                                      setFormData({ ...formData, commission_rate: e.target.value })
-                                    }
-                                    className="w-full px-3 py-2 border rounded-lg"
-                                    placeholder="10"
-                                  />
-                                </div>
-
-                                <div className="col-span-2">
-                                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Address
-                                  </label>
-                                  <textarea
-                                    value={formData.address}
-                                    onChange={(e) =>
-                                      setFormData({ ...formData, address: e.target.value })
-                                    }
-                                    className="w-full px-3 py-2 border rounded-lg"
-                                    rows={3}
-                                    placeholder="Full address..."
-                                  />
-                                </div>
+                              <div className="col-span-full border-b border-sky-200 pb-2 mb-2">
+                                <h3 className="font-semibold text-gray-800 flex items-center gap-2">
+                                  <Building2 className="w-4 h-4 text-sky-600" /> {editingAgency ? "Edit" : "New"} Agency
+                                </h3>
                               </div>
 
-                              <div className="flex gap-3 pt-4 border-t">
-                                <button
-                                  type="submit"
-                                  className="flex-1 px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 flex items-center justify-center gap-2"
-                                >
-                                  <Building2 className="w-4 h-4" />
-                                  {editingAgency ? "Update" : "Create"} Agency
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    setExpandedRowId(null);
-                                    setEditingAgency(null);
-                                  }}
-                                  className="flex-1 px-4 py-2 border rounded-lg hover:bg-gray-50"
-                                >
-                                  Cancel
-                                </button>
+                              <div className="col-span-full border-b border-sky-100 pb-2 mb-2">
+                                <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                                  <Building2 className="w-3.5 h-3.5 text-sky-500" /> Agency Information
+                                </h4>
                               </div>
-                            </form>
-                          </div>
-                        </td>
-                      </tr>
+
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  Agency Code *
+                                </label>
+                                <input
+                                  type="text"
+                                  value={formData.agency_code}
+                                  onChange={(e) =>
+                                    setFormData({ ...formData, agency_code: e.target.value })
+                                  }
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
+                                  placeholder="e.g., AG-001"
+                                  required
+                                />
+                              </div>
+
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  Agency Name *
+                                </label>
+                                <input
+                                  type="text"
+                                  value={formData.agency_name}
+                                  onChange={(e) =>
+                                    setFormData({ ...formData, agency_name: e.target.value })
+                                  }
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
+                                  placeholder="Full agency name"
+                                  required
+                                />
+                              </div>
+
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  Status
+                                </label>
+                                <select
+                                  value={formData.status}
+                                  onChange={(e) =>
+                                    setFormData({
+                                      ...formData,
+                                      status: e.target.value as "active" | "inactive",
+                                    })
+                                  }
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
+                                >
+                                  <option value="active">Active</option>
+                                  <option value="inactive">Inactive</option>
+                                </select>
+                              </div>
+
+                              <div className="col-span-full border-b border-sky-100 pb-2 mb-2 mt-2">
+                                <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                                  <User className="w-3.5 h-3.5 text-sky-500" /> Contact Details
+                                </h4>
+                              </div>
+
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  Email
+                                </label>
+                                <input
+                                  type="email"
+                                  value={formData.email}
+                                  onChange={(e) =>
+                                    setFormData({ ...formData, email: e.target.value })
+                                  }
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
+                                  placeholder="agency@example.com"
+                                />
+                              </div>
+
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  Phone
+                                </label>
+                                <input
+                                  type="tel"
+                                  value={formData.phone}
+                                  onChange={(e) =>
+                                    setFormData({ ...formData, phone: e.target.value })
+                                  }
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
+                                  placeholder="+1 234 567 890"
+                                />
+                              </div>
+
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  Commission Rate (%)
+                                </label>
+                                <input
+                                  type="number"
+                                  step="0.01"
+                                  value={formData.commission_rate}
+                                  onChange={(e) =>
+                                    setFormData({ ...formData, commission_rate: e.target.value })
+                                  }
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
+                                  placeholder="10"
+                                />
+                              </div>
+
+                              <div className="col-span-full border-b border-sky-100 pb-2 mb-2 mt-2">
+                                <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                                  <Globe className="w-3.5 h-3.5 text-sky-500" /> Location
+                                </h4>
+                              </div>
+
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  City
+                                </label>
+                                <input
+                                  type="text"
+                                  value={formData.city}
+                                  onChange={(e) =>
+                                    setFormData({ ...formData, city: e.target.value })
+                                  }
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
+                                  placeholder="City"
+                                />
+                              </div>
+
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  Country
+                                </label>
+                                <input
+                                  type="text"
+                                  value={formData.country}
+                                  onChange={(e) =>
+                                    setFormData({ ...formData, country: e.target.value })
+                                  }
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
+                                  placeholder="Country"
+                                />
+                              </div>
+
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  Postal Code
+                                </label>
+                                <input
+                                  type="text"
+                                  value={formData.postal_code}
+                                  onChange={(e) =>
+                                    setFormData({ ...formData, postal_code: e.target.value })
+                                  }
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
+                                  placeholder="Postal code"
+                                />
+                              </div>
+
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  Parent Agency
+                                </label>
+                                <select
+                                  value={formData.parent_agency_id}
+                                  onChange={(e) =>
+                                    setFormData({ ...formData, parent_agency_id: e.target.value })
+                                  }
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
+                                >
+                                  <option value="">None (Head Office)</option>
+                                  {agencies
+                                    .filter((a) => a.id !== editingAgency?.id)
+                                    .map((a) => (
+                                      <option key={a.id} value={a.id}>
+                                        {a.agency_name}
+                                      </option>
+                                    ))}
+                                </select>
+                              </div>
+
+                              <div className="col-span-full border-b border-sky-100 pb-2 mb-2 mt-2">
+                                <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                                  <MapPin className="w-3.5 h-3.5 text-sky-500" /> Address
+                                </h4>
+                              </div>
+
+                              <div className="col-span-full">
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  Address
+                                </label>
+                                <textarea
+                                  value={formData.address}
+                                  onChange={(e) =>
+                                    setFormData({ ...formData, address: e.target.value })
+                                  }
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
+                                  rows={3}
+                                  placeholder="Full address..."
+                                />
+                              </div>
+                            </div>
+
+                            <div className="col-span-full flex gap-3 pt-4 border-t border-sky-100 mt-4">
+                              <button
+                                type="submit"
+                                className="flex-1 px-4 py-2.5 bg-sky-600 text-white rounded-lg hover:bg-sky-700 font-medium flex items-center justify-center gap-2 transition-colors shadow-sm"
+                              >
+                                <Building2 className="w-4 h-4" />
+                                {editingAgency ? "Update" : "Create"} Agency
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setExpandedRowId(null);
+                                  setEditingAgency(null);
+                                }}
+                                className="px-6 py-2.5 border border-gray-300 rounded-lg hover:bg-gray-50 font-medium transition-colors"
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          </form>
+                        </div>
+                      </td>
+                    </tr>
                     )}
                   </>
                 );
@@ -771,11 +798,19 @@ export default function AgenciesPage() {
       )}
 
       {expandedRowId === "new" && (
-        <div className="bg-sky-50 border rounded-lg mt-4">
+        <div className="bg-gradient-to-br from-sky-50 to-white border border-sky-100 rounded-xl shadow-sm mt-4">
           <form onSubmit={handleSubmit} className="p-6">
-            <div className="grid grid-cols-2 gap-4 mb-4">
-              <div className="col-span-2">
-                <h3 className="font-semibold mb-3">New Agency</h3>
+            <div className="grid grid-cols-3 gap-4 mb-4">
+              <div className="col-span-full border-b border-sky-200 pb-2 mb-2">
+                <h3 className="font-semibold text-gray-800 flex items-center gap-2">
+                  <Building2 className="w-4 h-4 text-sky-600" /> New Agency
+                </h3>
+              </div>
+
+              <div className="col-span-full border-b border-sky-100 pb-2 mb-2">
+                <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                  <Building2 className="w-3.5 h-3.5 text-sky-500" /> Agency Information
+                </h4>
               </div>
 
               <div>
@@ -788,7 +823,7 @@ export default function AgenciesPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, agency_code: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                   placeholder="e.g., AG-001"
                   required
                 />
@@ -804,105 +839,10 @@ export default function AgenciesPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, agency_name: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                   placeholder="Full agency name"
                   required
                 />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) =>
-                    setFormData({ ...formData, email: e.target.value })
-                  }
-                  className="w-full px-3 py-2 border rounded-lg"
-                  placeholder="agency@example.com"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Phone
-                </label>
-                <input
-                  type="tel"
-                  value={formData.phone}
-                  onChange={(e) =>
-                    setFormData({ ...formData, phone: e.target.value })
-                  }
-                  className="w-full px-3 py-2 border rounded-lg"
-                  placeholder="+1 234 567 890"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  City
-                </label>
-                <input
-                  type="text"
-                  value={formData.city}
-                  onChange={(e) =>
-                    setFormData({ ...formData, city: e.target.value })
-                  }
-                  className="w-full px-3 py-2 border rounded-lg"
-                  placeholder="City"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Country
-                </label>
-                <input
-                  type="text"
-                  value={formData.country}
-                  onChange={(e) =>
-                    setFormData({ ...formData, country: e.target.value })
-                  }
-                  className="w-full px-3 py-2 border rounded-lg"
-                  placeholder="Country"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Postal Code
-                </label>
-                <input
-                  type="text"
-                  value={formData.postal_code}
-                  onChange={(e) =>
-                    setFormData({ ...formData, postal_code: e.target.value })
-                  }
-                  className="w-full px-3 py-2 border rounded-lg"
-                  placeholder="Postal code"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Parent Agency
-                </label>
-                <select
-                  value={formData.parent_agency_id}
-                  onChange={(e) =>
-                    setFormData({ ...formData, parent_agency_id: e.target.value })
-                  }
-                  className="w-full px-3 py-2 border rounded-lg"
-                >
-                  <option value="">None (Head Office)</option>
-                  {agencies.map((a) => (
-                    <option key={a.id} value={a.id}>
-                      {a.agency_name}
-                    </option>
-                  ))}
-                </select>
               </div>
 
               <div>
@@ -917,11 +857,47 @@ export default function AgenciesPage() {
                       status: e.target.value as "active" | "inactive",
                     })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                 >
                   <option value="active">Active</option>
                   <option value="inactive">Inactive</option>
                 </select>
+              </div>
+
+              <div className="col-span-full border-b border-sky-100 pb-2 mb-2 mt-2">
+                <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                  <User className="w-3.5 h-3.5 text-sky-500" /> Contact Details
+                </h4>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
+                  placeholder="agency@example.com"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Phone
+                </label>
+                <input
+                  type="tel"
+                  value={formData.phone}
+                  onChange={(e) =>
+                    setFormData({ ...formData, phone: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
+                  placeholder="+1 234 567 890"
+                />
               </div>
 
               <div>
@@ -935,12 +911,89 @@ export default function AgenciesPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, commission_rate: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                   placeholder="10"
                 />
               </div>
 
-              <div className="col-span-2">
+              <div className="col-span-full border-b border-sky-100 pb-2 mb-2 mt-2">
+                <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                  <Globe className="w-3.5 h-3.5 text-sky-500" /> Location
+                </h4>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  City
+                </label>
+                <input
+                  type="text"
+                  value={formData.city}
+                  onChange={(e) =>
+                    setFormData({ ...formData, city: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
+                  placeholder="City"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Country
+                </label>
+                <input
+                  type="text"
+                  value={formData.country}
+                  onChange={(e) =>
+                    setFormData({ ...formData, country: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
+                  placeholder="Country"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Postal Code
+                </label>
+                <input
+                  type="text"
+                  value={formData.postal_code}
+                  onChange={(e) =>
+                    setFormData({ ...formData, postal_code: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
+                  placeholder="Postal code"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Parent Agency
+                </label>
+                <select
+                  value={formData.parent_agency_id}
+                  onChange={(e) =>
+                    setFormData({ ...formData, parent_agency_id: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
+                >
+                  <option value="">None (Head Office)</option>
+                  {agencies.map((a) => (
+                    <option key={a.id} value={a.id}>
+                      {a.agency_name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="col-span-full border-b border-sky-100 pb-2 mb-2 mt-2">
+                <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                  <MapPin className="w-3.5 h-3.5 text-sky-500" /> Address
+                </h4>
+              </div>
+
+              <div className="col-span-full">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Address
                 </label>
@@ -949,17 +1002,17 @@ export default function AgenciesPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, address: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                   rows={3}
                   placeholder="Full address..."
                 />
               </div>
             </div>
 
-            <div className="flex gap-3 pt-4 border-t">
+            <div className="col-span-full flex gap-3 pt-4 border-t border-sky-100 mt-4">
               <button
                 type="submit"
-                className="flex-1 px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 flex items-center justify-center gap-2"
+                className="flex-1 px-4 py-2.5 bg-sky-600 text-white rounded-lg hover:bg-sky-700 font-medium flex items-center justify-center gap-2 transition-colors shadow-sm"
               >
                 <Building2 className="w-4 h-4" />
                 Create Agency
@@ -970,7 +1023,7 @@ export default function AgenciesPage() {
                   setExpandedRowId(null);
                   setEditingAgency(null);
                 }}
-                className="flex-1 px-4 py-2 border rounded-lg hover:bg-gray-50"
+                className="px-6 py-2.5 border border-gray-300 rounded-lg hover:bg-gray-50 font-medium transition-colors"
               >
                 Cancel
               </button>

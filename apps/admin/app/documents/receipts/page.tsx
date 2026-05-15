@@ -22,6 +22,7 @@ import {
   Printer,
   Plane,
   Share2,
+  User,
 } from "lucide-react";
 import { exportToExcel } from "@/lib/excel-utils";
 import { ExcelImporter } from "@/components/ui/excel-importer";
@@ -585,13 +586,20 @@ export default function ReceiptsPage() {
                   {expandedRowId === receipt.id && (
                     <tr>
                       <td colSpan={8} className="p-0">
-                        <div className="bg-sky-50 border-t">
+                        <div className="bg-gradient-to-br from-sky-50 to-white border border-sky-100 rounded-xl shadow-sm">
                           <form onSubmit={handleSubmit} className="p-6">
-                            <div className="grid grid-cols-2 gap-4 mb-4">
-                              <div className="col-span-2">
-                                <h3 className="font-semibold mb-3">
-                                  {editingReceipt ? "Edit Receipt" : "New Payment Receipt"}
+                            <div className="grid grid-cols-3 gap-4 mb-4">
+
+                              <div className="col-span-full border-b border-sky-200 pb-2 mb-2">
+                                <h3 className="font-semibold text-gray-800 flex items-center gap-2">
+                                  <CreditCard className="w-4 h-4 text-sky-600" /> {editingReceipt ? "Edit" : "New"} Receipt
                                 </h3>
+                              </div>
+
+                              <div className="col-span-full border-b border-sky-100 pb-2 mb-2">
+                                <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                                  <User className="w-3.5 h-3.5 text-sky-500" /> Customer Information
+                                </h4>
                               </div>
 
                               <div>
@@ -604,7 +612,7 @@ export default function ReceiptsPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, customer_name: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                                   placeholder="Customer name"
                                   required
                                 />
@@ -620,10 +628,16 @@ export default function ReceiptsPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, customer_email: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                                   placeholder="customer@example.com"
                                   required
                                 />
+                              </div>
+
+                              <div className="col-span-full border-b border-sky-100 pb-2 mb-2 mt-2">
+                                <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                                  <DollarSign className="w-3.5 h-3.5 text-sky-500" /> Payment Details
+                                </h4>
                               </div>
 
                               <div>
@@ -637,7 +651,7 @@ export default function ReceiptsPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, amount: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                                   placeholder="0.00"
                                   required
                                 />
@@ -652,7 +666,7 @@ export default function ReceiptsPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, payment_method: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                                   required
                                 >
                                   {paymentMethods.map((method) => (
@@ -673,7 +687,7 @@ export default function ReceiptsPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, payment_date: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                                   required
                                 />
                               </div>
@@ -688,7 +702,7 @@ export default function ReceiptsPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, transaction_id: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                                   placeholder="Bank transaction ID"
                                 />
                               </div>
@@ -703,12 +717,18 @@ export default function ReceiptsPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, reference_number: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                                   placeholder="Payment reference"
                                 />
                               </div>
 
-                              <div className="col-span-2">
+                              <div className="col-span-full border-b border-sky-100 pb-2 mb-2 mt-2">
+                                <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                                  <FileText className="w-3.5 h-3.5 text-sky-500" /> Notes
+                                </h4>
+                              </div>
+
+                              <div className="col-span-full">
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
                                   Notes
                                 </label>
@@ -717,17 +737,17 @@ export default function ReceiptsPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, notes: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                                   rows={3}
                                   placeholder="Additional notes..."
                                 />
                               </div>
                             </div>
 
-                            <div className="flex gap-3 pt-4 border-t">
+                            <div className="col-span-full flex gap-3 pt-4 border-t border-sky-100 mt-4">
                               <button
                                 type="submit"
-                                className="flex-1 px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 flex items-center justify-center gap-2"
+                                className="flex-1 px-4 py-2.5 bg-sky-600 text-white rounded-lg hover:bg-sky-700 font-medium flex items-center justify-center gap-2 transition-colors shadow-sm"
                               >
                                 <CreditCard className="w-4 h-4" />
                                 {editingReceipt ? "Update" : "Create"} Receipt
@@ -738,7 +758,7 @@ export default function ReceiptsPage() {
                                   setExpandedRowId(null);
                                   setEditingReceipt(null);
                                 }}
-                                className="flex-1 px-4 py-2 border rounded-lg hover:bg-gray-50"
+                                className="px-6 py-2.5 border border-gray-300 rounded-lg hover:bg-gray-50 font-medium transition-colors"
                               >
                                 Cancel
                               </button>
@@ -756,11 +776,20 @@ export default function ReceiptsPage() {
       )}
 
       {expandedRowId === "new" && (
-        <div className="bg-sky-50 border rounded-lg mt-4">
+        <div className="bg-gradient-to-br from-sky-50 to-white border border-sky-100 rounded-xl shadow-sm mt-4">
           <form onSubmit={handleSubmit} className="p-6">
-            <div className="grid grid-cols-2 gap-4 mb-4">
-              <div className="col-span-2">
-                <h3 className="font-semibold mb-3">New Payment Receipt</h3>
+            <div className="grid grid-cols-3 gap-4 mb-4">
+
+              <div className="col-span-full border-b border-sky-200 pb-2 mb-2">
+                <h3 className="font-semibold text-gray-800 flex items-center gap-2">
+                  <CreditCard className="w-4 h-4 text-sky-600" /> New Receipt
+                </h3>
+              </div>
+
+              <div className="col-span-full border-b border-sky-100 pb-2 mb-2">
+                <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                  <User className="w-3.5 h-3.5 text-sky-500" /> Customer Information
+                </h4>
               </div>
 
               <div>
@@ -773,7 +802,7 @@ export default function ReceiptsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, customer_name: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                   placeholder="Customer name"
                   required
                 />
@@ -789,10 +818,16 @@ export default function ReceiptsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, customer_email: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                   placeholder="customer@example.com"
                   required
                 />
+              </div>
+
+              <div className="col-span-full border-b border-sky-100 pb-2 mb-2 mt-2">
+                <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                  <DollarSign className="w-3.5 h-3.5 text-sky-500" /> Payment Details
+                </h4>
               </div>
 
               <div>
@@ -806,7 +841,7 @@ export default function ReceiptsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, amount: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                   placeholder="0.00"
                   required
                 />
@@ -821,7 +856,7 @@ export default function ReceiptsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, payment_method: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                   required
                 >
                   {paymentMethods.map((method) => (
@@ -842,7 +877,7 @@ export default function ReceiptsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, payment_date: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                   required
                 />
               </div>
@@ -857,7 +892,7 @@ export default function ReceiptsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, transaction_id: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                   placeholder="Bank transaction ID"
                 />
               </div>
@@ -872,12 +907,18 @@ export default function ReceiptsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, reference_number: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                   placeholder="Payment reference"
                 />
               </div>
 
-              <div className="col-span-2">
+              <div className="col-span-full border-b border-sky-100 pb-2 mb-2 mt-2">
+                <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                  <FileText className="w-3.5 h-3.5 text-sky-500" /> Notes
+                </h4>
+              </div>
+
+              <div className="col-span-full">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Notes
                 </label>
@@ -886,17 +927,17 @@ export default function ReceiptsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, notes: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                   rows={3}
                   placeholder="Additional notes..."
                 />
               </div>
             </div>
 
-            <div className="flex gap-3 pt-4 border-t">
+            <div className="col-span-full flex gap-3 pt-4 border-t border-sky-100 mt-4">
               <button
                 type="submit"
-                className="flex-1 px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 flex items-center justify-center gap-2"
+                className="flex-1 px-4 py-2.5 bg-sky-600 text-white rounded-lg hover:bg-sky-700 font-medium flex items-center justify-center gap-2 transition-colors shadow-sm"
               >
                 <CreditCard className="w-4 h-4" />
                 Create Receipt
@@ -907,7 +948,7 @@ export default function ReceiptsPage() {
                   setExpandedRowId(null);
                   setEditingReceipt(null);
                 }}
-                className="flex-1 px-4 py-2 border rounded-lg hover:bg-gray-50"
+                className="px-6 py-2.5 border border-gray-300 rounded-lg hover:bg-gray-50 font-medium transition-colors"
               >
                 Cancel
               </button>

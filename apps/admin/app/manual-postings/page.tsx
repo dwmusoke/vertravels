@@ -17,6 +17,11 @@ import {
   Square,
   CheckSquare,
   Save,
+  User,
+  DollarSign,
+  Plane,
+  FileText,
+  Calendar,
 } from "lucide-react";
 import { exportToExcel, getTemplateColumns, getValidationRules } from "@/lib/excel-utils";
 import { ExcelImporter } from "@/components/ui/excel-importer";
@@ -579,9 +584,22 @@ export default function ManualPostingsPage() {
                   {expandedRowId === posting.id && (
                     <tr>
                       <td colSpan={9} className="p-0">
-                        <div className="bg-sky-50 border-t">
+                        <div className="bg-gradient-to-br from-sky-50 to-white border border-sky-100 rounded-xl shadow-sm">
                           <form onSubmit={handleSubmit} className="p-6">
-                            <div className="grid grid-cols-2 gap-4 mb-4">
+                            <div className="grid grid-cols-3 gap-4 mb-4">
+
+                              <div className="col-span-full border-b border-sky-200 pb-2 mb-2">
+                                <h3 className="font-semibold text-gray-800 flex items-center gap-2">
+                                  <FileText className="w-4 h-4 text-sky-600" /> {editingPosting ? "Edit" : "New"} Posting
+                                </h3>
+                              </div>
+
+                              <div className="col-span-full border-b border-sky-100 pb-2 mb-2">
+                                <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                                  <Plane className="w-3.5 h-3.5 text-sky-500" /> Trip Information
+                                </h4>
+                              </div>
+
                               <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
                                   Posting Type *
@@ -591,7 +609,7 @@ export default function ManualPostingsPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, posting_type: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                                   required
                                 >
                                   <option value="flight">Flight</option>
@@ -613,9 +631,24 @@ export default function ManualPostingsPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, airline_code: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg uppercase"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow uppercase"
                                   placeholder="e.g., AA, EK, QR"
                                   maxLength={3}
+                                />
+                              </div>
+
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  Travel Date *
+                                </label>
+                                <input
+                                  type="date"
+                                  value={formData.travel_date}
+                                  onChange={(e) =>
+                                    setFormData({ ...formData, travel_date: e.target.value })
+                                  }
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
+                                  required
                                 />
                               </div>
 
@@ -629,7 +662,7 @@ export default function ManualPostingsPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, pnr: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg uppercase"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow uppercase"
                                   placeholder="6-character PNR"
                                   maxLength={10}
                                 />
@@ -645,13 +678,13 @@ export default function ManualPostingsPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, ticket_number: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                                   placeholder="13-digit ticket number"
                                   maxLength={15}
                                 />
                               </div>
 
-                              <div className="col-span-2">
+                              <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
                                   Passenger Name *
                                 </label>
@@ -661,7 +694,7 @@ export default function ManualPostingsPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, passenger_name: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                                   placeholder="Lastname/Firstname"
                                   required
                                 />
@@ -677,29 +710,16 @@ export default function ManualPostingsPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, route_description: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                                   placeholder="e.g., EBB → LHR → JFK"
                                   required
                                 />
                               </div>
 
-                              <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                  Travel Date *
-                                </label>
-                                <input
-                                  type="date"
-                                  value={formData.travel_date}
-                                  onChange={(e) =>
-                                    setFormData({ ...formData, travel_date: e.target.value })
-                                  }
-                                  className="w-full px-3 py-2 border rounded-lg"
-                                  required
-                                />
-                              </div>
-
-                              <div className="col-span-2 border-t pt-4 mt-4">
-                                <h3 className="font-semibold mb-3">Financial Details</h3>
+                              <div className="col-span-full border-b border-sky-100 pb-2 mb-2 mt-2">
+                                <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                                  <DollarSign className="w-3.5 h-3.5 text-sky-500" /> Financial Details
+                                </h4>
                               </div>
 
                               <div>
@@ -713,7 +733,7 @@ export default function ManualPostingsPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, fare: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                                   placeholder="0.00"
                                   required
                                 />
@@ -730,7 +750,7 @@ export default function ManualPostingsPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, tax: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                                   placeholder="0.00"
                                   required
                                 />
@@ -747,12 +767,18 @@ export default function ManualPostingsPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, commission: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                                   placeholder="0.00"
                                 />
                               </div>
 
-                              <div className="col-span-2">
+                              <div className="col-span-full border-b border-sky-100 pb-2 mb-2 mt-2">
+                                <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                                  <FileText className="w-3.5 h-3.5 text-sky-500" /> Notes
+                                </h4>
+                              </div>
+
+                              <div className="col-span-full">
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
                                   Notes
                                 </label>
@@ -761,17 +787,17 @@ export default function ManualPostingsPage() {
                                   onChange={(e) =>
                                     setFormData({ ...formData, notes: e.target.value })
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                                   rows={3}
                                   placeholder="Additional notes or special requests..."
                                 />
                               </div>
                             </div>
 
-                            <div className="flex gap-3 pt-4 border-t">
+                            <div className="col-span-full flex gap-3 pt-4 border-t border-sky-100 mt-4">
                               <button
                                 type="submit"
-                                className="flex-1 px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 flex items-center justify-center gap-2"
+                                className="flex-1 px-4 py-2.5 bg-sky-600 text-white rounded-lg hover:bg-sky-700 font-medium flex items-center justify-center gap-2 transition-colors shadow-sm"
                               >
                                 <Save className="w-4 h-4" />
                                 {editingPosting ? "Update" : "Create"} Posting
@@ -782,7 +808,7 @@ export default function ManualPostingsPage() {
                                   setExpandedRowId(null);
                                   setEditingPosting(null);
                                 }}
-                                className="flex-1 px-4 py-2 border rounded-lg hover:bg-gray-50"
+                                className="px-6 py-2.5 border border-gray-300 rounded-lg hover:bg-gray-50 font-medium transition-colors"
                               >
                                 Cancel
                               </button>
@@ -800,9 +826,22 @@ export default function ManualPostingsPage() {
       )}
 
       {expandedRowId === "new" && (
-        <div className="bg-sky-50 border rounded-lg mt-4">
+        <div className="bg-gradient-to-br from-sky-50 to-white border border-sky-100 rounded-xl shadow-sm mt-4">
           <form onSubmit={handleSubmit} className="p-6">
-            <div className="grid grid-cols-2 gap-4 mb-4">
+            <div className="grid grid-cols-3 gap-4 mb-4">
+
+              <div className="col-span-full border-b border-sky-200 pb-2 mb-2">
+                <h3 className="font-semibold text-gray-800 flex items-center gap-2">
+                  <FileText className="w-4 h-4 text-sky-600" /> New Posting
+                </h3>
+              </div>
+
+              <div className="col-span-full border-b border-sky-100 pb-2 mb-2">
+                <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                  <Plane className="w-3.5 h-3.5 text-sky-500" /> Trip Information
+                </h4>
+              </div>
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Posting Type *
@@ -812,7 +851,7 @@ export default function ManualPostingsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, posting_type: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                   required
                 >
                   <option value="flight">Flight</option>
@@ -834,9 +873,24 @@ export default function ManualPostingsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, airline_code: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg uppercase"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow uppercase"
                   placeholder="e.g., AA, EK, QR"
                   maxLength={3}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Travel Date *
+                </label>
+                <input
+                  type="date"
+                  value={formData.travel_date}
+                  onChange={(e) =>
+                    setFormData({ ...formData, travel_date: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
+                  required
                 />
               </div>
 
@@ -850,7 +904,7 @@ export default function ManualPostingsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, pnr: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg uppercase"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow uppercase"
                   placeholder="6-character PNR"
                   maxLength={10}
                 />
@@ -866,13 +920,13 @@ export default function ManualPostingsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, ticket_number: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                   placeholder="13-digit ticket number"
                   maxLength={15}
                 />
               </div>
 
-              <div className="col-span-2">
+              <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Passenger Name *
                 </label>
@@ -882,7 +936,7 @@ export default function ManualPostingsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, passenger_name: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                   placeholder="Lastname/Firstname"
                   required
                 />
@@ -898,29 +952,16 @@ export default function ManualPostingsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, route_description: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                   placeholder="e.g., EBB → LHR → JFK"
                   required
                 />
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Travel Date *
-                </label>
-                <input
-                  type="date"
-                  value={formData.travel_date}
-                  onChange={(e) =>
-                    setFormData({ ...formData, travel_date: e.target.value })
-                  }
-                  className="w-full px-3 py-2 border rounded-lg"
-                  required
-                />
-              </div>
-
-              <div className="col-span-2 border-t pt-4 mt-4">
-                <h3 className="font-semibold mb-3">Financial Details</h3>
+              <div className="col-span-full border-b border-sky-100 pb-2 mb-2 mt-2">
+                <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                  <DollarSign className="w-3.5 h-3.5 text-sky-500" /> Financial Details
+                </h4>
               </div>
 
               <div>
@@ -934,7 +975,7 @@ export default function ManualPostingsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, fare: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                   placeholder="0.00"
                   required
                 />
@@ -951,7 +992,7 @@ export default function ManualPostingsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, tax: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                   placeholder="0.00"
                   required
                 />
@@ -968,12 +1009,18 @@ export default function ManualPostingsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, commission: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                   placeholder="0.00"
                 />
               </div>
 
-              <div className="col-span-2">
+              <div className="col-span-full border-b border-sky-100 pb-2 mb-2 mt-2">
+                <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                  <FileText className="w-3.5 h-3.5 text-sky-500" /> Notes
+                </h4>
+              </div>
+
+              <div className="col-span-full">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Notes
                 </label>
@@ -982,17 +1029,17 @@ export default function ManualPostingsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, notes: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow"
                   rows={3}
                   placeholder="Additional notes or special requests..."
                 />
               </div>
             </div>
 
-            <div className="flex gap-3 pt-4 border-t">
+            <div className="col-span-full flex gap-3 pt-4 border-t border-sky-100 mt-4">
               <button
                 type="submit"
-                className="flex-1 px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 flex items-center justify-center gap-2"
+                className="flex-1 px-4 py-2.5 bg-sky-600 text-white rounded-lg hover:bg-sky-700 font-medium flex items-center justify-center gap-2 transition-colors shadow-sm"
               >
                 <Save className="w-4 h-4" />
                 Create Posting
@@ -1003,7 +1050,7 @@ export default function ManualPostingsPage() {
                   setExpandedRowId(null);
                   setEditingPosting(null);
                 }}
-                className="flex-1 px-4 py-2 border rounded-lg hover:bg-gray-50"
+                className="px-6 py-2.5 border border-gray-300 rounded-lg hover:bg-gray-50 font-medium transition-colors"
               >
                 Cancel
               </button>
