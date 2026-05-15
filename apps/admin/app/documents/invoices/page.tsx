@@ -1023,7 +1023,7 @@ export default function AdminInvoicesPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {(viewingInvoice as any).items ? JSON.parse((viewingInvoice as any).items as string || "[]").map((item: any, i: number) => (
+                    {Array.isArray((viewingInvoice as any).items) ? (viewingInvoice as any).items.map((item: any, i: number) => (
                       <tr key={i} className="border-b border-gray-100">
                         <td className="py-3 text-sm">{item.description}</td>
                         <td className="py-3 text-sm text-right">${item.amount?.toFixed(2)}</td>
