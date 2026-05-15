@@ -18,6 +18,10 @@ import {
   FileText,
   Edit2,
   Trash2,
+  Eye,
+  Printer,
+  Plane,
+  Share2,
 } from "lucide-react";
 import { exportToExcel } from "@/lib/excel-utils";
 import { ExcelImporter } from "@/components/ui/excel-importer";
@@ -31,6 +35,7 @@ interface Receipt {
   amount: number;
   payment_method: string;
   payment_date: string;
+  status?: "completed" | "pending" | "failed";
   transaction_id?: string;
   reference_number?: string;
   invoice_id?: string;
@@ -47,6 +52,9 @@ export default function ReceiptsPage() {
   const [search, setSearch] = useState("");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [showImporter, setShowImporter] = useState(false);
+  const [viewingReceipt, setViewingReceipt] = useState<Receipt | null>(null);
+  const [paymentModal, setPaymentModal] = useState<Receipt | null>(null);
+  const [paymentData, setPaymentData] = useState({ amount: "", method: "credit_card", reference: "", notes: "" });
 
   const [formData, setFormData] = useState({
     customer_name: "",
@@ -204,6 +212,71 @@ export default function ReceiptsPage() {
       fetchReceipts();
     } catch (error: any) {
       throw error;
+    }
+  }
+
+  async function handleShareDocument(receipt: Receipt) {
+    try {
+      const shareToken = `share_${Date.now()}_${Math.random().toString(36).substring(7)}`;
+
+      const { error } = await supabase.from("document_shares").insert([{
+        document_type: "receipt",
+        document_id: receipt.id,
+        share_token: shareToken,
+        expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+      }]);
+
+      if (error) throw error;
+
+      const shareUrl = `${window.location.origin}/documents/share/${shareToken}`;
+      navigator.clipboard.writeText(shareUrl);
+      alert(`Share link copied to clipboard!\n\n${shareUrl}`);
+    } catch (error: any) {
+      console.error("Error creating share link:", error);
+      alert("Failed to create share link");
+    }
+  }
+
+  function handlePrint() {
+    window.print();
+  }
+
+  function handleDownloadPDF() {
+    window.print();
+  }
+
+  async function handleSendEmail(receipt: Receipt) {
+    try {
+      navigator.clipboard.writeText(receipt.customer_email);
+      alert(`Receipt ${receipt.receipt_number} — email address ${receipt.customer_email} copied to clipboard`);
+    } catch (error: any) {
+      console.error("Error:", error);
+      alert("Failed to copy email");
+    }
+  }
+
+  async function handleRecordPayment(receipt: Receipt) {
+    try {
+      const amount = parseFloat(paymentData.amount) || receipt.amount;
+      const { error } = await supabase.from("payments").insert([{
+        receipt_id: receipt.id,
+        receipt_number: receipt.receipt_number,
+        customer_name: receipt.customer_name,
+        customer_email: receipt.customer_email,
+        amount,
+        payment_method: paymentData.method,
+        reference: paymentData.reference || `PAY-${Date.now()}`,
+        notes: paymentData.notes,
+        status: "completed",
+        payment_date: new Date().toISOString(),
+      }]);
+      if (error) throw error;
+      await supabase.from("payment_receipts").update({ status: "completed" }).eq("id", receipt.id);
+      setPaymentModal(null);
+      fetchReceipts();
+      alert("Payment recorded successfully");
+    } catch (err: any) {
+      alert("Failed to record payment: " + err.message);
     }
   }
 
@@ -469,6 +542,13 @@ export default function ReceiptsPage() {
                     <td className="px-6 py-4">
                       <div className="flex gap-2">
                         <button
+                          onClick={() => setViewingReceipt(receipt)}
+                          className="p-1.5 text-gray-600 hover:bg-gray-50 rounded"
+                          title="View"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </button>
+                        <button
                           onClick={() => handleEdit(receipt)}
                           className="p-1.5 text-sky-600 hover:bg-sky-50 rounded"
                           title="Edit"
@@ -484,6 +564,13 @@ export default function ReceiptsPage() {
                           title="Copy Email"
                         >
                           <Mail className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => setPaymentModal(receipt)}
+                          className="p-1.5 text-emerald-600 hover:bg-emerald-50 rounded"
+                          title="Record Payment"
+                        >
+                          <DollarSign className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => handleDelete(receipt.id)}
@@ -835,6 +922,177 @@ export default function ReceiptsPage() {
           onImport={handleImport}
           onClose={() => setShowImporter(false)}
         />
+      )}
+
+      {viewingReceipt && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 print:bg-white print:static print:inset-auto print:items-start" onClick={() => setViewingReceipt(null)}>
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto print:shadow-none print:rounded-none print:max-h-none print:overflow-visible" onClick={(e) => e.stopPropagation()}>
+
+            <div className="print:hidden p-4 border-b flex justify-between items-center bg-gray-50 rounded-t-2xl sticky top-0 z-10">
+              <h2 className="text-lg font-bold flex items-center gap-2">
+                <CreditCard className="w-5 h-5 text-sky-600" />
+                Receipt Preview
+              </h2>
+              <div className="flex gap-2">
+                <button onClick={handlePrint} className="flex items-center gap-1.5 px-3 py-1.5 border rounded-lg hover:bg-white text-sm"><Printer className="w-4 h-4" /> Print</button>
+                <button onClick={handleDownloadPDF} className="flex items-center gap-1.5 px-3 py-1.5 border rounded-lg hover:bg-white text-sm"><Download className="w-4 h-4" /> PDF</button>
+                <button onClick={() => { navigator.clipboard.writeText(window.location.href); alert("Link copied"); }} className="flex items-center gap-1.5 px-3 py-1.5 border rounded-lg hover:bg-white text-sm"><Share2 className="w-4 h-4" /> Share</button>
+                <button onClick={() => setViewingReceipt(null)} className="p-1.5 hover:bg-white rounded-lg">✕</button>
+              </div>
+            </div>
+
+            <div className="p-8 print:p-4">
+              <div className="flex justify-between items-start mb-8">
+                <div>
+                  <div className="w-14 h-14 bg-gradient-to-br from-sky-500 to-teal-500 rounded-xl flex items-center justify-center mb-3">
+                    <Plane className="w-8 h-8 text-white" />
+                  </div>
+                  <h1 className="text-2xl font-bold text-gray-900">VerTravels</h1>
+                  <p className="text-sm text-gray-500">Premium Travel Services</p>
+                </div>
+                <div className="text-right">
+                  <h2 className="text-xl font-bold text-gray-900">{viewingReceipt.receipt_number}</h2>
+                  <span className={`inline-block mt-1 px-3 py-1 text-xs font-semibold rounded-full ${
+                    viewingReceipt.status === "completed" ? "bg-green-100 text-green-700" :
+                    viewingReceipt.status === "pending" ? "bg-yellow-100 text-yellow-700" :
+                    viewingReceipt.status === "failed" ? "bg-red-100 text-red-700" :
+                    "bg-gray-100 text-gray-700"
+                  }`}>
+                    {viewingReceipt.status?.toUpperCase() || "COMPLETED"}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex justify-end mb-6">
+                <div className="w-20 h-20 border rounded-lg p-1">
+                  <img src={`https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${encodeURIComponent(viewingReceipt.receipt_number)}`} alt="QR" className="w-full h-full" />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-8 mb-8">
+                <div>
+                  <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold mb-2">From</p>
+                  <p className="font-semibold">VerTravels Ltd</p>
+                  <p className="text-sm text-gray-600">Plot 123, Kampala Road</p>
+                  <p className="text-sm text-gray-600">Kampala, Uganda</p>
+                  <p className="text-sm text-gray-600">admin@vertravels.com</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold mb-2">Bill To</p>
+                  <p className="font-semibold">{viewingReceipt.customer_name}</p>
+                  <p className="text-sm text-gray-600">{viewingReceipt.customer_email}</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-4 mb-8 p-4 bg-gray-50 rounded-xl">
+                <div>
+                  <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold">Payment Date</p>
+                  <p className="font-semibold">{viewingReceipt.payment_date ? new Date(viewingReceipt.payment_date).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }) : "—"}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold">Payment Method</p>
+                  <p className="font-semibold capitalize">{viewingReceipt.payment_method?.replace(/_/g, " ") || "—"}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold">Transaction ID</p>
+                  <p className="font-semibold font-mono text-sm">{viewingReceipt.transaction_id || "—"}</p>
+                </div>
+              </div>
+
+              <div className="mb-8">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b-2 border-gray-200">
+                      <th className="py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Description</th>
+                      <th className="py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr className="border-b border-gray-100">
+                      <td className="py-3 text-sm">Payment Received{viewingReceipt.reference_number ? ` (Ref: ${viewingReceipt.reference_number})` : ""}</td>
+                      <td className="py-3 text-sm text-right font-medium">${(viewingReceipt.amount || 0).toFixed(2)}</td>
+                    </tr>
+                  </tbody>
+                  <tfoot>
+                    <tr className="border-t-2 border-gray-300">
+                      <td className="py-4 text-base font-bold">Total Paid</td>
+                      <td className="py-4 text-base font-bold text-right text-green-600">${(viewingReceipt.amount || 0).toLocaleString()}</td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+
+              <div className="mb-8 p-4 bg-gray-50 rounded-xl">
+                <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold mb-2">Payment Information</p>
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  <div>
+                    <span className="text-gray-500">Reference:</span>
+                    <span className="ml-2 font-medium">{viewingReceipt.reference_number || "—"}</span>
+                  </div>
+                  <div>
+                    <span className="text-gray-500">Method:</span>
+                    <span className="ml-2 font-medium capitalize">{viewingReceipt.payment_method?.replace(/_/g, " ") || "—"}</span>
+                  </div>
+                </div>
+              </div>
+
+              {viewingReceipt.notes && (
+                <div className="mb-8 p-4 bg-gray-50 rounded-xl">
+                  <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold mb-1">Notes</p>
+                  <p className="text-sm text-gray-700">{viewingReceipt.notes}</p>
+                </div>
+              )}
+
+              <div className="text-center text-xs text-gray-400 pt-8 border-t">
+                <p>Thank you for your payment!</p>
+                <p className="mt-1">VerTravels Ltd | Kampala, Uganda | admin@vertravels.com</p>
+              </div>
+            </div>
+
+            <div className="print:hidden p-4 border-t flex gap-3 sticky bottom-0 bg-white">
+              <button onClick={() => handleSendEmail(viewingReceipt)} className="flex-1 px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 flex items-center justify-center gap-2">
+                <Mail className="w-4 h-4" /> Send Email
+              </button>
+              <button onClick={() => setViewingReceipt(null)} className="px-4 py-2 border rounded-lg hover:bg-gray-50">Close</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {paymentModal && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50" onClick={() => setPaymentModal(null)}>
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6" onClick={(e) => e.stopPropagation()}>
+            <h2 className="text-lg font-bold mb-4">Record Payment</h2>
+            <p className="text-sm text-gray-500 mb-4">Receipt: {paymentModal.receipt_number} — ${paymentModal.amount?.toLocaleString()}</p>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">Amount</label>
+                <input type="number" step="0.01" value={paymentData.amount || paymentModal.amount} onChange={e => setPaymentData({...paymentData, amount: e.target.value})} className="w-full px-3 py-2 border rounded-lg" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Payment Method</label>
+                <select value={paymentData.method} onChange={e => setPaymentData({...paymentData, method: e.target.value})} className="w-full px-3 py-2 border rounded-lg">
+                  <option value="credit_card">Credit Card</option>
+                  <option value="mobile_money">Mobile Money</option>
+                  <option value="bank_transfer">Bank Transfer</option>
+                  <option value="cash">Cash</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Reference</label>
+                <input type="text" value={paymentData.reference} onChange={e => setPaymentData({...paymentData, reference: e.target.value})} className="w-full px-3 py-2 border rounded-lg" placeholder="Transaction ref..." />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Notes</label>
+                <textarea value={paymentData.notes} onChange={e => setPaymentData({...paymentData, notes: e.target.value})} className="w-full px-3 py-2 border rounded-lg" rows={2} />
+              </div>
+            </div>
+            <div className="flex gap-3 mt-6">
+              <button onClick={() => handleRecordPayment(paymentModal)} className="flex-1 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700">Record Payment</button>
+              <button onClick={() => setPaymentModal(null)} className="flex-1 px-4 py-2 border rounded-lg hover:bg-gray-50">Cancel</button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

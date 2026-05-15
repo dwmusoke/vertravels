@@ -21,6 +21,10 @@ import {
   XCircle,
   Clock,
   ArrowRight,
+  Eye,
+  Printer,
+  Plane,
+  Share2,
 } from "lucide-react";
 import { exportToExcel, getTemplateColumns, getValidationRules } from "@/lib/excel-utils";
 import { ExcelImporter } from "@/components/ui/excel-importer";
@@ -57,6 +61,7 @@ export default function QuotationsPage() {
   const [filter, setFilter] = useState("all");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [showImporter, setShowImporter] = useState(false);
+  const [viewingQuotation, setViewingQuotation] = useState<Quotation | null>(null);
 
   const [formData, setFormData] = useState({
     customer_name: "",
@@ -312,6 +317,36 @@ export default function QuotationsPage() {
       console.error("Error sending email:", error);
       alert("Failed to send email");
     }
+  }
+
+  async function handleShareDocument(quotation: Quotation) {
+    try {
+      const shareToken = `share_${Date.now()}_${Math.random().toString(36).substring(7)}`;
+
+      const { error } = await supabase.from("document_shares").insert([{
+        document_type: "quotation",
+        document_id: quotation.id,
+        share_token: shareToken,
+        expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+      }]);
+
+      if (error) throw error;
+
+      const shareUrl = `${window.location.origin}/documents/share/${shareToken}`;
+      navigator.clipboard.writeText(shareUrl);
+      alert(`Share link copied to clipboard!\n\n${shareUrl}`);
+    } catch (error: any) {
+      console.error("Error creating share link:", error);
+      alert("Failed to create share link");
+    }
+  }
+
+  function handlePrint() {
+    window.print();
+  }
+
+  function handleDownloadPDF() {
+    window.print();
   }
 
   async function handleImport(data: any[]) {
@@ -622,6 +657,13 @@ export default function QuotationsPage() {
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex gap-2">
+                        <button
+                          onClick={() => setViewingQuotation(quotation)}
+                          className="p-1.5 text-gray-600 hover:bg-gray-50 rounded"
+                          title="View"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </button>
                         <button
                           onClick={() => handleEdit(quotation)}
                           className="p-1.5 text-sky-600 hover:bg-sky-50 rounded"
@@ -1062,6 +1104,134 @@ export default function QuotationsPage() {
           validationRules={getValidationRules("quotations")}
           onClose={() => setShowImporter(false)}
         />
+      )}
+
+      {viewingQuotation && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 print:bg-white print:static print:inset-auto print:items-start" onClick={() => setViewingQuotation(null)}>
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto print:shadow-none print:rounded-none print:max-h-none print:overflow-visible" onClick={(e) => e.stopPropagation()}>
+
+            <div className="print:hidden p-4 border-b flex justify-between items-center bg-gray-50 rounded-t-2xl sticky top-0 z-10">
+              <h2 className="text-lg font-bold flex items-center gap-2">
+                <FileCheck className="w-5 h-5 text-sky-600" />
+                Quotation Preview
+              </h2>
+              <div className="flex gap-2">
+                <button onClick={handlePrint} className="flex items-center gap-1.5 px-3 py-1.5 border rounded-lg hover:bg-white text-sm"><Printer className="w-4 h-4" /> Print</button>
+                <button onClick={handleDownloadPDF} className="flex items-center gap-1.5 px-3 py-1.5 border rounded-lg hover:bg-white text-sm"><Download className="w-4 h-4" /> PDF</button>
+                <button onClick={() => { navigator.clipboard.writeText(window.location.href); alert("Link copied"); }} className="flex items-center gap-1.5 px-3 py-1.5 border rounded-lg hover:bg-white text-sm"><Share2 className="w-4 h-4" /> Share</button>
+                <button onClick={() => setViewingQuotation(null)} className="p-1.5 hover:bg-white rounded-lg">✕</button>
+              </div>
+            </div>
+
+            <div className="p-8 print:p-4">
+              <div className="flex justify-between items-start mb-8">
+                <div>
+                  <div className="w-14 h-14 bg-gradient-to-br from-sky-500 to-teal-500 rounded-xl flex items-center justify-center mb-3">
+                    <Plane className="w-8 h-8 text-white" />
+                  </div>
+                  <h1 className="text-2xl font-bold text-gray-900">VerTravels</h1>
+                  <p className="text-sm text-gray-500">Premium Travel Services</p>
+                </div>
+                <div className="text-right">
+                  <h2 className="text-xl font-bold text-gray-900">{viewingQuotation.quote_number}</h2>
+                  <span className={`inline-block mt-1 px-3 py-1 text-xs font-semibold rounded-full ${
+                    viewingQuotation.status === "accepted" ? "bg-green-100 text-green-700" :
+                    viewingQuotation.status === "sent" ? "bg-blue-100 text-blue-700" :
+                    viewingQuotation.status === "rejected" ? "bg-red-100 text-red-700" :
+                    viewingQuotation.status === "expired" ? "bg-gray-100 text-gray-700" :
+                    "bg-gray-100 text-gray-700"
+                  }`}>
+                    {viewingQuotation.status.toUpperCase()}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex justify-end mb-6">
+                <div className="w-20 h-20 border rounded-lg p-1">
+                  <img src={`https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${encodeURIComponent(viewingQuotation.quote_number)}`} alt="QR" className="w-full h-full" />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-8 mb-8">
+                <div>
+                  <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold mb-2">From</p>
+                  <p className="font-semibold">VerTravels Ltd</p>
+                  <p className="text-sm text-gray-600">Plot 123, Kampala Road</p>
+                  <p className="text-sm text-gray-600">Kampala, Uganda</p>
+                  <p className="text-sm text-gray-600">admin@vertravels.com</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold mb-2">Bill To</p>
+                  <p className="font-semibold">{viewingQuotation.customer_name}</p>
+                  <p className="text-sm text-gray-600">{viewingQuotation.customer_email}</p>
+                  {viewingQuotation.customer_phone && <p className="text-sm text-gray-600">{viewingQuotation.customer_phone}</p>}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-4 mb-8 p-4 bg-gray-50 rounded-xl">
+                <div>
+                  <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold">Issue Date</p>
+                  <p className="font-semibold">{viewingQuotation.created_at ? new Date(viewingQuotation.created_at).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }) : "—"}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold">Expiry Date</p>
+                  <p className="font-semibold">{viewingQuotation.valid_until ? new Date(viewingQuotation.valid_until).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }) : "—"}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold">Travel Details</p>
+                  <p className="font-semibold">{viewingQuotation.destination || "—"} {viewingQuotation.travel_date ? `· ${new Date(viewingQuotation.travel_date).toLocaleDateString()}` : ""}</p>
+                </div>
+              </div>
+
+              <div className="mb-8">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b-2 border-gray-200">
+                      <th className="py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Description</th>
+                      <th className="py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr className="border-b border-gray-100">
+                      <td className="py-3 text-sm">{viewingQuotation.destination ? `Trip to ${viewingQuotation.destination}` : "Travel Services"} ({viewingQuotation.passengers || 1} passenger{viewingQuotation.passengers !== 1 ? "s" : ""}, {viewingQuotation.duration_days || 0} day{viewingQuotation.duration_days !== 1 ? "s" : ""})</td>
+                      <td className="py-3 text-sm text-right">${(viewingQuotation.subtotal || viewingQuotation.total || 0).toFixed(2)}</td>
+                    </tr>
+                  </tbody>
+                  <tfoot>
+                    <tr className="border-t-2 border-gray-300">
+                      <td className="py-4 text-base font-bold">Total</td>
+                      <td className="py-4 text-base font-bold text-right">${(viewingQuotation.total || 0).toLocaleString()}</td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+
+              {viewingQuotation.notes && (
+                <div className="mb-8 p-4 bg-gray-50 rounded-xl">
+                  <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold mb-1">Notes</p>
+                  <p className="text-sm text-gray-700">{viewingQuotation.notes}</p>
+                </div>
+              )}
+
+              <div className="text-center text-xs text-gray-400 pt-8 border-t">
+                <p>Thank you for considering VerTravels!</p>
+                <p className="mt-1">VerTravels Ltd | Kampala, Uganda | admin@vertravels.com</p>
+              </div>
+            </div>
+
+            <div className="print:hidden p-4 border-t flex gap-3 sticky bottom-0 bg-white">
+              {viewingQuotation.status === "accepted" && !viewingQuotation.converted_to_booking_id && (
+                <button onClick={() => { handleConvertToBooking(viewingQuotation); setViewingQuotation(null); }} className="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 flex items-center justify-center gap-2">
+                  <ArrowRight className="w-4 h-4" /> Convert to Booking
+                </button>
+              )}
+              <button onClick={() => handleSendEmail(viewingQuotation)} className="flex-1 px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 flex items-center justify-center gap-2">
+                <Mail className="w-4 h-4" /> Send Email
+              </button>
+              <button onClick={() => setViewingQuotation(null)} className="px-4 py-2 border rounded-lg hover:bg-gray-50">Close</button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
