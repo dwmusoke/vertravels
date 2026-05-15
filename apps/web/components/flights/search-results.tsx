@@ -101,8 +101,8 @@ export function SearchResults({
   const isRoundTrip = !!(returnDate && returnDate !== "2024-02-20T00:00:00");
 
   const outboundFlights = useMemo(() => {
-    return flights.filter((f) => f.destination === to.toUpperCase());
-  }, [flights, to]);
+    return flights.filter((f) => f.origin === from.toUpperCase() && f.destination === to.toUpperCase());
+  }, [flights, from, to]);
 
   const returnFlights = useMemo(() => {
     if (!isRoundTrip) return [];
@@ -332,7 +332,7 @@ export function SearchResults({
               Reset Filters
             </Button>
           </motion.div>
-        ) : isRoundTrip ? (
+        ) : (
           <div className="space-y-6">
             <div>
               <div className="flex items-center gap-3 mb-3">
@@ -340,7 +340,7 @@ export function SearchResults({
                   <Plane className="w-4 h-4 text-blue-600" />
                 </div>
                 <h3 className="text-lg font-bold text-slate-900">
-                  {from?.toUpperCase()} → {to?.toUpperCase()}
+                  {from?.toUpperCase()} → {to?.toUpperCase()} <span className="text-xs text-slate-400 font-normal">Departure</span>
                 </h3>
                 <span className="text-xs text-slate-400">{getDateDisplay(depart)}</span>
                 <span className="bg-blue-50 text-blue-700 text-xs font-semibold px-2 py-0.5 rounded-full">
@@ -349,33 +349,31 @@ export function SearchResults({
               </div>
               <div className="space-y-3">
                 {sortedOutbound.length > 0 ? flightCards(sortedOutbound, "outbound") : (
-                  <p className="text-sm text-slate-400 py-4 text-center">No outbound flights available</p>
+                  <p className="text-sm text-slate-400 py-4 text-center">No outbound flights found</p>
                 )}
               </div>
             </div>
-            <div className="border-t border-slate-200 pt-6">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center">
-                  <Plane className="w-4 h-4 text-emerald-600 transform rotate-180" />
+            {isRoundTrip && (
+              <div className="border-t border-slate-200 pt-6">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center">
+                    <Plane className="w-4 h-4 text-emerald-600 transform rotate-180" />
+                  </div>
+                  <h3 className="text-lg font-bold text-slate-900">
+                    {to?.toUpperCase()} → {from?.toUpperCase()} <span className="text-xs text-slate-400 font-normal">Return</span>
+                  </h3>
+                  <span className="text-xs text-slate-400">{getDateDisplay(returnDate)}</span>
+                  <span className="bg-emerald-50 text-emerald-700 text-xs font-semibold px-2 py-0.5 rounded-full">
+                    {sortedReturn.length} flights
+                  </span>
                 </div>
-                <h3 className="text-lg font-bold text-slate-900">
-                  {to?.toUpperCase()} → {from?.toUpperCase()}
-                </h3>
-                <span className="text-xs text-slate-400">{getDateDisplay(returnDate)}</span>
-                <span className="bg-emerald-50 text-emerald-700 text-xs font-semibold px-2 py-0.5 rounded-full">
-                  {sortedReturn.length} flights
-                </span>
+                <div className="space-y-3">
+                  {sortedReturn.length > 0 ? flightCards(sortedReturn, "return") : (
+                    <p className="text-sm text-slate-400 py-4 text-center">No return flights found</p>
+                  )}
+                </div>
               </div>
-              <div className="space-y-3">
-                {sortedReturn.length > 0 ? flightCards(sortedReturn, "return") : (
-                  <p className="text-sm text-slate-400 py-4 text-center">No return flights available</p>
-                )}
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {flightCards(sortedOutbound, "outbound")}
+            )}
           </div>
         )}
       </AnimatePresence>
