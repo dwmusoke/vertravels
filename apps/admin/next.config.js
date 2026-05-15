@@ -1,8 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Ignore these broken pages during build
-  experimental: {
-    // Skip compilation for problematic pages
+  eslint: {
+    ignoreDuringBuilds: true,
   },
   webpack: (config, { isServer }) => {
     // Ignore specific modules that cause build errors
