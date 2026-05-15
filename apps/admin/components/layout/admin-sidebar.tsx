@@ -63,6 +63,7 @@ const navigation: NavItem[] = [
   },
   { name: "Suppliers", href: "/suppliers", icon: Building2 },
   { name: "Partnerships", href: "/partnerships", icon: Users },
+  { name: "Agencies", href: "/agencies", icon: Building2 },
   { name: "Expenses", href: "/expenses", icon: CreditCard },
   { name: "Reconciliation", href: "/reconciliation", icon: RefreshCcw },
   { name: "Unused Tickets", href: "/unused-tickets", icon: Ticket },

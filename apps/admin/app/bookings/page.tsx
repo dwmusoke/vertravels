@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { AgencySelector } from "@/app/agencies/agency-context";
 import {
   FileText,
   Plus,
@@ -44,6 +45,16 @@ interface Booking {
   duration?: number;
   notes?: string;
   created_at: string;
+  agency_id?: string;
+  passenger_name?: string;
+  passenger_email?: string;
+  passenger_phone?: string;
+  passenger_passport?: string;
+  passenger_dob?: string;
+  passenger_nationality?: string;
+  tax_amount?: number;
+  commission_amount?: number;
+  commission_rate?: number;
 }
 
 export default function BookingsPage() {
@@ -55,6 +66,8 @@ export default function BookingsPage() {
   const [filter, setFilter] = useState("all");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [showImporter, setShowImporter] = useState(false);
+  const [agencies, setAgencies] = useState<any[]>([]);
+  const [agencyFilter, setAgencyFilter] = useState("all");
 
   const [formData, setFormData] = useState({
     customer_name: "",
@@ -78,13 +91,22 @@ export default function BookingsPage() {
     tax_amount: "",
     commission_amount: "",
     commission_rate: "",
+    agency_id: "",
   });
 
   const supabase = createClient();
 
   useEffect(() => {
     fetchBookings();
+    fetchAgencies();
   }, []);
+
+  async function fetchAgencies() {
+    try {
+      const { data } = await supabase.from("agencies").select("id, agency_name, agency_code").eq("status", "active");
+      setAgencies(data || []);
+    } catch (e) { console.error(e); }
+  }
 
   async function fetchBookings() {
     try {
@@ -123,6 +145,7 @@ export default function BookingsPage() {
         tax_amount: parseFloat(formData.tax_amount) || 0,
         commission_amount: parseFloat(formData.commission_amount) || 0,
         commission_rate: parseFloat(formData.commission_rate) || 0,
+        agency_id: formData.agency_id || null,
       };
 
       if (editingBooking) {
@@ -305,6 +328,7 @@ export default function BookingsPage() {
       tax_amount: "",
       commission_amount: "",
       commission_rate: "",
+      agency_id: "",
     });
   }
 
@@ -332,6 +356,7 @@ export default function BookingsPage() {
       tax_amount: (booking as any).tax_amount?.toString() || "",
       commission_amount: (booking as any).commission_amount?.toString() || "",
       commission_rate: (booking as any).commission_rate?.toString() || "",
+      agency_id: (booking as any).agency_id || "",
     });
     setExpandedRowId(booking.id);
   }
@@ -550,10 +575,10 @@ export default function BookingsPage() {
 
       {/* Table */}
       {loading ? (
-        <div className="text-center py-12">
-          <RefreshCw className="w-8 h-8 animate-spin mx-auto mb-4 text-sky-500" />
-          <p className="text-gray-600">Loading bookings...</p>
-        </div>
+          <div className="text-center py-12">
+            <RefreshCw className="w-8 h-8 animate-spin mx-auto mb-4 text-sky-500" />
+            <p className="text-gray-600">Loading bookings...</p>
+          </div>
       ) : (
         <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
           <table className="w-full">
@@ -582,6 +607,9 @@ export default function BookingsPage() {
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                   Amount
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  Agency
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                   Status
@@ -626,6 +654,12 @@ export default function BookingsPage() {
                     </td>
                     <td className="px-6 py-4 font-medium">
                       ${booking.total_amount.toLocaleString()}
+                    </td>
+                    <td className="px-6 py-4 text-sm">
+                      {(() => {
+                        const a = agencies.find(a => a.id === booking.agency_id);
+                        return a ? a.agency_code : "—";
+                      })()}
                     </td>
                     <td className="px-6 py-4">
                       <EditableCell
