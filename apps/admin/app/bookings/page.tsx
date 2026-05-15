@@ -69,6 +69,15 @@ export default function BookingsPage() {
     module_type: "flights",
     total_amount: "",
     notes: "",
+    passenger_name: "",
+    passenger_email: "",
+    passenger_phone: "",
+    passenger_passport: "",
+    passenger_dob: "",
+    passenger_nationality: "",
+    tax_amount: "",
+    commission_amount: "",
+    commission_rate: "",
   });
 
   const supabase = createClient();
@@ -104,6 +113,18 @@ export default function BookingsPage() {
       const children = parseInt(formData.children) || 0;
       const infants = parseInt(formData.infants) || 0;
 
+      const extraFields = {
+        passenger_name: formData.passenger_name || null,
+        passenger_email: formData.passenger_email || null,
+        passenger_phone: formData.passenger_phone || null,
+        passenger_passport: formData.passenger_passport || null,
+        passenger_dob: formData.passenger_dob || null,
+        passenger_nationality: formData.passenger_nationality || null,
+        tax_amount: parseFloat(formData.tax_amount) || 0,
+        commission_amount: parseFloat(formData.commission_amount) || 0,
+        commission_rate: parseFloat(formData.commission_rate) || 0,
+      };
+
       if (editingBooking) {
         const { error } = await supabase
           .from("bookings")
@@ -120,6 +141,7 @@ export default function BookingsPage() {
             module_type: formData.module_type,
             total_amount: totalAmount,
             notes: formData.notes,
+            ...extraFields,
             updated_at: new Date().toISOString(),
           })
           .eq("id", editingBooking.id);
@@ -143,6 +165,7 @@ export default function BookingsPage() {
             module_type: formData.module_type,
             total_amount: totalAmount,
             notes: formData.notes,
+            ...extraFields,
             status: "inquiry",
           },
         ]);
@@ -273,6 +296,15 @@ export default function BookingsPage() {
       module_type: "flights",
       total_amount: "",
       notes: "",
+      passenger_name: "",
+      passenger_email: "",
+      passenger_phone: "",
+      passenger_passport: "",
+      passenger_dob: "",
+      passenger_nationality: "",
+      tax_amount: "",
+      commission_amount: "",
+      commission_rate: "",
     });
   }
 
@@ -291,6 +323,15 @@ export default function BookingsPage() {
       module_type: booking.module_type,
       total_amount: booking.total_amount.toString(),
       notes: booking.notes || "",
+      passenger_name: (booking as any).passenger_name || "",
+      passenger_email: (booking as any).passenger_email || "",
+      passenger_phone: (booking as any).passenger_phone || "",
+      passenger_passport: (booking as any).passenger_passport || "",
+      passenger_dob: (booking as any).passenger_dob || "",
+      passenger_nationality: (booking as any).passenger_nationality || "",
+      tax_amount: (booking as any).tax_amount?.toString() || "",
+      commission_amount: (booking as any).commission_amount?.toString() || "",
+      commission_rate: (booking as any).commission_rate?.toString() || "",
     });
     setExpandedRowId(booking.id);
   }
@@ -794,6 +835,48 @@ export default function BookingsPage() {
                                 />
                               </div>
 
+                              <div className="col-span-2 border-t pt-4 mt-2">
+                                <h4 className="font-semibold text-sm text-gray-700 mb-3">Passenger Details</h4>
+                              </div>
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Passenger Name</label>
+                                <input type="text" value={formData.passenger_name} onChange={e => setFormData({...formData, passenger_name: e.target.value})} className="w-full px-3 py-2 border rounded-lg" placeholder="Full name" />
+                              </div>
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Passenger Email</label>
+                                <input type="email" value={formData.passenger_email} onChange={e => setFormData({...formData, passenger_email: e.target.value})} className="w-full px-3 py-2 border rounded-lg" placeholder="passenger@example.com" />
+                              </div>
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Passenger Phone</label>
+                                <input type="tel" value={formData.passenger_phone} onChange={e => setFormData({...formData, passenger_phone: e.target.value})} className="w-full px-3 py-2 border rounded-lg" placeholder="+256 700 123456" />
+                              </div>
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Passport Number</label>
+                                <input type="text" value={formData.passenger_passport} onChange={e => setFormData({...formData, passenger_passport: e.target.value})} className="w-full px-3 py-2 border rounded-lg" placeholder="UB123456" />
+                              </div>
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
+                                <input type="date" value={formData.passenger_dob} onChange={e => setFormData({...formData, passenger_dob: e.target.value})} className="w-full px-3 py-2 border rounded-lg" />
+                              </div>
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Nationality</label>
+                                <input type="text" value={formData.passenger_nationality} onChange={e => setFormData({...formData, passenger_nationality: e.target.value})} className="w-full px-3 py-2 border rounded-lg" placeholder="Ugandan" />
+                              </div>
+                              <div className="col-span-2 border-t pt-4 mt-2">
+                                <h4 className="font-semibold text-sm text-gray-700 mb-3">Pricing</h4>
+                              </div>
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Tax Amount</label>
+                                <input type="number" step="0.01" value={formData.tax_amount} onChange={e => setFormData({...formData, tax_amount: e.target.value})} className="w-full px-3 py-2 border rounded-lg" placeholder="0.00" />
+                              </div>
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Commission Amount</label>
+                                <input type="number" step="0.01" value={formData.commission_amount} onChange={e => setFormData({...formData, commission_amount: e.target.value})} className="w-full px-3 py-2 border rounded-lg" placeholder="0.00" />
+                              </div>
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Commission Rate (%)</label>
+                                <input type="number" step="0.1" value={formData.commission_rate} onChange={e => setFormData({...formData, commission_rate: e.target.value})} className="w-full px-3 py-2 border rounded-lg" placeholder="5" />
+                              </div>
                               <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
                                   Total Amount *
