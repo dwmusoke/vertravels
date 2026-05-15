@@ -668,6 +668,159 @@ export default function ExpensesPage() {
         </div>
       )}
 
+      {expandedRowId === "new" && (
+        <div className="bg-sky-50 border rounded-lg mt-4">
+          <form onSubmit={handleSubmit} className="p-6">
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <div className="col-span-2">
+                <h3 className="font-semibold mb-3">New Expense</h3>
+              </div>
+
+              <div className="col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Description *
+                </label>
+                <input
+                  type="text"
+                  value={formData.description}
+                  onChange={(e) =>
+                    setFormData({ ...formData, description: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                  placeholder="What is this expense for?"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Category *
+                </label>
+                <select
+                  value={formData.category}
+                  onChange={(e) =>
+                    setFormData({ ...formData, category: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                  required
+                >
+                  <option value="office_supplies">Office Supplies</option>
+                  <option value="travel">Travel</option>
+                  <option value="utilities">Utilities</option>
+                  <option value="software">Software</option>
+                  <option value="marketing">Marketing</option>
+                  <option value="payroll">Payroll</option>
+                  <option value="maintenance">Maintenance</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Amount *
+                </label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={formData.amount}
+                  onChange={(e) =>
+                    setFormData({ ...formData, amount: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                  placeholder="0.00"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Expense Date *
+                </label>
+                <input
+                  type="date"
+                  value={formData.expense_date}
+                  onChange={(e) =>
+                    setFormData({ ...formData, expense_date: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Vendor
+                </label>
+                <input
+                  type="text"
+                  value={formData.vendor_name}
+                  onChange={(e) =>
+                    setFormData({ ...formData, vendor_name: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                  placeholder="Vendor or payee name"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Payment Method
+                </label>
+                <select
+                  value={formData.payment_method}
+                  onChange={(e) =>
+                    setFormData({ ...formData, payment_method: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                >
+                  <option value="bank_transfer">Bank Transfer</option>
+                  <option value="credit_card">Credit Card</option>
+                  <option value="debit_card">Debit Card</option>
+                  <option value="cash">Cash</option>
+                  <option value="mobile_money">Mobile Money</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+
+              <div className="col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Notes
+                </label>
+                <textarea
+                  value={formData.notes}
+                  onChange={(e) =>
+                    setFormData({ ...formData, notes: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                  rows={3}
+                  placeholder="Additional details about this expense..."
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-3 pt-4 border-t">
+              <button
+                type="submit"
+                className="flex-1 px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 flex items-center justify-center gap-2"
+              >
+                <DollarSign className="w-4 h-4" />
+                Create Expense
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setExpandedRowId(null);
+                  setEditingExpense(null);
+                }}
+                className="flex-1 px-4 py-2 border rounded-lg hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
       {showImporter && (
         <ExcelImporter
           entityType="expenses"

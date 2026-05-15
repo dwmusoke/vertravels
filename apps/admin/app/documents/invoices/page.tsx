@@ -726,6 +726,147 @@ export default function AdminInvoicesPage() {
         </div>
       )}
 
+      {expandedRowId === "new" && (
+        <div className="bg-sky-50 border rounded-lg mt-4">
+          <form onSubmit={handleSubmit} className="p-6">
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <div className="col-span-2">
+                <h3 className="font-semibold mb-3">New Invoice</h3>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Customer Name *
+                </label>
+                <input
+                  type="text"
+                  value={formData.customer_name}
+                  onChange={(e) =>
+                    setFormData({ ...formData, customer_name: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                  placeholder="Customer name"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Customer Email *
+                </label>
+                <input
+                  type="email"
+                  value={formData.customer_email}
+                  onChange={(e) =>
+                    setFormData({ ...formData, customer_email: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                  placeholder="customer@example.com"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Customer Phone
+                </label>
+                <input
+                  type="tel"
+                  value={formData.customer_phone}
+                  onChange={(e) =>
+                    setFormData({ ...formData, customer_phone: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                  placeholder="+256 700 123456"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Total Amount *
+                </label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={formData.total}
+                  onChange={(e) =>
+                    setFormData({ ...formData, total: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                  placeholder="0.00"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Issue Date *
+                </label>
+                <input
+                  type="date"
+                  value={formData.issue_date}
+                  onChange={(e) =>
+                    setFormData({ ...formData, issue_date: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Due Date *
+                </label>
+                <input
+                  type="date"
+                  value={formData.due_date}
+                  onChange={(e) =>
+                    setFormData({ ...formData, due_date: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                  required
+                />
+              </div>
+
+              <div className="col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Notes
+                </label>
+                <textarea
+                  value={formData.notes}
+                  onChange={(e) =>
+                    setFormData({ ...formData, notes: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                  rows={3}
+                  placeholder="Additional notes..."
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-3 pt-4 border-t">
+              <button
+                type="submit"
+                className="flex-1 px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 flex items-center justify-center gap-2"
+              >
+                <FileText className="w-4 h-4" />
+                Create Invoice
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setExpandedRowId(null);
+                  setEditingInvoice(null);
+                }}
+                className="flex-1 px-4 py-2 border rounded-lg hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
       {showAuditTrail && (
         <div className="mt-6">
           <AuditTrailInline recordId={showAuditTrail} tableName="invoices" />

@@ -668,6 +668,167 @@ export default function ReceiptsPage() {
         </div>
       )}
 
+      {expandedRowId === "new" && (
+        <div className="bg-sky-50 border rounded-lg mt-4">
+          <form onSubmit={handleSubmit} className="p-6">
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <div className="col-span-2">
+                <h3 className="font-semibold mb-3">New Payment Receipt</h3>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Customer Name *
+                </label>
+                <input
+                  type="text"
+                  value={formData.customer_name}
+                  onChange={(e) =>
+                    setFormData({ ...formData, customer_name: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                  placeholder="Customer name"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Customer Email *
+                </label>
+                <input
+                  type="email"
+                  value={formData.customer_email}
+                  onChange={(e) =>
+                    setFormData({ ...formData, customer_email: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                  placeholder="customer@example.com"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Amount *
+                </label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={formData.amount}
+                  onChange={(e) =>
+                    setFormData({ ...formData, amount: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                  placeholder="0.00"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Payment Method *
+                </label>
+                <select
+                  value={formData.payment_method}
+                  onChange={(e) =>
+                    setFormData({ ...formData, payment_method: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                  required
+                >
+                  {paymentMethods.map((method) => (
+                    <option key={method.value} value={method.value}>
+                      {method.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Payment Date *
+                </label>
+                <input
+                  type="date"
+                  value={formData.payment_date}
+                  onChange={(e) =>
+                    setFormData({ ...formData, payment_date: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Transaction ID
+                </label>
+                <input
+                  type="text"
+                  value={formData.transaction_id}
+                  onChange={(e) =>
+                    setFormData({ ...formData, transaction_id: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                  placeholder="Bank transaction ID"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Reference Number
+                </label>
+                <input
+                  type="text"
+                  value={formData.reference_number}
+                  onChange={(e) =>
+                    setFormData({ ...formData, reference_number: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                  placeholder="Payment reference"
+                />
+              </div>
+
+              <div className="col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Notes
+                </label>
+                <textarea
+                  value={formData.notes}
+                  onChange={(e) =>
+                    setFormData({ ...formData, notes: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                  rows={3}
+                  placeholder="Additional notes..."
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-3 pt-4 border-t">
+              <button
+                type="submit"
+                className="flex-1 px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 flex items-center justify-center gap-2"
+              >
+                <CreditCard className="w-4 h-4" />
+                Create Receipt
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setExpandedRowId(null);
+                  setEditingReceipt(null);
+                }}
+                className="flex-1 px-4 py-2 border rounded-lg hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
       {showImporter && (
         <ExcelImporter
           entityType="payment_receipts"

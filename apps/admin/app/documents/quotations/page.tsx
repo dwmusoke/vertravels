@@ -870,6 +870,191 @@ export default function QuotationsPage() {
         </div>
       )}
 
+      {expandedRowId === "new" && (
+        <div className="bg-sky-50 border rounded-lg mt-4">
+          <form onSubmit={handleSubmit} className="p-6">
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <div className="col-span-2">
+                <h3 className="font-semibold mb-3">New Quotation</h3>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Customer Name *
+                </label>
+                <input
+                  type="text"
+                  value={formData.customer_name}
+                  onChange={(e) =>
+                    setFormData({ ...formData, customer_name: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                  placeholder="Customer name"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Customer Email *
+                </label>
+                <input
+                  type="email"
+                  value={formData.customer_email}
+                  onChange={(e) =>
+                    setFormData({ ...formData, customer_email: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                  placeholder="customer@example.com"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Customer Phone
+                </label>
+                <input
+                  type="tel"
+                  value={formData.customer_phone}
+                  onChange={(e) =>
+                    setFormData({ ...formData, customer_phone: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                  placeholder="+256 700 123456"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Destination
+                </label>
+                <input
+                  type="text"
+                  value={formData.destination}
+                  onChange={(e) =>
+                    setFormData({ ...formData, destination: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                  placeholder="e.g., Dubai, Paris"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Travel Date
+                </label>
+                <input
+                  type="date"
+                  value={formData.travel_date}
+                  onChange={(e) =>
+                    setFormData({ ...formData, travel_date: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Duration (Days)
+                </label>
+                <input
+                  type="number"
+                  value={formData.duration_days}
+                  onChange={(e) =>
+                    setFormData({ ...formData, duration_days: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                  placeholder="7"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Passengers
+                </label>
+                <input
+                  type="number"
+                  value={formData.passengers}
+                  onChange={(e) =>
+                    setFormData({ ...formData, passengers: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                  placeholder="1"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Total Price *
+                </label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={formData.total}
+                  onChange={(e) =>
+                    setFormData({ ...formData, total: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                  placeholder="0.00"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Valid Until *
+                </label>
+                <input
+                  type="date"
+                  value={formData.valid_until}
+                  onChange={(e) =>
+                    setFormData({ ...formData, valid_until: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                  required
+                />
+              </div>
+
+              <div className="col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Notes
+                </label>
+                <textarea
+                  value={formData.notes}
+                  onChange={(e) =>
+                    setFormData({ ...formData, notes: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                  rows={3}
+                  placeholder="Additional notes, inclusions, exclusions..."
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-3 pt-4 border-t">
+              <button
+                type="submit"
+                className="flex-1 px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 flex items-center justify-center gap-2"
+              >
+                <FileCheck className="w-4 h-4" />
+                Create Quotation
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setExpandedRowId(null);
+                  setEditingQuotation(null);
+                }}
+                className="flex-1 px-4 py-2 border rounded-lg hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
       {showImporter && (
         <ExcelImporter
           entityType="quotations"

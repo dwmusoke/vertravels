@@ -799,6 +799,219 @@ export default function ManualPostingsPage() {
         </div>
       )}
 
+      {expandedRowId === "new" && (
+        <div className="bg-sky-50 border rounded-lg mt-4">
+          <form onSubmit={handleSubmit} className="p-6">
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Posting Type *
+                </label>
+                <select
+                  value={formData.posting_type}
+                  onChange={(e) =>
+                    setFormData({ ...formData, posting_type: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                  required
+                >
+                  <option value="flight">Flight</option>
+                  <option value="hotel">Hotel</option>
+                  <option value="tour">Tour</option>
+                  <option value="car">Car</option>
+                  <option value="visa">Visa</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Airline Code
+                </label>
+                <input
+                  type="text"
+                  value={formData.airline_code}
+                  onChange={(e) =>
+                    setFormData({ ...formData, airline_code: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg uppercase"
+                  placeholder="e.g., AA, EK, QR"
+                  maxLength={3}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  PNR
+                </label>
+                <input
+                  type="text"
+                  value={formData.pnr}
+                  onChange={(e) =>
+                    setFormData({ ...formData, pnr: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg uppercase"
+                  placeholder="6-character PNR"
+                  maxLength={10}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Ticket Number
+                </label>
+                <input
+                  type="text"
+                  value={formData.ticket_number}
+                  onChange={(e) =>
+                    setFormData({ ...formData, ticket_number: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                  placeholder="13-digit ticket number"
+                  maxLength={15}
+                />
+              </div>
+
+              <div className="col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Passenger Name *
+                </label>
+                <input
+                  type="text"
+                  value={formData.passenger_name}
+                  onChange={(e) =>
+                    setFormData({ ...formData, passenger_name: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                  placeholder="Lastname/Firstname"
+                  required
+                />
+              </div>
+
+              <div className="col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Route Description *
+                </label>
+                <input
+                  type="text"
+                  value={formData.route_description}
+                  onChange={(e) =>
+                    setFormData({ ...formData, route_description: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                  placeholder="e.g., EBB → LHR → JFK"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Travel Date *
+                </label>
+                <input
+                  type="date"
+                  value={formData.travel_date}
+                  onChange={(e) =>
+                    setFormData({ ...formData, travel_date: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                  required
+                />
+              </div>
+
+              <div className="col-span-2 border-t pt-4 mt-4">
+                <h3 className="font-semibold mb-3">Financial Details</h3>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Base Fare *
+                </label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={formData.fare}
+                  onChange={(e) =>
+                    setFormData({ ...formData, fare: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                  placeholder="0.00"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Tax *
+                </label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={formData.tax}
+                  onChange={(e) =>
+                    setFormData({ ...formData, tax: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                  placeholder="0.00"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Commission
+                </label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={formData.commission}
+                  onChange={(e) =>
+                    setFormData({ ...formData, commission: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                  placeholder="0.00"
+                />
+              </div>
+
+              <div className="col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Notes
+                </label>
+                <textarea
+                  value={formData.notes}
+                  onChange={(e) =>
+                    setFormData({ ...formData, notes: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                  rows={3}
+                  placeholder="Additional notes or special requests..."
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-3 pt-4 border-t">
+              <button
+                type="submit"
+                className="flex-1 px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 flex items-center justify-center gap-2"
+              >
+                <Save className="w-4 h-4" />
+                Create Posting
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setExpandedRowId(null);
+                  setEditingPosting(null);
+                }}
+                className="flex-1 px-4 py-2 border rounded-lg hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
       {showAuditTrail && (
         <div className="mt-6">
           <AuditTrailInline recordId={showAuditTrail} tableName="manual_postings" />

@@ -723,6 +723,186 @@ export default function PartnershipsPage() {
         </div>
       )}
 
+      {expandedRowId === "new" && (
+        <div className="bg-sky-50 border rounded-lg mt-4">
+          <form onSubmit={handleSubmit} className="p-6">
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <div className="col-span-2">
+                <h3 className="font-semibold mb-3">New Partner</h3>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Company Name *
+                </label>
+                <input
+                  type="text"
+                  value={formData.company_name}
+                  onChange={(e) =>
+                    setFormData({ ...formData, company_name: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                  placeholder="Company name"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Type *
+                </label>
+                <select
+                  value={formData.type}
+                  onChange={(e) =>
+                    setFormData({ ...formData, type: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                  required
+                >
+                  <option value="affiliate">Affiliate</option>
+                  <option value="sub_agent">Sub Agent</option>
+                  <option value="b2b">B2B</option>
+                  <option value="corporate">Corporate</option>
+                  <option value="wholesaler">Wholesaler</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Contact Person
+                </label>
+                <input
+                  type="text"
+                  value={formData.contact_name}
+                  onChange={(e) =>
+                    setFormData({ ...formData, contact_name: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                  placeholder="Contact name"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Email *
+                </label>
+                <input
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                  placeholder="partner@example.com"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Phone
+                </label>
+                <input
+                  type="tel"
+                  value={formData.phone}
+                  onChange={(e) =>
+                    setFormData({ ...formData, phone: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                  placeholder="+1 234 567 890"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Website
+                </label>
+                <input
+                  type="url"
+                  value={formData.website}
+                  onChange={(e) =>
+                    setFormData({ ...formData, website: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                  placeholder="https://example.com"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Commission Rate (%)
+                </label>
+                <input
+                  type="number"
+                  step="0.1"
+                  value={formData.commission_rate}
+                  onChange={(e) =>
+                    setFormData({ ...formData, commission_rate: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                  placeholder="5"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Commission Type
+                </label>
+                <select
+                  value={formData.commission_type}
+                  onChange={(e) =>
+                    setFormData({ ...formData, commission_type: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                >
+                  <option value="percentage">Percentage</option>
+                  <option value="fixed">Fixed</option>
+                  <option value="tiered">Tiered</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Tier
+                </label>
+                <select
+                  value={formData.tier}
+                  onChange={(e) =>
+                    setFormData({ ...formData, tier: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                >
+                  <option value="bronze">Bronze</option>
+                  <option value="silver">Silver</option>
+                  <option value="gold">Gold</option>
+                  <option value="platinum">Platinum</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="flex gap-3 pt-4 border-t">
+              <button
+                type="submit"
+                className="flex-1 px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 flex items-center justify-center gap-2"
+              >
+                <Users className="w-4 h-4" />
+                Create Partner
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setExpandedRowId(null);
+                  setEditingPartner(null);
+                }}
+                className="flex-1 px-4 py-2 border rounded-lg hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
       {showImporter && (
         <ExcelImporter
           entityType="partners"

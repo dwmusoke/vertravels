@@ -858,6 +858,226 @@ export default function BookingsPage() {
         </div>
       )}
 
+      {expandedRowId === "new" && (
+        <div className="bg-sky-50 border rounded-lg mt-4">
+          <form onSubmit={handleSubmit} className="p-6">
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <div className="col-span-2">
+                <h3 className="font-semibold mb-3">New Booking</h3>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Customer Name *
+                </label>
+                <input
+                  type="text"
+                  value={formData.customer_name}
+                  onChange={(e) =>
+                    setFormData({ ...formData, customer_name: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                  placeholder="Customer name"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Customer Email *
+                </label>
+                <input
+                  type="email"
+                  value={formData.customer_email}
+                  onChange={(e) =>
+                    setFormData({ ...formData, customer_email: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                  placeholder="customer@example.com"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Customer Phone
+                </label>
+                <input
+                  type="tel"
+                  value={formData.customer_phone}
+                  onChange={(e) =>
+                    setFormData({ ...formData, customer_phone: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                  placeholder="+256 700 123456"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Destination
+                </label>
+                <input
+                  type="text"
+                  value={formData.destination}
+                  onChange={(e) =>
+                    setFormData({ ...formData, destination: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                  placeholder="e.g., Dubai, Paris"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Module Type *
+                </label>
+                <select
+                  value={formData.module_type}
+                  onChange={(e) =>
+                    setFormData({ ...formData, module_type: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                  required
+                >
+                  {serviceTypes.map((type) => (
+                    <option key={type.value} value={type.value}>
+                      {type.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Travel Date
+                </label>
+                <input
+                  type="date"
+                  value={formData.travel_date}
+                  onChange={(e) =>
+                    setFormData({ ...formData, travel_date: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Duration (Days)
+                </label>
+                <input
+                  type="number"
+                  value={formData.duration}
+                  onChange={(e) =>
+                    setFormData({ ...formData, duration: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                  placeholder="7"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Adults
+                </label>
+                <input
+                  type="number"
+                  value={formData.adults}
+                  onChange={(e) =>
+                    setFormData({ ...formData, adults: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                  placeholder="1"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Children
+                </label>
+                <input
+                  type="number"
+                  value={formData.children}
+                  onChange={(e) =>
+                    setFormData({ ...formData, children: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                  placeholder="0"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Infants
+                </label>
+                <input
+                  type="number"
+                  value={formData.infants}
+                  onChange={(e) =>
+                    setFormData({ ...formData, infants: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                  placeholder="0"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Total Amount *
+                </label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={formData.total_amount}
+                  onChange={(e) =>
+                    setFormData({ ...formData, total_amount: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                  placeholder="0.00"
+                  required
+                />
+              </div>
+
+              <div className="col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Notes
+                </label>
+                <textarea
+                  value={formData.notes}
+                  onChange={(e) =>
+                    setFormData({ ...formData, notes: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                  rows={3}
+                  placeholder="Additional notes, special requests, preferences..."
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-3 pt-4 border-t">
+              <button
+                type="submit"
+                className="flex-1 px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 flex items-center justify-center gap-2"
+              >
+                <FileText className="w-4 h-4" />
+                Create Booking
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setExpandedRowId(null);
+                  setEditingBooking(null);
+                }}
+                className="flex-1 px-4 py-2 border rounded-lg hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
       {showImporter && (
         <ExcelImporter
           entityType="bookings"
