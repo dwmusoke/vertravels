@@ -1,5 +1,3 @@
-"use client";
-
 export interface PaymentMethod {
   id: string;
   name: string;
