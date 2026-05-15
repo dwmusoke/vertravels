@@ -18,6 +18,9 @@ import {
   Square,
   CheckSquare,
   Upload,
+  DollarSign,
+  Printer,
+  Plane,
 } from "lucide-react";
 import { exportToExcel, getTemplateColumns, getValidationRules } from "@/lib/excel-utils";
 import { ExcelImporter } from "@/components/ui/excel-importer";
@@ -55,6 +58,8 @@ export default function AdminInvoicesPage() {
   const [showImporter, setShowImporter] = useState(false);
   const [showAuditTrail, setShowAuditTrail] = useState<string | null>(null);
   const [viewingInvoice, setViewingInvoice] = useState<Invoice | null>(null);
+  const [paymentModal, setPaymentModal] = useState<Invoice | null>(null);
+  const [paymentData, setPaymentData] = useState({ amount: "", method: "credit_card", reference: "", notes: "" });
 
   const [formData, setFormData] = useState({
     customer_name: "",
@@ -253,6 +258,39 @@ export default function AdminInvoicesPage() {
       console.error("Error creating share link:", error);
       alert("Failed to create share link");
     }
+  }
+
+  async function handleRecordPayment(invoice: Invoice) {
+    try {
+      const amount = parseFloat(paymentData.amount) || invoice.total;
+      const { error } = await supabase.from("payments").insert([{
+        invoice_id: invoice.id,
+        invoice_number: invoice.invoice_number,
+        customer_name: invoice.customer_name,
+        customer_email: invoice.customer_email,
+        amount,
+        payment_method: paymentData.method,
+        reference: paymentData.reference || `PAY-${Date.now()}`,
+        notes: paymentData.notes,
+        status: "completed",
+        payment_date: new Date().toISOString(),
+      }]);
+      if (error) throw error;
+      await supabase.from("invoices").update({ status: "paid", paid_date: new Date().toISOString() }).eq("id", invoice.id);
+      setPaymentModal(null);
+      fetchInvoices();
+      alert("Payment recorded successfully");
+    } catch (err: any) {
+      alert("Failed to record payment: " + err.message);
+    }
+  }
+
+  function handlePrint() {
+    window.print();
+  }
+
+  function handleDownloadPDF(invoice: Invoice) {
+    window.print();
   }
 
   async function handleImport(data: any[]) {
@@ -570,6 +608,9 @@ export default function AdminInvoicesPage() {
                           title="Share"
                         >
                           <Share2 className="w-4 h-4" />
+                        </button>
+                        <button onClick={() => setPaymentModal(invoice)} className="p-1.5 text-emerald-600 hover:bg-emerald-50 rounded" title="Record Payment">
+                          <DollarSign className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => handleDelete(invoice.id)}
@@ -891,62 +932,197 @@ export default function AdminInvoicesPage() {
       )}
 
       {viewingInvoice && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => setViewingInvoice(null)}>
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-            <div className="p-6 border-b flex justify-between items-center">
-              <h2 className="text-lg font-bold">{viewingInvoice.invoice_number}</h2>
-              <button onClick={() => setViewingInvoice(null)} className="p-1 hover:bg-gray-100 rounded">&times;</button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 print:bg-white print:static print:inset-auto print:items-start" onClick={() => setViewingInvoice(null)}>
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto print:shadow-none print:rounded-none print:max-h-none print:overflow-visible" onClick={(e) => e.stopPropagation()}>
+
+            {/* Toolbar - hidden when printing */}
+            <div className="print:hidden p-4 border-b flex justify-between items-center bg-gray-50 rounded-t-2xl sticky top-0 z-10">
+              <h2 className="text-lg font-bold flex items-center gap-2">
+                <FileText className="w-5 h-5 text-sky-600" />
+                Invoice Preview
+              </h2>
+              <div className="flex gap-2">
+                <button onClick={handlePrint} className="flex items-center gap-1.5 px-3 py-1.5 border rounded-lg hover:bg-white text-sm"><Printer className="w-4 h-4" /> Print</button>
+                <button onClick={() => handleDownloadPDF(viewingInvoice)} className="flex items-center gap-1.5 px-3 py-1.5 border rounded-lg hover:bg-white text-sm"><Download className="w-4 h-4" /> PDF</button>
+                <button onClick={() => { navigator.clipboard.writeText(window.location.href); alert("Link copied"); }} className="flex items-center gap-1.5 px-3 py-1.5 border rounded-lg hover:bg-white text-sm"><Share2 className="w-4 h-4" /> Share</button>
+                <button onClick={() => setViewingInvoice(null)} className="p-1.5 hover:bg-white rounded-lg">✕</button>
+              </div>
             </div>
-            <div className="p-6 space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+
+            {/* Invoice Content */}
+            <div className="p-8 print:p-4">
+              {/* Header with Logo */}
+              <div className="flex justify-between items-start mb-8">
                 <div>
-                  <p className="text-xs text-gray-500 uppercase tracking-wide">Customer</p>
+                  <div className="w-14 h-14 bg-gradient-to-br from-sky-500 to-teal-500 rounded-xl flex items-center justify-center mb-3">
+                    <Plane className="w-8 h-8 text-white" />
+                  </div>
+                  <h1 className="text-2xl font-bold text-gray-900">VerTravels</h1>
+                  <p className="text-sm text-gray-500">Premium Travel Services</p>
+                </div>
+                <div className="text-right">
+                  <h2 className="text-xl font-bold text-gray-900">{viewingInvoice.invoice_number}</h2>
+                  <span className={`inline-block mt-1 px-3 py-1 text-xs font-semibold rounded-full ${
+                    viewingInvoice.status === "paid" ? "bg-green-100 text-green-700" :
+                    viewingInvoice.status === "sent" ? "bg-blue-100 text-blue-700" :
+                    viewingInvoice.status === "overdue" ? "bg-red-100 text-red-700" :
+                    "bg-gray-100 text-gray-700"
+                  }`}>
+                    {viewingInvoice.status.toUpperCase()}
+                  </span>
+                </div>
+              </div>
+
+              {/* QR Code */}
+              <div className="flex justify-end mb-6">
+                <div className="w-20 h-20 border rounded-lg p-1">
+                  <img src={`https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${encodeURIComponent(viewingInvoice.invoice_number)}`} alt="QR" className="w-full h-full" />
+                </div>
+              </div>
+
+              {/* Company & Bill To */}
+              <div className="grid grid-cols-2 gap-8 mb-8">
+                <div>
+                  <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold mb-2">From</p>
+                  <p className="font-semibold">VerTravels Ltd</p>
+                  <p className="text-sm text-gray-600">Plot 123, Kampala Road</p>
+                  <p className="text-sm text-gray-600">Kampala, Uganda</p>
+                  <p className="text-sm text-gray-600">admin@vertravels.com</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold mb-2">Bill To</p>
                   <p className="font-semibold">{viewingInvoice.customer_name}</p>
                   <p className="text-sm text-gray-600">{viewingInvoice.customer_email}</p>
                   {viewingInvoice.customer_phone && <p className="text-sm text-gray-600">{viewingInvoice.customer_phone}</p>}
                 </div>
-                <div className="text-right">
-                  <p className="text-xs text-gray-500 uppercase tracking-wide">Status</p>
-                  <span className={`inline-block px-3 py-1 text-xs rounded-full mt-1 ${
-                    viewingInvoice.status === "paid" ? "bg-green-100 text-green-700" :
-                    viewingInvoice.status === "sent" ? "bg-blue-100 text-blue-700" :
-                    viewingInvoice.status === "overdue" ? "bg-red-100 text-red-700" :
-                    viewingInvoice.status === "draft" ? "bg-gray-100 text-gray-700" :
-                    "bg-yellow-100 text-yellow-700"
-                  }`}>
-                    {viewingInvoice.status}
-                  </span>
-                </div>
               </div>
-              <div className="grid grid-cols-2 gap-4 pt-4 border-t">
+
+              {/* Invoice Details */}
+              <div className="grid grid-cols-3 gap-4 mb-8 p-4 bg-gray-50 rounded-xl">
                 <div>
-                  <p className="text-xs text-gray-500 uppercase tracking-wide">Issue Date</p>
-                  <p className="font-medium">{viewingInvoice.issue_date ? new Date(viewingInvoice.issue_date).toLocaleDateString() : "—"}</p>
+                  <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold">Issue Date</p>
+                  <p className="font-semibold">{viewingInvoice.issue_date ? new Date(viewingInvoice.issue_date).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }) : "—"}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500 uppercase tracking-wide">Due Date</p>
-                  <p className="font-medium">{viewingInvoice.due_date ? new Date(viewingInvoice.due_date).toLocaleDateString() : "—"}</p>
+                  <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold">Due Date</p>
+                  <p className="font-semibold">{viewingInvoice.due_date ? new Date(viewingInvoice.due_date).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }) : "—"}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold">Payment Terms</p>
+                  <p className="font-semibold">Due on Receipt</p>
                 </div>
               </div>
-              <div className="pt-4 border-t">
-                <p className="text-xs text-gray-500 uppercase tracking-wide mb-2">Amount</p>
-                <p className="text-3xl font-bold text-sky-600">${viewingInvoice.total?.toLocaleString() || "0"}</p>
+
+              {/* Line Items Table */}
+              <div className="mb-8">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b-2 border-gray-200">
+                      <th className="py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Description</th>
+                      <th className="py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {(viewingInvoice as any).items ? JSON.parse((viewingInvoice as any).items as string || "[]").map((item: any, i: number) => (
+                      <tr key={i} className="border-b border-gray-100">
+                        <td className="py-3 text-sm">{item.description}</td>
+                        <td className="py-3 text-sm text-right">${item.amount?.toFixed(2)}</td>
+                      </tr>
+                    )) : (
+                      <tr className="border-b border-gray-100">
+                        <td className="py-3 text-sm">Travel Services</td>
+                        <td className="py-3 text-sm text-right">${(viewingInvoice.subtotal || viewingInvoice.total || 0).toFixed(2)}</td>
+                      </tr>
+                    )}
+                    {/* Tax Row */}
+                    <tr>
+                      <td className="py-3 text-sm font-medium">Subtotal</td>
+                      <td className="py-3 text-sm text-right font-medium">${(viewingInvoice.subtotal || viewingInvoice.total || 0).toFixed(2)}</td>
+                    </tr>
+                    {(viewingInvoice as any).tax_amount > 0 && (
+                      <tr>
+                        <td className="py-3 text-sm text-gray-500">Tax ({((viewingInvoice as any).tax_rate || 0)}%)</td>
+                        <td className="py-3 text-sm text-right text-gray-500">${(viewingInvoice as any).tax_amount?.toFixed(2)}</td>
+                      </tr>
+                    )}
+                    {(viewingInvoice as any).discount > 0 && (
+                      <tr>
+                        <td className="py-3 text-sm text-gray-500">Discount</td>
+                        <td className="py-3 text-sm text-right text-red-500">-${(viewingInvoice as any).discount?.toFixed(2)}</td>
+                      </tr>
+                    )}
+                  </tbody>
+                  <tfoot>
+                    <tr className="border-t-2 border-gray-300">
+                      <td className="py-4 text-base font-bold">Total</td>
+                      <td className="py-4 text-base font-bold text-right">${(viewingInvoice.total || 0).toLocaleString()}</td>
+                    </tr>
+                  </tfoot>
+                </table>
               </div>
+
+              {/* Notes */}
               {viewingInvoice.notes && (
-                <div className="pt-4 border-t">
-                  <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Notes</p>
+                <div className="mb-8 p-4 bg-gray-50 rounded-xl">
+                  <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold mb-1">Notes</p>
                   <p className="text-sm text-gray-700">{viewingInvoice.notes}</p>
                 </div>
               )}
+
+              {/* Footer */}
+              <div className="text-center text-xs text-gray-400 pt-8 border-t">
+                <p>Thank you for your business!</p>
+                <p className="mt-1">VerTravels Ltd | Kampala, Uganda | admin@vertravels.com</p>
+              </div>
             </div>
-            <div className="p-6 border-t flex gap-3">
+
+            {/* Bottom toolbar */}
+            <div className="print:hidden p-4 border-t flex gap-3 sticky bottom-0 bg-white">
+              {viewingInvoice.status !== "paid" && (
+                <button onClick={() => { setPaymentModal(viewingInvoice); setViewingInvoice(null); }} className="flex-1 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 flex items-center justify-center gap-2">
+                  <DollarSign className="w-4 h-4" /> Record Payment
+                </button>
+              )}
               <button onClick={() => handleSendEmail(viewingInvoice)} className="flex-1 px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 flex items-center justify-center gap-2">
                 <Mail className="w-4 h-4" /> Send Email
               </button>
-              <button onClick={() => handleEdit(viewingInvoice)} className="flex-1 px-4 py-2 border rounded-lg hover:bg-gray-50 flex items-center justify-center gap-2">
-                <Edit2 className="w-4 h-4" /> Edit
-              </button>
               <button onClick={() => setViewingInvoice(null)} className="px-4 py-2 border rounded-lg hover:bg-gray-50">Close</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {paymentModal && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50" onClick={() => setPaymentModal(null)}>
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6" onClick={(e) => e.stopPropagation()}>
+            <h2 className="text-lg font-bold mb-4">Record Payment</h2>
+            <p className="text-sm text-gray-500 mb-4">Invoice: {paymentModal.invoice_number} — ${paymentModal.total?.toLocaleString()}</p>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">Amount</label>
+                <input type="number" step="0.01" value={paymentData.amount || paymentModal.total} onChange={e => setPaymentData({...paymentData, amount: e.target.value})} className="w-full px-3 py-2 border rounded-lg" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Payment Method</label>
+                <select value={paymentData.method} onChange={e => setPaymentData({...paymentData, method: e.target.value})} className="w-full px-3 py-2 border rounded-lg">
+                  <option value="credit_card">Credit Card</option>
+                  <option value="mobile_money">Mobile Money</option>
+                  <option value="bank_transfer">Bank Transfer</option>
+                  <option value="cash">Cash</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Reference</label>
+                <input type="text" value={paymentData.reference} onChange={e => setPaymentData({...paymentData, reference: e.target.value})} className="w-full px-3 py-2 border rounded-lg" placeholder="Transaction ref..." />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Notes</label>
+                <textarea value={paymentData.notes} onChange={e => setPaymentData({...paymentData, notes: e.target.value})} className="w-full px-3 py-2 border rounded-lg" rows={2} />
+              </div>
+            </div>
+            <div className="flex gap-3 mt-6">
+              <button onClick={() => handleRecordPayment(paymentModal)} className="flex-1 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700">Record Payment</button>
+              <button onClick={() => setPaymentModal(null)} className="flex-1 px-4 py-2 border rounded-lg hover:bg-gray-50">Cancel</button>
             </div>
           </div>
         </div>
