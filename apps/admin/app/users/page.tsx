@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import {
   Users,
@@ -95,14 +95,17 @@ export default function UsersPage() {
 
       const { data: roleAssignments } = await supabase
         .from("user_role_assignments")
-        .select("user_id, role_id")
-        .join("user_roles", "role_id=id");
+        .select("*");
+      const { data: userRoles } = await supabase
+        .from("user_roles")
+        .select("*");
 
       const { data: agenciesData } = await supabase.from("agencies").select("id, agency_name");
 
       const usersWithDetails = authData?.map((user: any) => {
         const profile = profiles?.find((p: any) => p.user_id === user.id);
-        const role = roleAssignments?.find((r: any) => r.user_id === user.id);
+        const roleAssignment = roleAssignments?.find((r: any) => r.user_id === user.id);
+        const userRole = userRoles?.find((r: any) => r.id === roleAssignment?.role_id);
         const agency = agenciesData?.find((a: any) => a.id === profile?.agency_id);
 
         return {
@@ -112,8 +115,8 @@ export default function UsersPage() {
           lname: profile?.lname,
           phone: profile?.phone || user.phone,
           status: user.status,
-          role_name: role?.user_roles?.role_name,
-          role_slug: role?.user_roles?.role_slug,
+          role_name: userRole?.role_name,
+          role_slug: userRole?.role_slug,
           agency_name: agency?.agency_name,
           department: profile?.department,
           employee_id: profile?.employee_id,
@@ -160,8 +163,71 @@ export default function UsersPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    // Implementation would go here
-    console.log("Form submitted", formData);
+    try {
+      if (editingUser) {
+        const { error } = await supabase
+          .from("auth_users")
+          .update({
+            fname: formData.fname,
+            lname: formData.lname,
+            phone: formData.phone,
+            status: formData.status,
+            department: formData.department,
+            employee_id: formData.employee_id,
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", editingUser.id);
+
+        if (error) throw error;
+
+        if (formData.agency_id) {
+          await supabase.from("user_agency_assignments").upsert({
+            user_id: editingUser.id,
+            agency_id: formData.agency_id,
+            role_in_agency: formData.role_id || "agent",
+          });
+        }
+      } else {
+        const { data: authData, error: signUpError } = await supabase.auth.signUp({
+          email: formData.email,
+          password: formData.password || "TempPass123!",
+          options: { data: { fname: formData.fname, lname: formData.lname } },
+        });
+
+        if (signUpError) throw signUpError;
+        if (!authData.user) throw new Error("Failed to create user");
+
+        if (formData.role_id) {
+          await supabase.from("user_role_assignments").insert({
+            user_id: authData.user.id,
+            role_id: parseInt(formData.role_id),
+          });
+        }
+        if (formData.agency_id) {
+          await supabase.from("user_agency_assignments").insert({
+            user_id: authData.user.id,
+            agency_id: formData.agency_id,
+            role_in_agency: formData.role_id || "agent",
+          });
+        }
+        await supabase.from("user_profiles").insert({
+          user_id: authData.user.id,
+          fname: formData.fname,
+          lname: formData.lname,
+          phone: formData.phone,
+          agency_id: formData.agency_id || null,
+          department: formData.department,
+          employee_id: formData.employee_id,
+        });
+      }
+      setExpandedUserId(null);
+      setEditingUser(null);
+      resetForm();
+      fetchUsers();
+    } catch (error: any) {
+      console.error("Error saving user:", error);
+      alert("Failed to save user: " + error.message);
+    }
   }
 
   function resetForm() {
@@ -177,6 +243,39 @@ export default function UsersPage() {
       employee_id: "",
       status: "active",
     });
+  }
+
+  function handleEdit(user: User) {
+    setEditingUser(user);
+    setFormData({
+      email: user.email,
+      password: "",
+      fname: user.fname || "",
+      lname: user.lname || "",
+      phone: user.phone || "",
+      role_id: roles.find(r => r.role_slug === user.role_slug)?.id?.toString() || "",
+      agency_id: agencies.find(a => a.agency_name === user.agency_name)?.id || "",
+      department: user.department || "",
+      employee_id: user.employee_id || "",
+      status: user.status,
+    });
+    setExpandedUserId(user.id);
+  }
+
+  async function handleDelete(id: string) {
+    if (!confirm("Are you sure you want to delete this user?")) return;
+    try {
+      await supabase.from("auth_users").delete().eq("id", id);
+      fetchUsers();
+    } catch (error: any) {
+      console.error("Error deleting user:", error);
+    }
+  }
+
+  async function handleToggleStatus(user: User) {
+    const newStatus = user.status === "active" ? "suspended" : "active";
+    await supabase.from("auth_users").update({ status: newStatus }).eq("id", user.id);
+    fetchUsers();
   }
 
   const stats = {
@@ -299,7 +398,8 @@ export default function UsersPage() {
             </thead>
             <tbody className="divide-y">
               {users.map((user) => (
-                <tr key={user.id} className="hover:bg-gray-50">
+                <React.Fragment key={user.id}>
+                <tr className="hover:bg-gray-50">
                   <td className="px-6 py-4">
                     <div>
                       <p className="font-medium">{user.fname && user.lname ? `${user.fname} ${user.lname}` : "—"}</p>
@@ -333,21 +433,120 @@ export default function UsersPage() {
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex gap-2">
-                      <button className="p-1.5 text-sky-600 hover:bg-sky-50 rounded" title="Edit">
-                        <Edit2 className="w-4 h-4" />
-                      </button>
-                      <button className="p-1.5 text-yellow-600 hover:bg-yellow-50 rounded">
+                      <button onClick={() => handleEdit(user)} className="p-1.5 text-sky-600 hover:bg-sky-50 rounded" title="Edit"><Edit2 className="w-4 h-4" /></button>
+                      <button onClick={() => handleToggleStatus(user)} className="p-1.5 text-yellow-600 hover:bg-yellow-50 rounded" title={user.status === "active" ? "Suspend" : "Activate"}>
                         {user.status === "active" ? <Clock className="w-4 h-4" /> : <CheckCircle className="w-4 h-4" />}
                       </button>
-                      <button className="p-1.5 text-red-600 hover:bg-red-50 rounded">
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                      <button onClick={() => handleDelete(user.id)} className="p-1.5 text-red-600 hover:bg-red-50 rounded" title="Delete"><Trash2 className="w-4 h-4" /></button>
                     </div>
                   </td>
                 </tr>
+                {expandedUserId === user.id && (
+                  <tr><td colSpan={6} className="p-0">
+                    <div className="bg-gradient-to-br from-sky-50 to-white border border-sky-100 rounded-xl shadow-sm m-4">
+                      <form onSubmit={handleSubmit} className="p-6">
+                        <div className="grid grid-cols-3 gap-4">
+                          <div className="col-span-full border-b pb-3 mb-4">
+                            <h4 className="font-semibold text-gray-800 flex items-center gap-2">
+                              <Edit2 className="w-4 h-4 text-sky-600" /> {editingUser ? "Edit User" : "New User"}
+                            </h4>
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium mb-1">First Name</label>
+                            <input type="text" value={formData.fname} onChange={e => setFormData({...formData, fname: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 outline-none" placeholder="John" />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium mb-1">Last Name</label>
+                            <input type="text" value={formData.lname} onChange={e => setFormData({...formData, lname: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 outline-none" placeholder="Doe" />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium mb-1">Email *</label>
+                            <input type="email" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 outline-none" placeholder="user@example.com" required />
+                          </div>
+                          {!editingUser && (
+                            <div>
+                              <label className="block text-sm font-medium mb-1">Password</label>
+                              <input type="password" value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 outline-none" placeholder="Leave blank for temp" />
+                            </div>
+                          )}
+                          <div>
+                            <label className="block text-sm font-medium mb-1">Phone</label>
+                            <input type="tel" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 outline-none" placeholder="+256 700 123456" />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium mb-1">Role</label>
+                            <select value={formData.role_id} onChange={e => setFormData({...formData, role_id: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 outline-none">
+                              <option value="">Select role</option>
+                              {roles.map(r => <option key={r.id} value={r.id}>{r.role_name}</option>)}
+                            </select>
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium mb-1">Agency</label>
+                            <select value={formData.agency_id} onChange={e => setFormData({...formData, agency_id: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 outline-none">
+                              <option value="">No agency</option>
+                              {agencies.map(a => <option key={a.id} value={a.id}>{a.agency_name}</option>)}
+                            </select>
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium mb-1">Department</label>
+                            <input type="text" value={formData.department} onChange={e => setFormData({...formData, department: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 outline-none" placeholder="Sales" />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium mb-1">Employee ID</label>
+                            <input type="text" value={formData.employee_id} onChange={e => setFormData({...formData, employee_id: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 outline-none" placeholder="EMP001" />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium mb-1">Status</label>
+                            <select value={formData.status} onChange={e => setFormData({...formData, status: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 outline-none">
+                              <option value="active">Active</option>
+                              <option value="suspended">Suspended</option>
+                              <option value="banned">Banned</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div className="col-span-full flex gap-3 pt-4 border-t border-sky-100 mt-4">
+                          <button type="submit" className="flex-1 px-4 py-2.5 bg-gradient-to-r from-sky-600 to-blue-600 text-white rounded-lg hover:from-sky-700 hover:to-blue-700 font-medium flex items-center justify-center gap-2 shadow-sm">
+                            <Plus className="w-4 h-4" /> {editingUser ? "Update User" : "Create User"}
+                          </button>
+                          <button type="button" onClick={() => { setExpandedUserId(null); setEditingUser(null); resetForm(); }} className="px-6 py-2.5 border border-gray-300 rounded-lg hover:bg-gray-50 font-medium">Cancel</button>
+                        </div>
+                      </form>
+                    </div>
+                  </td></tr>
+                )}
+                </React.Fragment>
               ))}
             </tbody>
           </table>
+        </div>
+      )}
+      {expandedUserId === null && (
+        <div className="bg-gradient-to-br from-sky-50 to-white border border-sky-100 rounded-xl shadow-sm mt-6 no-print">
+          <form onSubmit={(e) => { setEditingUser(null); handleSubmit(e); }} className="p-6">
+            <div className="grid grid-cols-3 gap-4">
+              <div className="col-span-full border-b pb-3 mb-4">
+                <h4 className="font-semibold text-gray-800 flex items-center gap-2">
+                  <Plus className="w-4 h-4 text-sky-600" /> Quick Add User
+                </h4>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Email *</label>
+                <input type="email" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 outline-none" placeholder="user@example.com" required />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">First Name</label>
+                <input type="text" value={formData.fname} onChange={e => setFormData({...formData, fname: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 outline-none" placeholder="John" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Role</label>
+                <select value={formData.role_id} onChange={e => setFormData({...formData, role_id: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 outline-none">
+                  <option value="">Select</option>
+                  {roles.map(r => <option key={r.id} value={r.id}>{r.role_name}</option>)}
+                </select>
+              </div>
+            </div>
+            <button type="submit" className="mt-4 px-4 py-2.5 bg-gradient-to-r from-sky-600 to-blue-600 text-white rounded-lg hover:from-sky-700 hover:to-blue-700 font-medium shadow-sm">Create User</button>
+          </form>
         </div>
       )}
     </div>
