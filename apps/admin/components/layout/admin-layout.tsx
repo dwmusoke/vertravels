@@ -6,6 +6,7 @@ import { useSupabase } from '@/components/providers/supabase-provider';
 import { redirect } from 'next/navigation';
 import { AdminHeader } from './admin-header';
 import { AdminSidebar } from './admin-sidebar';
+import { AiAssistant } from '@/components/ui/ai-assistant';
 import { CommandPalette } from '@/components/ui/command-palette';
 import type { User } from '@supabase/supabase-js';
 
@@ -88,6 +89,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       </div>
 
       {/* Global components */}
+      <AiAssistant />
       <CommandPalette open={commandOpen} onClose={() => setCommandOpen(false)} />
     </div>
   );

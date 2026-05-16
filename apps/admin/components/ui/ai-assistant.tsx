@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, type ReactNode } from "react";
 import { Bot, X, Send, Sparkles, BarChart3, FileText, Users, DollarSign, TrendingUp, Loader2 } from "lucide-react";
 
 interface Message {
@@ -82,7 +82,7 @@ export function AiAssistant() {
     setLoading(false);
   }
 
-  function formatMessage(content: string): React.ReactNode {
+  function formatMessage(content: string): ReactNode {
     return content.split("\n").map((line, i) => {
       if (line.startsWith("- ")) {
         return <li key={i} className="text-xs text-foreground/80 ml-2">{line.slice(2)}</li>;
