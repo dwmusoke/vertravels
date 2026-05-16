@@ -1,0 +1,15 @@
+-- Migration 0028: Add missing columns to bookings table (multi-vendor, passenger details)
+ALTER TABLE bookings ADD COLUMN IF NOT EXISTS agency_id UUID REFERENCES agencies(id);
+ALTER TABLE bookings ADD COLUMN IF NOT EXISTS pnr_url VARCHAR(500);
+ALTER TABLE bookings ADD COLUMN IF NOT EXISTS ticket_number VARCHAR(30);
+ALTER TABLE bookings ADD COLUMN IF NOT EXISTS airline_code VARCHAR(100);
+ALTER TABLE bookings ADD COLUMN IF NOT EXISTS commission_amount DECIMAL(10,2) DEFAULT 0;
+ALTER TABLE bookings ADD COLUMN IF NOT EXISTS commission_rate DECIMAL(5,2) DEFAULT 0;
+ALTER TABLE bookings ADD COLUMN IF NOT EXISTS tax_amount DECIMAL(10,2) DEFAULT 0;
+ALTER TABLE bookings ADD COLUMN IF NOT EXISTS passenger_email VARCHAR(255);
+ALTER TABLE bookings ADD COLUMN IF NOT EXISTS passenger_phone VARCHAR(50);
+ALTER TABLE bookings ADD COLUMN IF NOT EXISTS passenger_passport VARCHAR(50);
+ALTER TABLE bookings ADD COLUMN IF NOT EXISTS passenger_dob DATE;
+ALTER TABLE bookings ADD COLUMN IF NOT EXISTS passenger_nationality VARCHAR(100);
+ALTER TABLE bookings ADD COLUMN IF NOT EXISTS notes TEXT;
+ALTER TABLE bookings ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW();
