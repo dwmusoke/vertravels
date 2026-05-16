@@ -172,6 +172,7 @@ async function searchDuffelFlights(
 
   try {
     const response = await fetch(`${config.baseUrl}/offers`, {
+      method: "POST",
       headers: {
         Authorization: `Bearer ${config.apiKey}`,
         "Content-Type": "application/json",
