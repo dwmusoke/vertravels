@@ -179,6 +179,34 @@ export default function ManualPostingsPage() {
 
   async function handleVerify(id: string) {
     try {
+      const { data: posting, error: fetchError } = await supabase
+        .from("manual_postings")
+        .select("*")
+        .eq("id", id)
+        .single();
+
+      if (fetchError) throw fetchError;
+      if (!posting) throw new Error("Posting not found");
+
+      const bookingRef = `BK-${Date.now().toString(36).toUpperCase()}`;
+      const { error: bookingError } = await supabase.from("bookings").insert([
+        {
+          booking_ref: bookingRef,
+          pnr: posting.pnr,
+          module_type: "flights",
+          customer_name: posting.passenger_name,
+          passenger_name: posting.passenger_name,
+          destination: posting.route_description,
+          travel_date: posting.travel_date,
+          total_amount: posting.total_amount || 0,
+          currency: "USD",
+          payment_status: posting.payment_status || "pending",
+          status: "pending",
+        },
+      ]);
+
+      if (bookingError) throw bookingError;
+
       const { error } = await supabase
         .from("manual_postings")
         .update({
@@ -191,6 +219,7 @@ export default function ManualPostingsPage() {
       fetchPostings();
     } catch (error: any) {
       console.error("Error verifying:", error);
+      alert("Failed to verify: " + error.message);
     }
   }
 
