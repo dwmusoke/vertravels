@@ -165,20 +165,37 @@ export default function UsersPage() {
     e.preventDefault();
     try {
       if (editingUser) {
-        const { error } = await supabase
+        const { error: authError } = await supabase
           .from("auth_users")
           .update({
-            fname: formData.fname,
-            lname: formData.lname,
             phone: formData.phone,
             status: formData.status,
-            department: formData.department,
-            employee_id: formData.employee_id,
             updated_at: new Date().toISOString(),
           })
           .eq("id", editingUser.id);
 
-        if (error) throw error;
+        if (authError) throw authError;
+
+        const { error: profileError } = await supabase
+          .from("user_profiles")
+          .upsert({
+            user_id: editingUser.id,
+            fname: formData.fname,
+            lname: formData.lname,
+            phone: formData.phone,
+            agency_id: formData.agency_id || null,
+            department: formData.department,
+            employee_id: formData.employee_id,
+          });
+
+        if (profileError) throw profileError;
+
+        if (formData.role_id) {
+          await supabase.from("user_role_assignments").upsert({
+            user_id: editingUser.id,
+            role_id: parseInt(formData.role_id),
+          });
+        }
 
         if (formData.agency_id) {
           await supabase.from("user_agency_assignments").upsert({
@@ -197,21 +214,36 @@ export default function UsersPage() {
         if (signUpError) throw signUpError;
         if (!authData.user) throw new Error("Failed to create user");
 
+        const { data: authUser, error: authUserError } = await supabase
+          .from("auth_users")
+          .insert({
+            supabase_user_id: authData.user.id,
+            email: formData.email,
+            password_hash: "managed-by-supabase-auth",
+            phone: formData.phone,
+            status: formData.status,
+            email_verified: true,
+          })
+          .select()
+          .single();
+
+        if (authUserError) throw authUserError;
+
         if (formData.role_id) {
           await supabase.from("user_role_assignments").insert({
-            user_id: authData.user.id,
+            user_id: authUser.id,
             role_id: parseInt(formData.role_id),
           });
         }
         if (formData.agency_id) {
           await supabase.from("user_agency_assignments").insert({
-            user_id: authData.user.id,
+            user_id: authUser.id,
             agency_id: formData.agency_id,
             role_in_agency: formData.role_id || "agent",
           });
         }
         await supabase.from("user_profiles").insert({
-          user_id: authData.user.id,
+          user_id: authUser.id,
           fname: formData.fname,
           lname: formData.lname,
           phone: formData.phone,

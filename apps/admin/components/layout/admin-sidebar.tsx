@@ -23,6 +23,7 @@ import {
   Zap,
   CreditCard,
   Sliders,
+  MessageSquare,
 } from "lucide-react";
 
 interface NavItem {
@@ -35,6 +36,8 @@ interface NavItem {
 const navigation: NavItem[] = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
   { name: "Bookings", href: "/bookings", icon: FileText },
+  { name: "Clients", href: "/crm", icon: Users },
+  { name: "Inquiries", href: "/contacts", icon: MessageSquare },
   {
     name: "Operations",
     href: "#",

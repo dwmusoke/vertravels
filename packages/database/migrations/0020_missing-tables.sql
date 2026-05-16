@@ -1,7 +1,7 @@
 -- ========================================
 -- VERTRAVELS DATABASE SCHEMA
 -- Migration 0020: Missing admin tables
--- Add payments, unused_tickets, sales_reports tables
+-- Add payments, unused_tickets, daily_sales_reports tables
 -- ========================================
 
 -- Payments table
@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS unused_tickets (
 );
 
 -- Daily sales reports table
-CREATE TABLE IF NOT EXISTS sales_reports (
+CREATE TABLE IF NOT EXISTS daily_sales_reports (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     file_name VARCHAR(255),
     file_path TEXT,
@@ -52,10 +52,10 @@ CREATE TABLE IF NOT EXISTS sales_reports (
 -- Disable RLS on new tables
 ALTER TABLE payments DISABLE ROW LEVEL SECURITY;
 ALTER TABLE unused_tickets DISABLE ROW LEVEL SECURITY;
-ALTER TABLE sales_reports DISABLE ROW LEVEL SECURITY;
+ALTER TABLE daily_sales_reports DISABLE ROW LEVEL SECURITY;
 
 -- Indexes
 CREATE INDEX IF NOT EXISTS idx_payments_invoice ON payments(invoice_id);
 CREATE INDEX IF NOT EXISTS idx_payments_status ON payments(status);
 CREATE INDEX IF NOT EXISTS idx_unused_tickets_status ON unused_tickets(status);
-CREATE INDEX IF NOT EXISTS idx_sales_reports_date ON sales_reports(report_date);
+CREATE INDEX IF NOT EXISTS idx_daily_sales_reports_date ON daily_sales_reports(report_date);

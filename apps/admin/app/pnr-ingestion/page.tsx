@@ -149,6 +149,7 @@ export default function PNRIngestionPage() {
         .single();
 
       if (batchError) throw batchError;
+      if (!batch || !batch.id) throw new Error("Batch created without ID");
 
       // Parse and insert records (simplified parsing)
       const recordsToInsert = lines.map((line, index) => {
@@ -158,25 +159,29 @@ export default function PNRIngestionPage() {
         return {
           batch_id: batch.id,
           record_number: index + 1,
-          pnr: parts[0] || "",
-          ticket_number: parts[1] || "",
-          passenger_name: parts[2] || "",
-          airline_code: parts[3] || "",
-          flight_date: parts[4] || "",
-          route: parts[5] || "",
-          fare: parseFloat(parts[6]) || 0,
-          tax: parseFloat(parts[7]) || 0,
-          commission: parseFloat(parts[8]) || 0,
-          total: parseFloat(parts[9]) || 0,
+          pnr: parts[0] || null,
+          ticket_number: parts[1] || null,
+          passenger_name: parts[2] || null,
+          airline_code: parts[3] || null,
+          flight_date: parts[4] || null,
+          route: parts[5] || null,
+          fare: parseFloat(parts[6]) || null,
+          tax: parseFloat(parts[7]) || null,
+          commission: parseFloat(parts[8]) || null,
+          total: parseFloat(parts[9]) || null,
           status: "pending" as const,
         };
       });
 
-      const { error: recordsError } = await supabase
+      const { data: insertedRecords, error: recordsError } = await supabase
         .from("pnr_ingestion_records")
-        .insert(recordsToInsert);
+        .insert(recordsToInsert)
+        .select();
 
       if (recordsError) throw recordsError;
+      if (!insertedRecords || insertedRecords.length === 0) {
+        throw new Error("Insert returned success but 0 rows were created. Check table permissions.");
+      }
 
       // Update batch status
       await supabase
