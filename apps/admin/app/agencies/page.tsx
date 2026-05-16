@@ -550,7 +550,7 @@ export default function AgenciesPage() {
                     </tr>
                     {expandedRowId === agency.id && (
                       <tr>
-                        <td colSpan={9} className="p-0">
+                        <td colSpan={9} className="p-0 block">
                           <div className="bg-sky-50 border-t">
                             <form onSubmit={handleSubmit} className="p-6">
                             <div className="grid grid-cols-3 gap-4 mb-4">

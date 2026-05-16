@@ -651,7 +651,7 @@ export default function CRMPage() {
                 (client) =>
                   client.id === expandedRowId && (
                     <tr key={`${client.id}-form`}>
-                      <td colSpan={7} className="p-0">
+                      <td colSpan={7} className="p-0 block">
                         <div className="bg-gradient-to-br from-sky-50 to-white border-t border-sky-100 p-5">
                           <div className="flex items-center gap-2 mb-4">
                             <User className="w-5 h-5 text-sky-600" />

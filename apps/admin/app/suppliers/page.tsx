@@ -593,7 +593,7 @@ export default function SuppliersPage() {
                   </tr>
                   {expandedRowId === supplier.id && (
                     <tr>
-                      <td colSpan={9} className="p-0">
+                      <td colSpan={9} className="p-0 block">
                         <div className="bg-gradient-to-br from-sky-50 to-white border border-sky-100 rounded-xl shadow-sm">
                           <form onSubmit={handleSubmit} className="p-6">
                             <div className="grid grid-cols-3 gap-4 mb-4">
