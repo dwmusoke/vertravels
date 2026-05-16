@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Bot, X, Send, Sparkles, BarChart3, FileText, Users, DollarSign, TrendingUp, Loader2 } from "lucide-react";
 
 interface Message {
