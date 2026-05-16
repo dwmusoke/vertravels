@@ -34,13 +34,9 @@ export function AdminHeader() {
     return () => subscription.unsubscribe();
   }, [supabase]);
 
-  // Global search keyboard shortcut
+  // Handle Escape for local search modal
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
-        e.preventDefault();
-        setSearchOpen(true);
-      }
       if (e.key === "Escape") {
         setSearchOpen(false);
         setQuery("");

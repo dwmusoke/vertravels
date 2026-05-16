@@ -6,6 +6,8 @@ import { useSupabase } from '@/components/providers/supabase-provider';
 import { redirect } from 'next/navigation';
 import { AdminHeader } from './admin-header';
 import { AdminSidebar } from './admin-sidebar';
+import { AiAssistant } from '@/components/ui/ai-assistant';
+import { CommandPalette } from '@/components/ui/command-palette';
 import type { User } from '@supabase/supabase-js';
 
 interface AdminLayoutProps {
@@ -17,6 +19,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   const { supabase } = useSupabase();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [commandOpen, setCommandOpen] = useState(false);
 
   const isAuthPage = pathname?.startsWith('/login') || pathname?.startsWith('/signup');
 
@@ -41,6 +44,18 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
     return () => subscription.unsubscribe();
   }, [supabase]);
+
+  // Global keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setCommandOpen(true);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   if (loading && !isAuthPage) {
     return (
@@ -72,6 +87,10 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           {children}
         </main>
       </div>
+
+      {/* Global components */}
+      <AiAssistant />
+      <CommandPalette open={commandOpen} onClose={() => setCommandOpen(false)} />
     </div>
   );
 }
