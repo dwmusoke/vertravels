@@ -1,18 +1,17 @@
 "use client";
 
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback } from "react";
 import {
   ChevronDown,
   ChevronUp,
   ChevronsUpDown,
-  CheckSquare,
-  Square,
+  Check,
   Filter,
   X,
   Eye,
-  EyeOff,
   Download,
   RefreshCw,
+  Search,
 } from "lucide-react";
 
 interface Column<T> {
@@ -237,32 +236,42 @@ export function DataGrid<T extends { id?: string }>({
   return (
     <div className={`space-y-4 ${className}`}>
       {/* Toolbar */}
-      <div className="flex items-center justify-between bg-white border rounded-lg p-3">
+      <div className="flex items-center justify-between bg-surface border border-border/60 rounded-xl p-3 shadow-soft">
         <div className="flex items-center gap-3">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+            <input
+              type="text"
+              placeholder="Quick filter..."
+              className="input-field-sm pl-8 w-48"
+              value={filterValue}
+              onChange={(e) => setFilterValue(e.target.value)}
+            />
+          </div>
           <div className="relative">
             <button
               onClick={() => setShowColumnMenu(!showColumnMenu)}
-              className="flex items-center gap-2 px-3 py-1.5 border rounded-lg hover:bg-gray-50 text-sm"
+              className="btn-ghost btn-sm"
             >
-              <Eye className="w-4 h-4" />
+              <Eye className="w-3.5 h-3.5" />
               Columns
             </button>
             {showColumnMenu && (
-              <div className="absolute top-full left-0 mt-1 bg-white border rounded-lg shadow-lg z-50 p-2 min-w-[200px]">
-                <div className="text-xs font-medium text-gray-700 mb-2 px-2">
+              <div className="absolute top-full left-0 mt-1 bg-surface border border-border rounded-xl shadow-elevated z-50 p-2 min-w-[200px] animate-scale-in">
+                <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-2 px-2">
                   Toggle Columns
                 </div>
                 {columns.map((column) => (
                   <label
                     key={column.key as string}
-                    className="flex items-center gap-2 px-2 py-1.5 hover:bg-gray-50 rounded cursor-pointer"
+                    className="flex items-center gap-2 px-2 py-1.5 hover:bg-muted rounded-lg cursor-pointer transition-colors"
                   >
                     {visibleColumns.has(column.key as string) ? (
-                      <CheckSquare className="w-4 h-4 text-sky-600" />
+                      <Check className="w-3.5 h-3.5 text-primary" />
                     ) : (
-                      <Square className="w-4 h-4 text-gray-400" />
+                      <div className="w-3.5 h-3.5 border-2 border-muted-foreground/30 rounded-sm" />
                     )}
-                    <span className="text-sm">{column.header}</span>
+                    <span className="text-xs">{column.header}</span>
                     <input
                       type="checkbox"
                       className="hidden"
@@ -276,27 +285,21 @@ export function DataGrid<T extends { id?: string }>({
           </div>
 
           {activeFiltersCount > 0 && (
-            <button
-              onClick={resetFilters}
-              className="flex items-center gap-2 px-3 py-1.5 bg-red-50 text-red-700 border border-red-200 rounded-lg hover:bg-red-100 text-sm"
-            >
-              <X className="w-4 h-4" />
-              Clear Filters ({activeFiltersCount})
+            <button onClick={resetFilters} className="btn-ghost btn-sm text-danger">
+              <X className="w-3.5 h-3.5" />
+              Clear ({activeFiltersCount})
             </button>
           )}
         </div>
 
         <div className="flex items-center gap-3">
-          <span className="text-sm text-gray-600">
+          <span className="text-xs text-muted-foreground tabular-nums">
             {sortedAndFilteredData.length} records
             {currentPageData.length < sortedAndFilteredData.length &&
-              ` (Page ${currentPage} of ${totalPages})`}
+              ` • Page ${currentPage} of ${totalPages}`}
           </span>
-          <button
-            onClick={handleExport}
-            className="flex items-center gap-2 px-3 py-1.5 border rounded-lg hover:bg-gray-50 text-sm"
-          >
-            <Download className="w-4 h-4" />
+          <button onClick={handleExport} className="btn-ghost btn-sm">
+            <Download className="w-3.5 h-3.5" />
             Export
           </button>
         </div>
@@ -305,18 +308,15 @@ export function DataGrid<T extends { id?: string }>({
       {/* Active Filters */}
       {filters.length > 0 && (
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-sm text-gray-600">Active filters:</span>
+          <span className="text-xs text-muted-foreground">Active filters:</span>
           {filters.map((filter, index) => (
             <div
               key={index}
-              className="flex items-center gap-2 px-3 py-1 bg-sky-100 text-sky-700 rounded-full text-sm"
+              className="flex items-center gap-1.5 px-2 py-0.5 bg-primary/10 text-primary rounded-full text-xs font-medium"
             >
               <span>{filter.column}: &ldquo;{filter.value}&rdquo;</span>
-              <button
-                onClick={() => handleRemoveFilter(filter.column)}
-                className="hover:bg-sky-200 rounded-full p-0.5"
-              >
-                <X className="w-3 h-3" />
+              <button onClick={() => handleRemoveFilter(filter.column)} className="hover:bg-primary/20 rounded-full p-0.5">
+                <X className="w-2.5 h-2.5" />
               </button>
             </div>
           ))}
@@ -324,33 +324,30 @@ export function DataGrid<T extends { id?: string }>({
       )}
 
       {/* Table */}
-      <div className="bg-white border rounded-lg overflow-hidden">
+      <div className="table-container">
         {loading ? (
-          <div className="flex items-center justify-center py-12">
-            <RefreshCw className="w-8 h-8 animate-spin text-sky-500" />
-            <span className="ml-3 text-gray-600">Loading...</span>
+          <div className="flex items-center justify-center py-16">
+            <RefreshCw className="w-6 h-6 animate-spin text-primary" />
+            <span className="ml-3 text-sm text-muted-foreground">Loading...</span>
           </div>
         ) : currentPageData.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-gray-600">{emptyMessage}</p>
+          <div className="text-center py-16">
+            <Search className="w-8 h-8 mx-auto mb-3 text-muted-foreground/40" />
+            <p className="text-sm text-muted-foreground">{emptyMessage}</p>
           </div>
         ) : (
           <>
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-50 border-b">
+                <thead>
                   <tr>
                     {selectable && (
-                      <th className="px-4 py-3 w-12">
-                        <button
-                          onClick={handleSelectAll}
-                          className="p-1 hover:bg-gray-200 rounded"
-                        >
-                          {selectedIds.size === currentPageData.length &&
-                          currentPageData.length > 0 ? (
-                            <CheckSquare className="w-4 h-4 text-sky-600" />
+                      <th className="px-4 py-3 w-10">
+                        <button onClick={handleSelectAll} className="p-0.5 hover:bg-muted rounded transition-colors">
+                          {selectedIds.size === currentPageData.length && currentPageData.length > 0 ? (
+                            <Check className="w-4 h-4 text-primary" />
                           ) : (
-                            <Square className="w-4 h-4 text-gray-400" />
+                            <div className="w-4 h-4 border-2 border-muted-foreground/30 rounded-sm" />
                           )}
                         </button>
                       </th>
@@ -358,19 +355,15 @@ export function DataGrid<T extends { id?: string }>({
                     {columns
                       .filter((c) => visibleColumns.has(c.key as string))
                       .map((column) => (
-                        <th
-                          key={column.key as string}
-                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase"
-                          style={{ width: column.width }}
-                        >
+                        <th key={column.key as string} style={{ width: column.width }}>
                           <div className="flex items-center gap-2">
                             {column.sortable ? (
                               <button
                                 onClick={() => handleSort(column.key as string)}
-                                className="flex items-center gap-2 hover:text-gray-700"
+                                className="flex items-center gap-1.5 hover:text-foreground transition-colors"
                               >
                                 {column.header}
-                                {getSortIcon(column.key as string)}
+                                <span className="text-muted-foreground">{getSortIcon(column.key as string)}</span>
                               </button>
                             ) : (
                               column.header
@@ -378,51 +371,36 @@ export function DataGrid<T extends { id?: string }>({
                             {column.filterable && (
                               <div className="relative">
                                 <button
-                                  onClick={() =>
-                                    setShowFilterMenu(
-                                      showFilterMenu === column.key ? null : (column.key as string)
-                                    )
-                                  }
-                                  className={`p-1 hover:bg-gray-200 rounded ${
+                                  onClick={() => setShowFilterMenu(
+                                    showFilterMenu === column.key ? null : (column.key as string)
+                                  )}
+                                  className={`p-0.5 rounded transition-colors ${
                                     filters.some((f) => f.column === column.key)
-                                      ? "text-sky-600"
-                                      : "text-gray-400"
+                                      ? "text-primary"
+                                      : "text-muted-foreground hover:text-foreground"
                                   }`}
                                 >
                                   <Filter className="w-3 h-3" />
                                 </button>
                                 {showFilterMenu === column.key && (
-                                  <div className="absolute top-full right-0 mt-1 bg-white border rounded-lg shadow-lg z-50 p-3 min-w-[200px]">
-                                    <div className="text-xs font-medium text-gray-700 mb-2">
+                                  <div className="absolute top-full right-0 mt-1 bg-surface border border-border rounded-xl shadow-elevated z-50 p-3 min-w-[200px] animate-scale-in">
+                                    <div className="text-xs font-medium text-foreground mb-2">
                                       Filter by {column.header}
                                     </div>
                                     <input
                                       type="text"
                                       value={filterValue}
                                       onChange={(e) => setFilterValue(e.target.value)}
-                                      onKeyDown={(e) => {
-                                        if (e.key === "Enter") {
-                                          handleAddFilter(column.key as string);
-                                        }
-                                      }}
+                                      onKeyDown={(e) => { if (e.key === "Enter") handleAddFilter(column.key as string); }}
                                       placeholder="Type to filter..."
-                                      className="w-full px-2 py-1 border rounded text-sm mb-2"
+                                      className="input-field-sm mb-2"
                                       autoFocus
                                     />
                                     <div className="flex gap-2">
-                                      <button
-                                        onClick={() => handleAddFilter(column.key as string)}
-                                        className="flex-1 px-2 py-1 bg-sky-600 text-white rounded text-xs hover:bg-sky-700"
-                                      >
+                                      <button onClick={() => handleAddFilter(column.key as string)} className="btn-primary btn-xs flex-1">
                                         Apply
                                       </button>
-                                      <button
-                                        onClick={() => {
-                                          setShowFilterMenu(null);
-                                          setFilterValue("");
-                                        }}
-                                        className="flex-1 px-2 py-1 border rounded text-xs hover:bg-gray-50"
-                                      >
+                                      <button onClick={() => { setShowFilterMenu(null); setFilterValue(""); }} className="btn-secondary btn-xs flex-1">
                                         Cancel
                                       </button>
                                     </div>
@@ -435,26 +413,23 @@ export function DataGrid<T extends { id?: string }>({
                       ))}
                   </tr>
                 </thead>
-                <tbody className="divide-y">
+                <tbody className="divide-y divide-border/60">
                   {currentPageData.map((row, rowIndex) => (
                     <tr
                       key={(row.id as string) || rowIndex}
                       onClick={() => onRowClick?.(row)}
-                      className={`hover:bg-gray-50 ${onRowClick ? "cursor-pointer" : ""}`}
+                      className={`transition-colors ${onRowClick ? "cursor-pointer" : ""}`}
                     >
                       {selectable && (
-                        <td className="px-4 py-4">
+                        <td className="px-4 py-3">
                           <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleSelectRow(row.id!);
-                            }}
-                            className="p-1 hover:bg-gray-200 rounded"
+                            onClick={(e) => { e.stopPropagation(); handleSelectRow(row.id!); }}
+                            className="p-0.5 hover:bg-muted rounded transition-colors"
                           >
                             {selectedIds.has(row.id!) ? (
-                              <CheckSquare className="w-4 h-4 text-sky-600" />
+                              <Check className="w-4 h-4 text-primary" />
                             ) : (
-                              <Square className="w-4 h-4 text-gray-400" />
+                              <div className="w-4 h-4 border-2 border-muted-foreground/30 rounded-sm" />
                             )}
                           </button>
                         </td>
@@ -462,7 +437,7 @@ export function DataGrid<T extends { id?: string }>({
                       {columns
                         .filter((c) => visibleColumns.has(c.key as string))
                         .map((column) => (
-                          <td key={column.key as string} className="px-6 py-4 text-sm">
+                          <td key={column.key as string}>
                             {column.render
                               ? column.render(row[column.key as keyof T], row)
                               : String(row[column.key as keyof T] ?? "")}
@@ -476,54 +451,20 @@ export function DataGrid<T extends { id?: string }>({
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="flex items-center justify-between px-6 py-3 border-t bg-gray-50">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-600">Rows per page:</span>
-                  <select
-                    value={pageSize}
-                    onChange={(e) => {
-                      setCurrentPage(1);
-                    }}
-                    className="px-2 py-1 border rounded text-sm"
-                  >
-                    <option value={10}>10</option>
-                    <option value={25}>25</option>
-                    <option value={50}>50</option>
-                    <option value={100}>100</option>
-                  </select>
-                </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => setCurrentPage(1)}
-                    disabled={currentPage === 1}
-                    className="px-3 py-1 border rounded text-sm disabled:opacity-50 hover:bg-white"
-                  >
-                    First
-                  </button>
-                  <button
-                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                    disabled={currentPage === 1}
-                    className="px-3 py-1 border rounded text-sm disabled:opacity-50 hover:bg-white"
-                  >
-                    Previous
-                  </button>
-                  <span className="text-sm text-gray-600">
-                    Page {currentPage} of {totalPages}
+              <div className="flex items-center justify-between px-4 py-3 border-t border-border/60 bg-muted/30">
+                <span className="text-xs text-muted-foreground">Rows per page: {pageSize}</span>
+                <div className="flex items-center gap-1">
+                  <button onClick={() => setCurrentPage(1)} disabled={currentPage === 1}
+                    className="btn-ghost btn-xs disabled:opacity-30">First</button>
+                  <button onClick={() => setCurrentPage((p) => Math.max(1, p - 1))} disabled={currentPage === 1}
+                    className="btn-ghost btn-xs disabled:opacity-30">Prev</button>
+                  <span className="text-xs text-muted-foreground px-2 tabular-nums">
+                    {currentPage} / {totalPages}
                   </span>
-                  <button
-                    onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                    disabled={currentPage === totalPages}
-                    className="px-3 py-1 border rounded text-sm disabled:opacity-50 hover:bg-white"
-                  >
-                    Next
-                  </button>
-                  <button
-                    onClick={() => setCurrentPage(totalPages)}
-                    disabled={currentPage === totalPages}
-                    className="px-3 py-1 border rounded text-sm disabled:opacity-50 hover:bg-white"
-                  >
-                    Last
-                  </button>
+                  <button onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages}
+                    className="btn-ghost btn-xs disabled:opacity-30">Next</button>
+                  <button onClick={() => setCurrentPage(totalPages)} disabled={currentPage === totalPages}
+                    className="btn-ghost btn-xs disabled:opacity-30">Last</button>
                 </div>
               </div>
             )}
