@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { SupabaseProvider } from "@/components/providers/supabase-provider";
+import { ThemeProvider } from "@/components/providers/theme-provider";
 import { AdminLayout } from "@/components/layout/admin-layout";
 
 export const metadata: Metadata = {
-  title: "VerTravels Admin",
-  description: "VerTravels Admin Dashboard",
+  title: "VerTravels Operations",
+  description: "Travel Operations Platform",
 };
 
 export default function RootLayout({
@@ -14,12 +15,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="antialiased">
+    <html lang="en" className="antialiased" suppressHydrationWarning>
       <body>
         <SupabaseProvider>
-          <AdminLayout>
-            {children}
-          </AdminLayout>
+          <ThemeProvider>
+            <AdminLayout>
+              {children}
+            </AdminLayout>
+          </ThemeProvider>
         </SupabaseProvider>
       </body>
     </html>

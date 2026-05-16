@@ -18,7 +18,6 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Skip auth check on auth pages
   const isAuthPage = pathname?.startsWith('/login') || pathname?.startsWith('/signup');
 
   useEffect(() => {
@@ -26,8 +25,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       try {
         const { data } = await supabase.auth.getUser();
         setUser(data.user);
-      } catch (error) {
-        console.error('Auth error:', error);
+      } catch {
         setUser(null);
       } finally {
         setLoading(false);
@@ -44,34 +42,33 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     return () => subscription.unsubscribe();
   }, [supabase]);
 
-  // Show loading only on non-auth pages
   if (loading && !isAuthPage) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto" />
-          <p className="mt-4 text-muted-foreground">Loading...</p>
+          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
+            <div className="w-5 h-5 rounded-lg bg-primary animate-pulse" />
+          </div>
+          <p className="text-sm text-muted-foreground">Loading...</p>
         </div>
       </div>
     );
   }
 
-  // Redirect to login if not authenticated and not on auth page
   if (!user && !isAuthPage) {
     redirect('/login');
   }
 
-  // Skip admin layout for auth pages
   if (isAuthPage) {
     return <>{children}</>;
   }
 
   return (
-    <div className="min-h-screen bg-background flex">
+    <div className="min-h-screen bg-background">
       <AdminSidebar />
-      <div className="flex-1 flex flex-col">
+      <div className="transition-all duration-300 ease-in-out" style={{ marginLeft: 'var(--sidebar-width)' }}>
         <AdminHeader />
-        <main className="flex-1 p-6 md:p-8 overflow-auto">
+        <main className="p-4 lg:p-6">
           {children}
         </main>
       </div>
