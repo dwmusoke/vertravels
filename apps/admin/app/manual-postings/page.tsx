@@ -369,7 +369,7 @@ export default function ManualPostingsPage() {
             onClick={() => {
               resetForm();
               setEditingPosting(null);
-              setExpandedRowId(postings.length > 0 ? "new" : null);
+              setExpandedRowId("new");
             }}
             className="flex items-center gap-2 px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700"
           >
